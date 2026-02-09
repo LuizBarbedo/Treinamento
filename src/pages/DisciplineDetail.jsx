@@ -2,9 +2,26 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import { FiPlay, FiFileText, FiCheckCircle, FiLock, FiCheck } from 'react-icons/fi'
+import { FiPlay, FiFileText, FiCheckCircle, FiLock, FiCheck, FiX } from 'react-icons/fi'
 import AIChat from '../components/AIChat'
 import './DisciplineDetail.css'
+
+function getEmbedUrl(url) {
+  if (!url) return null
+  // YouTube: youtube.com/watch?v=ID or youtu.be/ID
+  let match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/)
+  if (match) return `https://www.youtube.com/embed/${match[1]}?rel=0`
+  // YouTube embed already
+  if (url.includes('youtube.com/embed/')) return url
+  // Vimeo: vimeo.com/ID
+  match = url.match(/vimeo\.com\/(\d+)/)
+  if (match) return `https://player.vimeo.com/video/${match[1]}`
+  // Google Drive: drive.google.com/file/d/ID
+  match = url.match(/drive\.google\.com\/file\/d\/([\w-]+)/)
+  if (match) return `https://drive.google.com/file/d/${match[1]}/preview`
+  // Fallback: try embedding directly
+  return url
+}
 
 export default function DisciplineDetail() {
   const { id } = useParams()
@@ -14,6 +31,7 @@ export default function DisciplineDetail() {
   const [materials, setMaterials] = useState([])
   const [completedLessons, setCompletedLessons] = useState(new Set())
   const [activeTab, setActiveTab] = useState('aulas')
+  const [activeLesson, setActiveLesson] = useState(null)
   const [loading, setLoading] = useState(true)
 
   const totalContent = lessons.length + materials.length
@@ -138,27 +156,40 @@ export default function DisciplineDetail() {
           {lessons.map((lesson, index) => {
             const isCompleted = completedLessons.has(lesson.id)
             return (
-              <div key={lesson.id} className={`lesson-card ${isCompleted ? 'completed' : ''}`}>
-                <button
-                  className={`lesson-check ${isCompleted ? 'checked' : ''}`}
-                  onClick={() => toggleLessonComplete(lesson.id)}
-                  title={isCompleted ? 'Desmarcar aula' : 'Marcar como concluída'}
-                >
-                  {isCompleted ? <FiCheck /> : <span className="lesson-number-text">{index + 1}</span>}
-                </button>
-                <div className="lesson-info">
-                  <h3 className={isCompleted ? 'lesson-done' : ''}>{lesson.title}</h3>
-                  {lesson.description && <p>{lesson.description}</p>}
-                </div>
-                {lesson.video_url && (
-                  <a
-                    href={lesson.video_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-watch"
+              <div key={lesson.id} className="lesson-wrapper">
+                <div className={`lesson-card ${isCompleted ? 'completed' : ''} ${activeLesson?.id === lesson.id ? 'playing' : ''}`}>
+                  <button
+                    className={`lesson-check ${isCompleted ? 'checked' : ''}`}
+                    onClick={() => toggleLessonComplete(lesson.id)}
+                    title={isCompleted ? 'Desmarcar aula' : 'Marcar como concluída'}
                   >
-                    <FiPlay /> Assistir
-                  </a>
+                    {isCompleted ? <FiCheck /> : <span className="lesson-number-text">{index + 1}</span>}
+                  </button>
+                  <div className="lesson-info">
+                    <h3 className={isCompleted ? 'lesson-done' : ''}>{lesson.title}</h3>
+                    {lesson.description && <p>{lesson.description}</p>}
+                  </div>
+                  {lesson.video_url && (
+                    <button
+                      className={`btn-watch ${activeLesson?.id === lesson.id ? 'btn-watch-active' : ''}`}
+                      onClick={() => setActiveLesson(activeLesson?.id === lesson.id ? null : lesson)}
+                    >
+                      {activeLesson?.id === lesson.id ? <><FiX /> Fechar</> : <><FiPlay /> Assistir</>}
+                    </button>
+                  )}
+                </div>
+                {activeLesson?.id === lesson.id && (
+                  <div className="video-player-inline">
+                    <div className="video-wrapper">
+                      <iframe
+                        src={getEmbedUrl(lesson.video_url)}
+                        title={lesson.title}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
+                  </div>
                 )}
               </div>
             )

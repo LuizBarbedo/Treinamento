@@ -245,6 +245,56 @@
   opacity: 0.85;
 }
 
+.btn-watch-active {
+  background: linear-gradient(135deg, #e94560, #c0392b) !important;
+}
+
+/* Video Player */
+.lesson-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.lesson-card.playing {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-left-color: #533483;
+}
+
+.video-player-inline {
+  background: #000;
+  border-radius: 0 0 12px 12px;
+  overflow: hidden;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 600px;
+  }
+}
+
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
 /* Materials */
 .materials-list {
   display: grid;
