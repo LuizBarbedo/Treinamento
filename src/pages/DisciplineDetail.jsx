@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { FiPlay, FiFileText, FiCheckCircle } from 'react-icons/fi'
+import AIChat from '../components/AIChat'
 import './DisciplineDetail.css'
 
 export default function DisciplineDetail() {
@@ -123,6 +124,8 @@ export default function DisciplineDetail() {
           )}
         </div>
       )}
+
+      <AIChat discipline={discipline} lessons={lessons} materials={materials} />
     </div>
   )
 }

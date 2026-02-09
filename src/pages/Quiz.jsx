@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
+import AIChat from '../components/AIChat'
 import './Quiz.css'
 
 export default function Quiz() {
@@ -160,6 +161,8 @@ export default function Quiz() {
           )}
         </div>
       )}
+
+      <AIChat discipline={discipline} lessons={[]} materials={[]} />
     </div>
   )
 }
