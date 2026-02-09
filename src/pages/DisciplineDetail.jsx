@@ -37,11 +37,9 @@ export default function DisciplineDetail() {
   const [lessonQuizScore, setLessonQuizScore] = useState(null)
   const [loadingQuiz, setLoadingQuiz] = useState(false)
 
-  const totalContent = lessons.length + materials.length
   const completedCount = completedLessons.size
   const allLessonsCompleted = lessons.length > 0 && completedLessons.size >= lessons.length
-  const allContentCompleted = totalContent > 0 && completedCount >= totalContent
-  const progressPercent = totalContent > 0 ? Math.round((completedCount / totalContent) * 100) : 0
+  const progressPercent = lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0
 
   useEffect(() => {
     fetchData()
@@ -188,17 +186,17 @@ export default function DisciplineDetail() {
       </div>
 
       {/* Barra de Progresso */}
-      {totalContent > 0 && (
+      {lessons.length > 0 && (
         <div className="progress-section">
           <div className="progress-header">
-            <span className="progress-label">Progresso do Conteúdo</span>
-            <span className="progress-value">{completedCount}/{totalContent} concluídos ({progressPercent}%)</span>
+            <span className="progress-label">Progresso das Aulas</span>
+            <span className="progress-value">{completedCount}/{lessons.length} aulas concluídas ({progressPercent}%)</span>
           </div>
           <div className="progress-bar">
             <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
           </div>
-          {allContentCompleted && (
-            <p className="progress-complete-msg">✅ Todo o conteúdo foi concluído! O quiz final está liberado.</p>
+          {allLessonsCompleted && (
+            <p className="progress-complete-msg">✅ Todas as aulas foram concluídas! O quiz final está liberado.</p>
           )}
         </div>
       )}
@@ -217,12 +215,12 @@ export default function DisciplineDetail() {
           <FiFileText /> Materiais ({materials.length})
         </button>
 
-        {allContentCompleted ? (
+        {allLessonsCompleted ? (
           <Link to={`/disciplinas/${id}/quiz`} className="tab tab-quiz tab-quiz-unlocked">
             <FiCheckCircle /> Quiz Final
           </Link>
         ) : (
-          <span className="tab tab-quiz tab-quiz-locked" title="Conclua todo o conteúdo para liberar o quiz final">
+          <span className="tab tab-quiz tab-quiz-locked" title="Conclua todas as aulas para liberar o quiz final">
             <FiLock /> Quiz Final (bloqueado)
           </span>
         )}
