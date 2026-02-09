@@ -1,0 +1,60 @@
+.disciplines-page h1 {
+  font-size: 1.8rem;
+  color: #1a1a2e;
+  margin-bottom: 0.25rem;
+}
+
+.page-subtitle {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.disciplines-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.discipline-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.discipline-item:hover {
+  border-color: #533483;
+  transform: translateX(4px);
+}
+
+.disc-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.disc-info {
+  flex: 1;
+}
+
+.disc-info h3 {
+  color: #1a1a2e;
+  margin-bottom: 0.25rem;
+}
+
+.disc-info p {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.disc-arrow {
+  font-size: 1.2rem;
+  color: #533483;
+  font-weight: bold;
+}
