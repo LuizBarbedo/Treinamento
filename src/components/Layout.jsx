@@ -1,10 +1,10 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { FiHome, FiBook, FiLogOut, FiUser } from 'react-icons/fi'
+import { FiHome, FiBook, FiLogOut, FiUser, FiSettings } from 'react-icons/fi'
 import './Layout.css'
 
 export default function Layout() {
-  const { user, signOut } = useAuth()
+  const { user, signOut, isAdmin } = useAuth()
   const navigate = useNavigate()
 
   const handleSignOut = async () => {
@@ -28,6 +28,16 @@ export default function Layout() {
           <NavLink to="/disciplinas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
             <FiBook /> <span>Disciplinas</span>
           </NavLink>
+
+          {isAdmin && (
+            <>
+              <div className="nav-divider" />
+              <span className="nav-section-label">Admin</span>
+              <NavLink to="/admin/disciplinas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+                <FiSettings /> <span>Gerenciar</span>
+              </NavLink>
+            </>
+          )}
         </nav>
 
         <div className="sidebar-footer">

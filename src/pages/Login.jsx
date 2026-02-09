@@ -30,7 +30,8 @@ export default function Login() {
     } else {
       const { error } = await signIn(email, password)
       if (error) {
-        setError('E-mail ou senha incorretos.')
+        console.error('Login error:', error)
+        setError(error.message || 'E-mail ou senha incorretos.')
       } else {
         navigate('/')
       }
