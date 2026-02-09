@@ -1,7 +1,9 @@
-.discipline-detail {}
+.discipline-detail {
+  padding-bottom: 2rem;
+}
 
 .detail-header {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .back-link {
@@ -35,6 +37,56 @@
 
 .detail-title p {
   color: #666;
+}
+
+/* Progress Section */
+.progress-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.progress-label {
+  font-weight: 600;
+  color: #1a1a2e;
+  font-size: 0.9rem;
+}
+
+.progress-value {
+  font-size: 0.85rem;
+  color: #533483;
+  font-weight: 600;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background: #e8e8e8;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #533483, #27ae60);
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.progress-complete-msg {
+  margin-top: 0.6rem;
+  font-size: 0.85rem;
+  color: #27ae60;
+  font-weight: 600;
 }
 
 /* Tabs */
@@ -74,11 +126,24 @@
 
 .tab-quiz {
   margin-left: auto;
-  color: #e94560;
 }
 
-.tab-quiz:hover {
-  color: #c0392b;
+.tab-quiz-unlocked {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.tab-quiz-unlocked:hover {
+  color: #1e8449;
+}
+
+.tab-quiz-locked {
+  color: #bbb;
+  cursor: not-allowed;
+}
+
+.tab-quiz-locked:hover {
+  color: #bbb;
 }
 
 /* Lessons */
@@ -96,19 +161,51 @@
   border-radius: 12px;
   padding: 1.25rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s;
+  border-left: 4px solid transparent;
 }
 
-.lesson-number {
+.lesson-card.completed {
+  border-left-color: #27ae60;
+  background: #f8fff8;
+}
+
+.lesson-check {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0f3460, #533483);
-  color: #fff;
+  border: 2px solid #d0d0d0;
+  background: #f0f0f0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  cursor: pointer;
   flex-shrink: 0;
+  transition: all 0.2s;
+  color: #888;
+  font-size: 1rem;
+}
+
+.lesson-check:hover {
+  border-color: #533483;
+  background: #f0e6ff;
+}
+
+.lesson-check.checked {
+  border-color: #27ae60;
+  background: #27ae60;
+  color: #fff;
+}
+
+.lesson-check.checked:hover {
+  background: #1e8449;
+  border-color: #1e8449;
+}
+
+.lesson-number-text {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #666;
 }
 
 .lesson-info {
@@ -118,6 +215,11 @@
 .lesson-info h3 {
   color: #1a1a2e;
   margin-bottom: 0.25rem;
+}
+
+.lesson-info h3.lesson-done {
+  text-decoration: line-through;
+  color: #888;
 }
 
 .lesson-info p {

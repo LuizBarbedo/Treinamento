@@ -1,33 +1,74 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { FiPlay, FiFileText, FiCheckCircle } from 'react-icons/fi'
+import { useAuth } from '../contexts/AuthContext'
+import { FiPlay, FiFileText, FiCheckCircle, FiLock, FiCheck } from 'react-icons/fi'
 import AIChat from '../components/AIChat'
 import './DisciplineDetail.css'
 
 export default function DisciplineDetail() {
   const { id } = useParams()
+  const { user } = useAuth()
   const [discipline, setDiscipline] = useState(null)
   const [lessons, setLessons] = useState([])
   const [materials, setMaterials] = useState([])
+  const [completedLessons, setCompletedLessons] = useState(new Set())
   const [activeTab, setActiveTab] = useState('aulas')
   const [loading, setLoading] = useState(true)
+
+  const totalContent = lessons.length + materials.length
+  const completedCount = completedLessons.size
+  const allLessonsCompleted = lessons.length > 0 && completedLessons.size >= lessons.length
+  const allContentCompleted = totalContent > 0 && completedCount >= totalContent
+  const progressPercent = totalContent > 0 ? Math.round((completedCount / totalContent) * 100) : 0
 
   useEffect(() => {
     fetchData()
   }, [id])
 
   const fetchData = async () => {
-    const [discRes, lessonsRes, materialsRes] = await Promise.all([
+    const [discRes, lessonsRes, materialsRes, progressRes] = await Promise.all([
       supabase.from('disciplines').select('*').eq('id', id).single(),
       supabase.from('lessons').select('*').eq('discipline_id', id).order('order_index'),
-      supabase.from('materials').select('*').eq('discipline_id', id).order('created_at')
+      supabase.from('materials').select('*').eq('discipline_id', id).order('created_at'),
+      supabase.from('lesson_progress').select('lesson_id').eq('user_id', user.id).eq('discipline_id', id)
     ])
 
     if (discRes.data) setDiscipline(discRes.data)
     if (lessonsRes.data) setLessons(lessonsRes.data)
     if (materialsRes.data) setMaterials(materialsRes.data)
+    if (progressRes.data) {
+      setCompletedLessons(new Set(progressRes.data.map(p => p.lesson_id)))
+    }
     setLoading(false)
+  }
+
+  const toggleLessonComplete = async (lessonId) => {
+    const isCompleted = completedLessons.has(lessonId)
+
+    if (isCompleted) {
+      // Desmarcar
+      await supabase
+        .from('lesson_progress')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('lesson_id', lessonId)
+
+      setCompletedLessons(prev => {
+        const next = new Set(prev)
+        next.delete(lessonId)
+        return next
+      })
+    } else {
+      // Marcar como concluída
+      await supabase.from('lesson_progress').insert({
+        user_id: user.id,
+        lesson_id: lessonId,
+        discipline_id: id
+      })
+
+      setCompletedLessons(prev => new Set([...prev, lessonId]))
+    }
   }
 
   if (loading) {
@@ -51,12 +92,28 @@ export default function DisciplineDetail() {
         </div>
       </div>
 
+      {/* Barra de Progresso */}
+      {totalContent > 0 && (
+        <div className="progress-section">
+          <div className="progress-header">
+            <span className="progress-label">Progresso do Conteúdo</span>
+            <span className="progress-value">{completedCount}/{totalContent} concluídos ({progressPercent}%)</span>
+          </div>
+          <div className="progress-bar">
+            <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
+          </div>
+          {allContentCompleted && (
+            <p className="progress-complete-msg">✅ Todo o conteúdo foi concluído! O quiz está liberado.</p>
+          )}
+        </div>
+      )}
+
       <div className="tabs">
         <button
           className={`tab ${activeTab === 'aulas' ? 'active' : ''}`}
           onClick={() => setActiveTab('aulas')}
         >
-          <FiPlay /> Aulas ({lessons.length})
+          <FiPlay /> Aulas ({completedLessons.size}/{lessons.length})
         </button>
         <button
           className={`tab ${activeTab === 'materiais' ? 'active' : ''}`}
@@ -64,32 +121,48 @@ export default function DisciplineDetail() {
         >
           <FiFileText /> Materiais ({materials.length})
         </button>
-        <Link to={`/disciplinas/${id}/quiz`} className="tab tab-quiz">
-          <FiCheckCircle /> Quiz
-        </Link>
+
+        {allContentCompleted ? (
+          <Link to={`/disciplinas/${id}/quiz`} className="tab tab-quiz tab-quiz-unlocked">
+            <FiCheckCircle /> Fazer Quiz
+          </Link>
+        ) : (
+          <span className="tab tab-quiz tab-quiz-locked" title="Conclua todo o conteúdo para liberar o quiz">
+            <FiLock /> Quiz (bloqueado)
+          </span>
+        )}
       </div>
 
       {activeTab === 'aulas' && (
         <div className="lessons-list">
-          {lessons.map((lesson, index) => (
-            <div key={lesson.id} className="lesson-card">
-              <div className="lesson-number">{index + 1}</div>
-              <div className="lesson-info">
-                <h3>{lesson.title}</h3>
-                {lesson.description && <p>{lesson.description}</p>}
-              </div>
-              {lesson.video_url && (
-                <a
-                  href={lesson.video_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-watch"
+          {lessons.map((lesson, index) => {
+            const isCompleted = completedLessons.has(lesson.id)
+            return (
+              <div key={lesson.id} className={`lesson-card ${isCompleted ? 'completed' : ''}`}>
+                <button
+                  className={`lesson-check ${isCompleted ? 'checked' : ''}`}
+                  onClick={() => toggleLessonComplete(lesson.id)}
+                  title={isCompleted ? 'Desmarcar aula' : 'Marcar como concluída'}
                 >
-                  <FiPlay /> Assistir
-                </a>
-              )}
-            </div>
-          ))}
+                  {isCompleted ? <FiCheck /> : <span className="lesson-number-text">{index + 1}</span>}
+                </button>
+                <div className="lesson-info">
+                  <h3 className={isCompleted ? 'lesson-done' : ''}>{lesson.title}</h3>
+                  {lesson.description && <p>{lesson.description}</p>}
+                </div>
+                {lesson.video_url && (
+                  <a
+                    href={lesson.video_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-watch"
+                  >
+                    <FiPlay /> Assistir
+                  </a>
+                )}
+              </div>
+            )
+          })}
 
           {lessons.length === 0 && (
             <div className="empty-state">
