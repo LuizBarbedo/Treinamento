@@ -2,45 +2,67 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import { FiBook, FiAward, FiTrendingUp } from 'react-icons/fi'
+import { FiBook, FiAward, FiTrendingUp, FiLock, FiCheck } from 'react-icons/fi'
 import './Dashboard.css'
 
 export default function Dashboard() {
   const { user } = useAuth()
   const [stats, setStats] = useState({ total: 0, completed: 0, inProgress: 0 })
   const [disciplines, setDisciplines] = useState([])
+  const [completedDisciplines, setCompletedDisciplines] = useState(new Set())
 
   useEffect(() => {
     fetchData()
   }, [])
 
   const fetchData = async () => {
-    // Buscar disciplinas
-    const { data: discs } = await supabase
+    // Buscar todas as disciplinas
+    const { data: allDiscs } = await supabase
       .from('disciplines')
       .select('*')
       .order('order_index')
-      .limit(4)
 
-    if (discs) setDisciplines(discs)
+    if (allDiscs) setDisciplines(allDiscs)
 
-    // Buscar progresso do aluno
-    const { data: progress } = await supabase
+    // Buscar disciplinas concluídas (quiz final aprovado)
+    const { data: completedProgress } = await supabase
       .from('user_progress')
-      .select('*')
+      .select('discipline_id')
+      .eq('user_id', user.id)
+      .eq('completed', true)
+
+    const completedIds = new Set((completedProgress || []).map(p => p.discipline_id))
+    setCompletedDisciplines(completedIds)
+
+    // Buscar aulas com progresso (para detectar "em andamento")
+    const { data: lessonProgress } = await supabase
+      .from('lesson_progress')
+      .select('discipline_id')
       .eq('user_id', user.id)
 
-    if (progress) {
-      const completed = progress.filter(p => p.completed).length
-      setStats({
-        total: discs?.length || 0,
-        completed,
-        inProgress: progress.filter(p => !p.completed).length
+    // Disciplinas em andamento = tem pelo menos 1 aula concluída mas disciplina não está completa
+    const inProgressIds = new Set()
+    if (lessonProgress) {
+      lessonProgress.forEach(lp => {
+        if (!completedIds.has(lp.discipline_id)) {
+          inProgressIds.add(lp.discipline_id)
+        }
       })
     }
+
+    setStats({
+      total: allDiscs?.length || 0,
+      completed: completedIds.size,
+      inProgress: inProgressIds.size
+    })
   }
 
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuário'
+
+  const isDisciplineAccessible = (index) => {
+    if (index === 0) return true
+    return completedDisciplines.has(disciplines[index - 1].id)
+  }
 
   return (
     <div className="dashboard">
@@ -80,13 +102,30 @@ export default function Dashboard() {
         </div>
 
         <div className="disciplines-grid">
-          {disciplines.map((disc) => (
-            <Link key={disc.id} to={`/disciplinas/${disc.id}`} className="discipline-card">
-              <div className="discipline-emoji">{disc.icon || '📚'}</div>
-              <h3>{disc.name}</h3>
-              <p>{disc.description}</p>
-            </Link>
-          ))}
+          {disciplines.slice(0, 4).map((disc, index) => {
+            const accessible = isDisciplineAccessible(index)
+            const isCompleted = completedDisciplines.has(disc.id)
+
+            if (!accessible) {
+              return (
+                <div key={disc.id} className="discipline-card discipline-card-locked">
+                  <div className="discipline-emoji">{disc.icon || '📚'}</div>
+                  <h3>{disc.name}</h3>
+                  <p>{disc.description}</p>
+                  <span className="card-locked-badge"><FiLock /> Bloqueada</span>
+                </div>
+              )
+            }
+
+            return (
+              <Link key={disc.id} to={`/disciplinas/${disc.id}`} className={`discipline-card ${isCompleted ? 'discipline-card-completed' : ''}`}>
+                <div className="discipline-emoji">{disc.icon || '📚'}</div>
+                <h3>{disc.name}</h3>
+                <p>{disc.description}</p>
+                {isCompleted && <span className="card-completed-badge"><FiCheck /> Concluída</span>}
+              </Link>
+            )
+          })}
 
           {disciplines.length === 0 && (
             <div className="empty-state">
