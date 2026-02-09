@@ -8,18 +8,13 @@ import './DisciplineDetail.css'
 
 function getEmbedUrl(url) {
   if (!url) return null
-  // YouTube: youtube.com/watch?v=ID or youtu.be/ID
   let match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/)
   if (match) return `https://www.youtube.com/embed/${match[1]}?rel=0`
-  // YouTube embed already
   if (url.includes('youtube.com/embed/')) return url
-  // Vimeo: vimeo.com/ID
   match = url.match(/vimeo\.com\/(\d+)/)
   if (match) return `https://player.vimeo.com/video/${match[1]}`
-  // Google Drive: drive.google.com/file/d/ID
   match = url.match(/drive\.google\.com\/file\/d\/([\w-]+)/)
   if (match) return `https://drive.google.com/file/d/${match[1]}/preview`
-  // Fallback: try embedding directly
   return url
 }
 
@@ -33,6 +28,14 @@ export default function DisciplineDetail() {
   const [activeTab, setActiveTab] = useState('aulas')
   const [activeLesson, setActiveLesson] = useState(null)
   const [loading, setLoading] = useState(true)
+
+  // Lesson quiz state
+  const [lessonQuizQuestions, setLessonQuizQuestions] = useState({})
+  const [activeLessonQuiz, setActiveLessonQuiz] = useState(null)
+  const [lessonQuizAnswers, setLessonQuizAnswers] = useState({})
+  const [lessonQuizSubmitted, setLessonQuizSubmitted] = useState(false)
+  const [lessonQuizScore, setLessonQuizScore] = useState(null)
+  const [loadingQuiz, setLoadingQuiz] = useState(false)
 
   const totalContent = lessons.length + materials.length
   const completedCount = completedLessons.size
@@ -61,32 +64,106 @@ export default function DisciplineDetail() {
     setLoading(false)
   }
 
-  const toggleLessonComplete = async (lessonId) => {
-    const isCompleted = completedLessons.has(lessonId)
+  // Check if lesson is accessible (sequential order)
+  const isLessonAccessible = (index) => {
+    if (index === 0) return true
+    return completedLessons.has(lessons[index - 1].id)
+  }
 
-    if (isCompleted) {
-      // Desmarcar
-      await supabase
-        .from('lesson_progress')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('lesson_id', lessonId)
+  // Open lesson quiz
+  const startLessonQuiz = async (lessonId) => {
+    if (lessonQuizQuestions[lessonId]) {
+      setActiveLessonQuiz(lessonId)
+      setLessonQuizAnswers({})
+      setLessonQuizSubmitted(false)
+      setLessonQuizScore(null)
+      return
+    }
 
-      setCompletedLessons(prev => {
-        const next = new Set(prev)
-        next.delete(lessonId)
-        return next
-      })
-    } else {
-      // Marcar como concluída
-      await supabase.from('lesson_progress').insert({
+    setLoadingQuiz(true)
+    const { data } = await supabase
+      .from('quiz_questions')
+      .select('*')
+      .eq('lesson_id', lessonId)
+      .order('order_index')
+      .limit(3)
+
+    setLessonQuizQuestions(prev => ({ ...prev, [lessonId]: data || [] }))
+    setActiveLessonQuiz(lessonId)
+    setLessonQuizAnswers({})
+    setLessonQuizSubmitted(false)
+    setLessonQuizScore(null)
+    setLoadingQuiz(false)
+  }
+
+  // Handle lesson quiz answer
+  const handleLessonQuizAnswer = (questionId, optionIndex) => {
+    if (lessonQuizSubmitted) return
+    setLessonQuizAnswers(prev => ({ ...prev, [questionId]: optionIndex }))
+  }
+
+  // Submit lesson quiz
+  const submitLessonQuiz = async (lessonId) => {
+    const questions = lessonQuizQuestions[lessonId] || []
+    if (Object.keys(lessonQuizAnswers).length < questions.length) {
+      alert('Responda todas as questões antes de enviar.')
+      return
+    }
+
+    let correct = 0
+    questions.forEach(q => {
+      if (lessonQuizAnswers[q.id] === q.correct_option) correct++
+    })
+
+    const total = questions.length
+    const passed = correct >= Math.ceil(total * 0.66) // 2/3 corretas
+    const scorePercent = Math.round((correct / total) * 100)
+
+    setLessonQuizScore({ correct, total, passed, scorePercent })
+    setLessonQuizSubmitted(true)
+
+    // Save quiz result
+    await supabase.from('lesson_quiz_results').upsert({
+      user_id: user.id,
+      lesson_id: lessonId,
+      discipline_id: id,
+      score: scorePercent,
+      total_questions: total,
+      correct_answers: correct,
+      passed,
+      completed_at: new Date().toISOString()
+    }, { onConflict: 'user_id,lesson_id' })
+
+    // If passed, mark lesson as completed
+    if (passed) {
+      await supabase.from('lesson_progress').upsert({
         user_id: user.id,
         lesson_id: lessonId,
-        discipline_id: id
-      })
+        discipline_id: id,
+        completed_at: new Date().toISOString()
+      }, { onConflict: 'user_id,lesson_id' })
 
       setCompletedLessons(prev => new Set([...prev, lessonId]))
     }
+  }
+
+  // Mark lesson complete manually (when no quiz questions exist)
+  const markLessonComplete = async (lessonId) => {
+    await supabase.from('lesson_progress').upsert({
+      user_id: user.id,
+      lesson_id: lessonId,
+      discipline_id: id,
+      completed_at: new Date().toISOString()
+    }, { onConflict: 'user_id,lesson_id' })
+
+    setCompletedLessons(prev => new Set([...prev, lessonId]))
+  }
+
+  // Reset lesson quiz to retry
+  const retryLessonQuiz = () => {
+    setLessonQuizAnswers({})
+    setLessonQuizSubmitted(false)
+    setLessonQuizScore(null)
   }
 
   if (loading) {
@@ -121,7 +198,7 @@ export default function DisciplineDetail() {
             <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
           </div>
           {allContentCompleted && (
-            <p className="progress-complete-msg">✅ Todo o conteúdo foi concluído! O quiz está liberado.</p>
+            <p className="progress-complete-msg">✅ Todo o conteúdo foi concluído! O quiz final está liberado.</p>
           )}
         </div>
       )}
@@ -142,11 +219,11 @@ export default function DisciplineDetail() {
 
         {allContentCompleted ? (
           <Link to={`/disciplinas/${id}/quiz`} className="tab tab-quiz tab-quiz-unlocked">
-            <FiCheckCircle /> Fazer Quiz
+            <FiCheckCircle /> Quiz Final
           </Link>
         ) : (
-          <span className="tab tab-quiz tab-quiz-locked" title="Conclua todo o conteúdo para liberar o quiz">
-            <FiLock /> Quiz (bloqueado)
+          <span className="tab tab-quiz tab-quiz-locked" title="Conclua todo o conteúdo para liberar o quiz final">
+            <FiLock /> Quiz Final (bloqueado)
           </span>
         )}
       </div>
@@ -155,30 +232,41 @@ export default function DisciplineDetail() {
         <div className="lessons-list">
           {lessons.map((lesson, index) => {
             const isCompleted = completedLessons.has(lesson.id)
+            const accessible = isLessonAccessible(index)
+            const isActive = activeLesson?.id === lesson.id
+            const isQuizOpen = activeLessonQuiz === lesson.id
+            const quizQuestions = lessonQuizQuestions[lesson.id] || []
+
             return (
               <div key={lesson.id} className="lesson-wrapper">
-                <div className={`lesson-card ${isCompleted ? 'completed' : ''} ${activeLesson?.id === lesson.id ? 'playing' : ''}`}>
-                  <button
-                    className={`lesson-check ${isCompleted ? 'checked' : ''}`}
-                    onClick={() => toggleLessonComplete(lesson.id)}
-                    title={isCompleted ? 'Desmarcar aula' : 'Marcar como concluída'}
-                  >
-                    {isCompleted ? <FiCheck /> : <span className="lesson-number-text">{index + 1}</span>}
-                  </button>
+                <div className={`lesson-card ${isCompleted ? 'completed' : ''} ${!accessible ? 'locked' : ''} ${isActive ? 'playing' : ''}`}>
+                  <div className={`lesson-check ${isCompleted ? 'checked' : ''} ${!accessible ? 'lesson-check-locked' : ''}`}>
+                    {isCompleted ? <FiCheck /> : !accessible ? <FiLock /> : <span className="lesson-number-text">{index + 1}</span>}
+                  </div>
                   <div className="lesson-info">
                     <h3 className={isCompleted ? 'lesson-done' : ''}>{lesson.title}</h3>
                     {lesson.description && <p>{lesson.description}</p>}
+                    {!accessible && <span className="lesson-locked-msg">🔒 Complete a aula anterior primeiro</span>}
+                    {isCompleted && <span className="lesson-completed-badge">✅ Concluída</span>}
                   </div>
-                  {lesson.video_url && (
+                  {accessible && lesson.video_url && (
                     <button
-                      className={`btn-watch ${activeLesson?.id === lesson.id ? 'btn-watch-active' : ''}`}
-                      onClick={() => setActiveLesson(activeLesson?.id === lesson.id ? null : lesson)}
+                      className={`btn-watch ${isActive ? 'btn-watch-active' : ''}`}
+                      onClick={() => {
+                        setActiveLesson(isActive ? null : lesson)
+                        if (isActive) {
+                          setActiveLessonQuiz(null)
+                          setLessonQuizSubmitted(false)
+                        }
+                      }}
                     >
-                      {activeLesson?.id === lesson.id ? <><FiX /> Fechar</> : <><FiPlay /> Assistir</>}
+                      {isActive ? <><FiX /> Fechar</> : <><FiPlay /> Assistir</>}
                     </button>
                   )}
                 </div>
-                {activeLesson?.id === lesson.id && (
+
+                {/* Video Player */}
+                {isActive && (
                   <div className="video-player-inline">
                     <div className="video-wrapper">
                       <iframe
@@ -189,6 +277,109 @@ export default function DisciplineDetail() {
                         allowFullScreen
                       />
                     </div>
+
+                    {/* Lesson quiz trigger / mark complete */}
+                    {!isCompleted && !isQuizOpen && (
+                      <div className="lesson-actions">
+                        <button
+                          className="btn-lesson-quiz"
+                          onClick={() => startLessonQuiz(lesson.id)}
+                          disabled={loadingQuiz}
+                        >
+                          📝 {loadingQuiz ? 'Carregando...' : 'Fazer Quiz da Aula'}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Lesson Quiz Inline */}
+                {isQuizOpen && (
+                  <div className="lesson-quiz-inline">
+                    {quizQuestions.length === 0 ? (
+                      <div className="lesson-quiz-empty">
+                        <p>Nenhuma questão cadastrada para esta aula.</p>
+                        <button className="btn-mark-complete" onClick={() => {
+                          markLessonComplete(lesson.id)
+                          setActiveLessonQuiz(null)
+                        }}>
+                          <FiCheck /> Marcar Aula como Concluída
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="lesson-quiz-header">
+                          <h4>📝 Quiz da Aula: {lesson.title}</h4>
+                          <p>Responda corretamente para concluir esta aula ({quizQuestions.length} questões)</p>
+                        </div>
+
+                        {lessonQuizSubmitted && lessonQuizScore && (
+                          <div className={`lesson-quiz-result ${lessonQuizScore.passed ? 'passed' : 'failed'}`}>
+                            <div className="lq-result-score">{lessonQuizScore.scorePercent}%</div>
+                            <div className="lq-result-detail">
+                              {lessonQuizScore.correct} de {lessonQuizScore.total} acertos
+                            </div>
+                            <div className="lq-result-text">
+                              {lessonQuizScore.passed
+                                ? '🎉 Aprovado! Aula concluída com sucesso.'
+                                : '😕 Não atingiu a pontuação mínima. Revise o conteúdo e tente novamente.'}
+                            </div>
+                            {!lessonQuizScore.passed && (
+                              <button className="btn-retry-lesson" onClick={retryLessonQuiz}>
+                                🔄 Tentar Novamente
+                              </button>
+                            )}
+                            {lessonQuizScore.passed && (
+                              <button className="btn-next-lesson" onClick={() => {
+                                setActiveLessonQuiz(null)
+                                setActiveLesson(null)
+                              }}>
+                                Continuar →
+                              </button>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="lesson-quiz-questions">
+                          {quizQuestions.map((q, qIndex) => (
+                            <div key={q.id} className="lq-question-card">
+                              <span className="lq-question-number">Questão {qIndex + 1}</span>
+                              <p className="lq-question-text">{q.question}</p>
+                              <div className="lq-options">
+                                {q.options.map((option, oIndex) => {
+                                  let cls = 'lq-option'
+                                  if (lessonQuizAnswers[q.id] === oIndex) cls += ' selected'
+                                  if (lessonQuizSubmitted) {
+                                    if (oIndex === q.correct_option) cls += ' correct'
+                                    else if (lessonQuizAnswers[q.id] === oIndex) cls += ' wrong'
+                                  }
+                                  return (
+                                    <button
+                                      key={oIndex}
+                                      className={cls}
+                                      onClick={() => handleLessonQuizAnswer(q.id, oIndex)}
+                                      disabled={lessonQuizSubmitted}
+                                    >
+                                      <span className="lq-option-letter">{String.fromCharCode(65 + oIndex)}</span>
+                                      <span>{option}</span>
+                                    </button>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        {!lessonQuizSubmitted && (
+                          <button
+                            className="btn-submit-lesson-quiz"
+                            onClick={() => submitLessonQuiz(lesson.id)}
+                          >
+                            Enviar Respostas ({Object.keys(lessonQuizAnswers).length}/{quizQuestions.length})
+                          </button>
+                        )}
+                      </>
+                    )}
                   </div>
                 )}
               </div>

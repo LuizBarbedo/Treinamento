@@ -37,9 +37,12 @@ CREATE TABLE materials (
 );
 
 -- 4. Tabela de Questões do Quiz
+-- Se lesson_id for NULL = questão do quiz geral da disciplina (10 perguntas)
+-- Se lesson_id preenchido = questão do quiz da aula (3 perguntas)
 CREATE TABLE quiz_questions (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   discipline_id UUID REFERENCES disciplines(id) ON DELETE CASCADE,
+  lesson_id UUID REFERENCES lessons(id) ON DELETE CASCADE, -- NULL = quiz geral, preenchido = quiz da aula
   question TEXT NOT NULL,
   options JSONB NOT NULL,       -- Array de strings: ["Opção A", "Opção B", "Opção C", "Opção D"]
   correct_option INTEGER NOT NULL, -- Índice da resposta correta (0, 1, 2, 3)
@@ -69,6 +72,20 @@ CREATE TABLE user_progress (
   UNIQUE(user_id, discipline_id)
 );
 
+-- 7. Tabela de Resultados do Quiz por Aula
+CREATE TABLE lesson_quiz_results (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  lesson_id UUID REFERENCES lessons(id) ON DELETE CASCADE,
+  discipline_id UUID REFERENCES disciplines(id) ON DELETE CASCADE,
+  score INTEGER NOT NULL,
+  total_questions INTEGER NOT NULL,
+  correct_answers INTEGER NOT NULL,
+  passed BOOLEAN DEFAULT FALSE,
+  completed_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, lesson_id)
+);
+
 -- ============================================
 -- ROW LEVEL SECURITY (RLS)
 -- ============================================
@@ -80,6 +97,7 @@ ALTER TABLE materials ENABLE ROW LEVEL SECURITY;
 ALTER TABLE quiz_questions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE quiz_results ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_progress ENABLE ROW LEVEL SECURITY;
+ALTER TABLE lesson_quiz_results ENABLE ROW LEVEL SECURITY;
 
 -- Disciplinas, aulas, materiais e questões: qualquer usuário autenticado pode ler
 CREATE POLICY "Authenticated users can read disciplines"
@@ -131,6 +149,22 @@ CREATE POLICY "Users can insert own progress"
 
 CREATE POLICY "Users can update own progress"
   ON user_progress FOR UPDATE
+  TO authenticated
+  USING (auth.uid() = user_id);
+
+-- Lesson quiz results: usuário só vê/edita os seus próprios
+CREATE POLICY "Users can read own lesson quiz results"
+  ON lesson_quiz_results FOR SELECT
+  TO authenticated
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own lesson quiz results"
+  ON lesson_quiz_results FOR INSERT
+  TO authenticated
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own lesson quiz results"
+  ON lesson_quiz_results FOR UPDATE
   TO authenticated
   USING (auth.uid() = user_id);
 

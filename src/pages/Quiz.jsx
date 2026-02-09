@@ -26,7 +26,7 @@ export default function Quiz() {
   const fetchQuiz = async () => {
     const [discRes, questionsRes, lessonsRes, progressRes] = await Promise.all([
       supabase.from('disciplines').select('*').eq('id', id).single(),
-      supabase.from('quiz_questions').select('*').eq('discipline_id', id).order('order_index'),
+      supabase.from('quiz_questions').select('*').eq('discipline_id', id).is('lesson_id', null).order('order_index').limit(10),
       supabase.from('lessons').select('id').eq('discipline_id', id),
       supabase.from('lesson_progress').select('lesson_id').eq('user_id', user.id).eq('discipline_id', id)
     ])
@@ -141,8 +141,8 @@ export default function Quiz() {
       <Link to={`/disciplinas/${id}`} className="back-link">← Voltar para {discipline.name}</Link>
 
       <div className="quiz-header">
-        <h1>📝 Avaliação: {discipline.name}</h1>
-        <p>Responda todas as questões abaixo. Você precisa de pelo menos <strong>70%</strong> de acertos para ser aprovado.</p>
+        <h1>📝 Quiz Final: {discipline.name}</h1>
+        <p>Avaliação geral da disciplina. Responda todas as questões abaixo. Você precisa de pelo menos <strong>70%</strong> de acertos para ser aprovado.</p>
         <div className="quiz-info-bar">
           <span>📋 {questions.length} questões</span>
           <span>✅ Mínimo: 70%</span>
