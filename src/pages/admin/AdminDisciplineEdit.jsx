@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { FiArrowLeft, FiSave, FiPlus, FiTrash2, FiEdit2, FiCheck } from 'react-icons/fi'
@@ -13,6 +13,7 @@ export default function AdminDisciplineEdit() {
   const [activeTab, setActiveTab] = useState('info')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const quizFormRef = useRef(null)
 
   // Discipline form
   const [discForm, setDiscForm] = useState({ name: '', description: '', icon: '📚', order_index: 0 })
@@ -29,7 +30,7 @@ export default function AdminDisciplineEdit() {
 
   // Quiz form
   const [quizForm, setQuizForm] = useState({
-    question: '', options: ['', '', '', ''], correct_option: 0, lesson_id: null, order_index: 0
+    question: '', options: ['', '', '', ''], correct_option: 0, lesson_id: null, order_index: 0, correction_comment: ''
   })
   const [editingQuestionId, setEditingQuestionId] = useState(null)
   const [showQuizForm, setShowQuizForm] = useState(false)
@@ -166,7 +167,7 @@ export default function AdminDisciplineEdit() {
   // ═══════════════════════════════════════
   const resetQuizForm = () => {
     setQuizForm({
-      question: '', options: ['', '', '', ''], correct_option: 0, lesson_id: null, order_index: 0
+      question: '', options: ['', '', '', ''], correct_option: 0, lesson_id: null, order_index: 0, correction_comment: ''
     })
     setEditingQuestionId(null)
     setShowQuizForm(false)
@@ -178,10 +179,14 @@ export default function AdminDisciplineEdit() {
       options: [...(q.options || ['', '', '', ''])],
       correct_option: q.correct_option,
       lesson_id: q.lesson_id || null,
-      order_index: q.order_index || 0
+      order_index: q.order_index || 0,
+      correction_comment: q.correction_comment || ''
     })
     setEditingQuestionId(q.id)
     setShowQuizForm(true)
+    setTimeout(() => {
+      quizFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 50)
   }
 
   const saveQuestion = async () => {
@@ -194,7 +199,8 @@ export default function AdminDisciplineEdit() {
       options: quizForm.options,
       correct_option: quizForm.correct_option,
       lesson_id: quizForm.lesson_id || null,
-      order_index: quizForm.order_index
+      order_index: quizForm.order_index,
+      correction_comment: quizForm.correction_comment || null
     }
 
     if (editingQuestionId) {
@@ -390,7 +396,7 @@ export default function AdminDisciplineEdit() {
                         onClick={() => {
                           setQuizForm({
                             question: '', options: ['', '', '', ''], correct_option: 0,
-                            lesson_id: lesson.id, order_index: lessonQuestionCount + 1
+                            lesson_id: lesson.id, order_index: lessonQuestionCount + 1, correction_comment: ''
                           })
                           setEditingQuestionId(null)
                           setShowQuizForm(true)
@@ -507,7 +513,7 @@ export default function AdminDisciplineEdit() {
           </div>
 
           {showQuizForm && (
-            <div className="admin-form-card">
+            <div className="admin-form-card" ref={quizFormRef}>
               <h3>{editingQuestionId ? '✏️ Editar Questão' : '➕ Nova Questão'}</h3>
               <div className="form-grid">
                 <div className="form-group" style={{ gridColumn: 'span 1' }}>
@@ -537,6 +543,15 @@ export default function AdminDisciplineEdit() {
                     onChange={e => setQuizForm(f => ({ ...f, question: e.target.value }))}
                     rows={2}
                     placeholder="Digite a pergunta..."
+                  />
+                </div>
+                <div className="form-group form-full">
+                  <label>Comentário de Correção (aparece ao final do quiz)</label>
+                  <textarea
+                    value={quizForm.correction_comment}
+                    onChange={e => setQuizForm(f => ({ ...f, correction_comment: e.target.value }))}
+                    rows={2}
+                    placeholder="Explicação que aparece ao aluno após finalizar o quiz (opcional)"
                   />
                 </div>
                 {quizForm.options.map((opt, i) => (
@@ -589,6 +604,11 @@ export default function AdminDisciplineEdit() {
                       </span>
                     ))}
                   </div>
+                  {q.correction_comment && (
+                    <div className="quiz-comment-preview">
+                      💬 <em>{q.correction_comment}</em>
+                    </div>
+                  )}
                 </div>
                 <div className="item-actions">
                   <button className="btn-icon btn-edit" onClick={() => editQuestion(q)} title="Editar">
@@ -624,6 +644,11 @@ export default function AdminDisciplineEdit() {
                           </span>
                         ))}
                       </div>
+                      {q.correction_comment && (
+                        <div className="quiz-comment-preview">
+                          💬 <em>{q.correction_comment}</em>
+                        </div>
+                      )}
                     </div>
                     <div className="item-actions">
                       <button className="btn-icon btn-edit" onClick={() => editQuestion(q)} title="Editar">

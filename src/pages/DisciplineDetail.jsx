@@ -419,6 +419,13 @@ export default function DisciplineDetail() {
                                   )
                                 })}
                               </div>
+
+                              {lessonQuizSubmitted && q.correction_comment && (
+                                <div className="correction-comment">
+                                  <span className="correction-comment-icon">💡</span>
+                                  <div className="correction-comment-text">{q.correction_comment}</div>
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>

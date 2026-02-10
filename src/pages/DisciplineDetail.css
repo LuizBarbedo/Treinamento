@@ -636,6 +636,42 @@
   opacity: 0.9;
 }
 
+/* Correction Comment (Lesson Quiz) */
+.lesson-quiz-inline .correction-comment {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #fef9e7;
+  border: 1px solid #f0d861;
+  border-radius: 8px;
+  animation: fadeInComment 0.3s ease;
+}
+
+.lesson-quiz-inline .correction-comment-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.lesson-quiz-inline .correction-comment-text {
+  font-size: 0.9rem;
+  color: #5a4e00;
+  line-height: 1.5;
+}
+
+@keyframes fadeInComment {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Materials */
 .materials-list {
   display: grid;

@@ -46,6 +46,7 @@ CREATE TABLE quiz_questions (
   question TEXT NOT NULL,
   options JSONB NOT NULL,       -- Array de strings: ["Opção A", "Opção B", "Opção C", "Opção D"]
   correct_option INTEGER NOT NULL, -- Índice da resposta correta (0, 1, 2, 3)
+  correction_comment TEXT,      -- Comentário de correção exibido após o quiz ser finalizado
   order_index INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );

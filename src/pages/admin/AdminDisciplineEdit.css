@@ -289,6 +289,16 @@
   font-weight: 600;
 }
 
+.quiz-comment-preview {
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: #8a7000;
+  background: #fef9e7;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border-left: 3px solid #f0d861;
+}
+
 /* Quiz form - option input row */
 .option-input-row {
   display: flex;
