@@ -37,6 +37,11 @@ export default function DisciplineDetail() {
   const [lessonQuizScore, setLessonQuizScore] = useState(null)
   const [loadingQuiz, setLoadingQuiz] = useState(false)
 
+  // Video watched state
+  const [watchedLessons, setWatchedLessons] = useState(new Set())
+  const [watchTimers, setWatchTimers] = useState({})
+  const [watchReady, setWatchReady] = useState(new Set())
+
   const completedCount = completedLessons.size
   const allLessonsCompleted = lessons.length > 0 && completedLessons.size >= lessons.length
   const progressPercent = lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0
@@ -164,6 +169,35 @@ export default function DisciplineDetail() {
     setLessonQuizScore(null)
   }
 
+  // Start watch timer when video is opened
+  const startWatchTimer = (lessonId) => {
+    if (watchedLessons.has(lessonId) || watchReady.has(lessonId)) return
+    // Show "Já assisti" button after 10 seconds
+    const timer = setTimeout(() => {
+      setWatchReady(prev => new Set([...prev, lessonId]))
+    }, 10000)
+    setWatchTimers(prev => ({ ...prev, [lessonId]: timer }))
+  }
+
+  // Clear watch timer
+  const clearWatchTimer = (lessonId) => {
+    if (watchTimers[lessonId]) {
+      clearTimeout(watchTimers[lessonId])
+      setWatchTimers(prev => {
+        const next = { ...prev }
+        delete next[lessonId]
+        return next
+      })
+    }
+  }
+
+  // Mark video as watched and auto-open quiz
+  const markVideoWatched = async (lessonId) => {
+    setWatchedLessons(prev => new Set([...prev, lessonId]))
+    // Auto-start the quiz
+    startLessonQuiz(lessonId)
+  }
+
   if (loading) {
     return <div className="loading-screen"><div className="spinner"></div></div>
   }
@@ -251,10 +285,14 @@ export default function DisciplineDetail() {
                     <button
                       className={`btn-watch ${isActive ? 'btn-watch-active' : ''}`}
                       onClick={() => {
-                        setActiveLesson(isActive ? null : lesson)
                         if (isActive) {
+                          setActiveLesson(null)
                           setActiveLessonQuiz(null)
                           setLessonQuizSubmitted(false)
+                          clearWatchTimer(lesson.id)
+                        } else {
+                          setActiveLesson(lesson)
+                          startWatchTimer(lesson.id)
                         }
                       }}
                     >
@@ -277,7 +315,24 @@ export default function DisciplineDetail() {
                     </div>
 
                     {/* Lesson quiz trigger / mark complete */}
-                    {!isCompleted && !isQuizOpen && (
+                    {!isCompleted && !isQuizOpen && !watchedLessons.has(lesson.id) && (
+                      <div className="lesson-actions">
+                        {watchReady.has(lesson.id) ? (
+                          <button
+                            className="btn-lesson-watched"
+                            onClick={() => markVideoWatched(lesson.id)}
+                          >
+                            <FiCheck /> Já assisti esta aula — Fazer Quiz
+                          </button>
+                        ) : (
+                          <div className="lesson-watch-notice">
+                            <div className="watch-notice-spinner"></div>
+                            <span>Assista a aula para liberar o quiz...</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {!isCompleted && watchedLessons.has(lesson.id) && !isQuizOpen && (
                       <div className="lesson-actions">
                         <button
                           className="btn-lesson-quiz"

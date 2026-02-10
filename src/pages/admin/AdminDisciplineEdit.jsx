@@ -372,24 +372,46 @@ export default function AdminDisciplineEdit() {
           )}
 
           <div className="admin-list">
-            {lessons.map((lesson) => (
-              <div key={lesson.id} className="admin-list-item">
-                <span className="item-order">{lesson.order_index}</span>
-                <div className="item-info">
-                  <strong>{lesson.title}</strong>
-                  {lesson.description && <small>{lesson.description}</small>}
-                  {lesson.video_url && <small className="item-url">🎬 {lesson.video_url}</small>}
+            {lessons.map((lesson) => {
+              const lessonQuestionCount = questions.filter(q => q.lesson_id === lesson.id).length
+              return (
+                <div key={lesson.id} className="admin-list-item admin-lesson-item">
+                  <span className="item-order">{lesson.order_index}</span>
+                  <div className="item-info">
+                    <strong>{lesson.title}</strong>
+                    {lesson.description && <small>{lesson.description}</small>}
+                    {lesson.video_url && <small className="item-url">🎬 {lesson.video_url}</small>}
+                    <div className="lesson-quiz-badge-row">
+                      <span className={`lesson-quiz-count ${lessonQuestionCount > 0 ? 'has-questions' : 'no-questions'}`}>
+                        📝 {lessonQuestionCount} {lessonQuestionCount === 1 ? 'questão' : 'questões'} no quiz
+                      </span>
+                      <button
+                        className="btn-add-quiz-shortcut"
+                        onClick={() => {
+                          setQuizForm({
+                            question: '', options: ['', '', '', ''], correct_option: 0,
+                            lesson_id: lesson.id, order_index: lessonQuestionCount + 1
+                          })
+                          setEditingQuestionId(null)
+                          setShowQuizForm(true)
+                          setActiveTab('quiz')
+                        }}
+                      >
+                        + Adicionar questão
+                      </button>
+                    </div>
+                  </div>
+                  <div className="item-actions">
+                    <button className="btn-icon btn-edit" onClick={() => editLesson(lesson)} title="Editar">
+                      <FiEdit2 />
+                    </button>
+                    <button className="btn-icon btn-delete" onClick={() => deleteLesson(lesson.id, lesson.title)} title="Excluir">
+                      <FiTrash2 />
+                    </button>
+                  </div>
                 </div>
-                <div className="item-actions">
-                  <button className="btn-icon btn-edit" onClick={() => editLesson(lesson)} title="Editar">
-                    <FiEdit2 />
-                  </button>
-                  <button className="btn-icon btn-delete" onClick={() => deleteLesson(lesson.id, lesson.title)} title="Excluir">
-                    <FiTrash2 />
-                  </button>
-                </div>
-              </div>
-            ))}
+              )
+            })}
             {lessons.length === 0 && (
               <div className="list-empty">Nenhuma aula cadastrada. Adicione a primeira aula!</div>
             )}

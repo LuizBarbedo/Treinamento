@@ -319,6 +319,61 @@
   justify-content: center;
 }
 
+/* Watch notice (waiting for video) */
+.lesson-watch-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+}
+
+.watch-notice-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Button: already watched */
+.btn-lesson-watched {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  color: #fff;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  animation: fadeInUp 0.3s ease;
+}
+
+.btn-lesson-watched:hover {
+  opacity: 0.85;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .btn-lesson-quiz {
   background: linear-gradient(135deg, #f5a623, #e94560);
   color: #fff;
