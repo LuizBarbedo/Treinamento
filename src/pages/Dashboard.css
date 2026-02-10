@@ -48,6 +48,16 @@
   color: #888;
 }
 
+.stat-card-badges {
+  border: 2px solid #ffc107;
+  background: linear-gradient(135deg, #fffef5, #fff8e1);
+}
+
+.stat-icon-emoji {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
 .section {
   margin-bottom: 2rem;
 }

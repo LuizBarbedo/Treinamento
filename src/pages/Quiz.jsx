@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
+import { computeDisciplineBadges } from '../lib/badges'
+import { BadgeUnlocked } from '../components/Badges'
 import { FiLock } from 'react-icons/fi'
 import AIChat from '../components/AIChat'
 import './Quiz.css'
@@ -18,6 +20,7 @@ export default function Quiz() {
   const [contentCompleted, setContentCompleted] = useState(false)
   const [totalLessons, setTotalLessons] = useState(0)
   const [completedLessonsCount, setCompletedLessonsCount] = useState(0)
+  const [newBadge, setNewBadge] = useState(null)
 
   useEffect(() => {
     fetchQuiz()
@@ -88,6 +91,38 @@ export default function Quiz() {
       }, {
         onConflict: 'user_id,discipline_id'
       })
+    }
+
+    // Compute badges for the quiz result
+    if (finalScore >= 70) {
+      // Fetch data needed for badge computation
+      const [lessonsRes, progressRes, quizResultsRes] = await Promise.all([
+        supabase.from('lessons').select('*').eq('discipline_id', id),
+        supabase.from('lesson_progress').select('lesson_id').eq('user_id', user.id).eq('discipline_id', id),
+        supabase.from('lesson_quiz_results').select('lesson_id, score, correct_answers, total_questions').eq('user_id', user.id).eq('discipline_id', id),
+      ])
+
+      const lessonsData = lessonsRes.data || []
+      const completedIds = new Set((progressRes.data || []).map(p => p.lesson_id))
+      const quizResults = quizResultsRes.data || []
+      const finalResult = { score: finalScore, correct_answers: correct, total_questions: questions.length }
+
+      const { badges } = computeDisciplineBadges({
+        lessons: lessonsData,
+        completedLessonIds: completedIds,
+        lessonQuizResults: quizResults,
+        finalQuizResult: finalResult,
+      })
+
+      // Show the most notable new badge
+      if (finalScore === 100) {
+        const masterBadge = badges.find(b => b.id === 'discipline_master')
+        const perfectBadge = badges.find(b => b.id === 'final_quiz_perfect')
+        setNewBadge(masterBadge || perfectBadge || null)
+      } else {
+        const passedBadge = badges.find(b => b.id === 'final_quiz_passed')
+        setNewBadge(passedBadge || null)
+      }
     }
   }
 
@@ -223,6 +258,9 @@ export default function Quiz() {
       )}
 
       <AIChat discipline={discipline} lessons={[]} materials={[]} />
+
+      {/* Badge Unlocked Popup */}
+      {newBadge && <BadgeUnlocked badge={newBadge} onClose={() => setNewBadge(null)} />}
     </div>
   )
 }

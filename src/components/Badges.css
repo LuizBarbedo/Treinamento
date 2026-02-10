@@ -1,0 +1,578 @@
+/* ============================================
+   Sistema de Gamificação - Badges CSS
+   ============================================ */
+
+/* ---------- Badge Item ---------- */
+.badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 2px solid #e0e0e0;
+  transition: all 0.3s ease;
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+
+.badge-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Sizes */
+.badge-sm { padding: 0.4rem; min-width: 60px; }
+.badge-md { padding: 0.75rem; min-width: 90px; }
+.badge-lg { padding: 1rem; min-width: 120px; }
+
+.badge-sm .badge-icon { font-size: 1.4rem; }
+.badge-md .badge-icon { font-size: 2rem; }
+.badge-lg .badge-icon { font-size: 2.8rem; }
+
+/* ---------- Icon Wrapper ---------- */
+.badge-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge-icon {
+  position: relative;
+  z-index: 1;
+  line-height: 1;
+}
+
+/* ---------- Tier: Bronze ---------- */
+.badge-bronze {
+  border-color: #cd7f32;
+  background: linear-gradient(135deg, #fff9f0 0%, #ffecd2 100%);
+}
+
+.badge-bronze .badge-tier-tag {
+  color: #cd7f32;
+}
+
+/* ---------- Tier: Silver ---------- */
+.badge-silver {
+  border-color: #a8a8a8;
+  background: linear-gradient(135deg, #fafafa 0%, #e8e8e8 100%);
+}
+
+.badge-silver .badge-tier-tag {
+  color: #888;
+}
+
+.badge-silver::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 60%
+  );
+  animation: semi-shimmer 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ---------- Tier: Gold ---------- */
+.badge-gold {
+  border-color: #ffc107;
+  background: linear-gradient(135deg, #fffef5 0%, #fff3cd 100%);
+  box-shadow: 0 2px 12px rgba(255, 193, 7, 0.25);
+}
+
+.badge-gold .badge-tier-tag {
+  color: #d4a00a;
+}
+
+.badge-shine {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 215, 0, 0.3) 45%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 215, 0, 0.3) 55%,
+    transparent 70%
+  );
+  animation: shine 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ---------- Tier: Diamond ---------- */
+.badge-diamond {
+  border-color: #b388ff;
+  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 50%, #ce93d8 100%);
+  box-shadow: 0 2px 16px rgba(179, 136, 255, 0.35);
+}
+
+.badge-diamond .badge-tier-tag {
+  color: #7c4dff;
+  font-weight: 700;
+}
+
+.badge-sparkles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.badge-sparkles::before,
+.badge-sparkles::after {
+  content: '✦';
+  position: absolute;
+  font-size: 0.6rem;
+  color: rgba(179, 136, 255, 0.8);
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+.badge-sparkles::before {
+  top: 2px;
+  right: 6px;
+  animation-delay: 0s;
+}
+
+.badge-sparkles::after {
+  bottom: 8px;
+  left: 6px;
+  animation-delay: 1s;
+}
+
+/* ---------- Label ---------- */
+.badge-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.badge-name {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.badge-tier-tag {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ---------- Badge Grid ---------- */
+.badge-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.badge-grid-empty {
+  text-align: center;
+  padding: 1.5rem;
+  color: #999;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* ---------- Discipline Badge Section ---------- */
+.discipline-badge-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1rem;
+}
+
+.discipline-badge-section.compact {
+  padding: 0.75rem;
+}
+
+.discipline-badge-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.discipline-badge-icon {
+  font-size: 1.4rem;
+}
+
+.discipline-badge-title {
+  font-weight: 600;
+  color: #1a1a2e;
+  font-size: 0.95rem;
+  flex: 1;
+}
+
+.discipline-badge-count {
+  font-size: 0.75rem;
+  color: #888;
+  background: #f0f0f0;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+}
+
+/* ---------- Inline Badges ---------- */
+.inline-badges {
+  display: inline-flex;
+  gap: 0.25rem;
+  margin-left: 0.4rem;
+  vertical-align: middle;
+}
+
+.inline-badge {
+  display: inline-flex;
+  font-size: 0.85rem;
+  border-radius: 50%;
+  width: 1.4rem;
+  height: 1.4rem;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  position: relative;
+}
+
+.inline-badge.badge-gold {
+  background: #fff3cd;
+  box-shadow: 0 0 4px rgba(255, 193, 7, 0.5);
+}
+
+.inline-badge.badge-diamond {
+  background: #f3e5f5;
+  box-shadow: 0 0 6px rgba(179, 136, 255, 0.5);
+}
+
+/* ---------- Badge Unlocked Overlay ---------- */
+.badge-unlocked-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+}
+
+.badge-unlocked-modal {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 340px;
+  width: 90%;
+  text-align: center;
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.badge-unlocked-header {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 1.2rem;
+}
+
+.badge-unlocked-icon-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.badge-unlocked-icon {
+  font-size: 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+.badge-shine-large {
+  animation: shine 2s ease-in-out infinite;
+}
+
+.badge-sparkles-large::before {
+  font-size: 0.9rem;
+}
+
+.badge-sparkles-large::after {
+  font-size: 0.9rem;
+}
+
+.badge-unlocked-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 0.25rem;
+}
+
+.badge-unlocked-tier {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #7c4dff;
+  margin-bottom: 0.5rem;
+}
+
+.badge-unlocked-desc {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1.25rem;
+  line-height: 1.4;
+}
+
+.badge-unlocked-btn {
+  background: linear-gradient(135deg, #533483, #7c4dff);
+  color: #fff;
+  border: none;
+  padding: 0.65rem 2rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.badge-unlocked-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(83, 52, 131, 0.3);
+}
+
+/* ---------- Animations ---------- */
+@keyframes shine {
+  0%, 100% { transform: translateX(-100%) rotate(45deg); }
+  50% { transform: translateX(100%) rotate(45deg); }
+}
+
+@keyframes semi-shimmer {
+  0%, 100% { transform: translateX(-100%) rotate(45deg); opacity: 0; }
+  40% { opacity: 0; }
+  50% { opacity: 1; transform: translateX(0) rotate(45deg); }
+  60% { opacity: 0; }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ---------- Conquistas Page ---------- */
+.conquistas-page {
+  padding-bottom: 2rem;
+}
+
+.conquistas-header {
+  margin-bottom: 2rem;
+}
+
+.conquistas-header h1 {
+  font-size: 1.8rem;
+  color: #1a1a2e;
+  margin-bottom: 0.5rem;
+}
+
+.conquistas-header p {
+  color: #666;
+  font-size: 1rem;
+}
+
+.conquistas-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.conquista-stat-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.conquista-stat-number {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #533483;
+}
+
+.conquista-stat-label {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.conquistas-empty {
+  text-align: center;
+  padding: 3rem;
+  background: #fff;
+  border-radius: 12px;
+  color: #888;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.conquistas-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.conquistas-empty p {
+  margin-bottom: 0.5rem;
+}
+
+/* ---------- Dashboard Badges Section ---------- */
+.dashboard-badges-section {
+  margin-bottom: 2rem;
+}
+
+.dashboard-badges-section .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.dashboard-badges-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.dashboard-badges-empty {
+  text-align: center;
+  padding: 1.5rem;
+  color: #999;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  width: 100%;
+}
+
+.dashboard-badges-empty p {
+  margin: 0.25rem 0;
+}
+
+.dashboard-badge-see-all {
+  margin-top: 0.75rem;
+  text-align: center;
+}
+
+/* ---------- DisciplineDetail Badges ---------- */
+.detail-badges-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.detail-badges-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.detail-badges-header h3 {
+  font-size: 1rem;
+  color: #1a1a2e;
+  margin: 0;
+  flex: 1;
+}
+
+.detail-badges-count {
+  font-size: 0.75rem;
+  color: #533483;
+  background: #f0e6ff;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* ---------- Lesson Badge Indicators ---------- */
+.lesson-badges {
+  display: flex;
+  gap: 0.2rem;
+  margin-top: 0.25rem;
+}
+
+.lesson-badge-mini {
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+.lesson-badge-mini.badge-gold {
+  filter: drop-shadow(0 0 2px rgba(255, 193, 7, 0.6));
+}
+
+.lesson-badge-mini.badge-diamond {
+  filter: drop-shadow(0 0 3px rgba(179, 136, 255, 0.6));
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .badge-grid {
+    gap: 0.5rem;
+  }
+
+  .badge-md {
+    min-width: 75px;
+    padding: 0.5rem;
+  }
+
+  .badge-md .badge-icon {
+    font-size: 1.6rem;
+  }
+
+  .badge-name {
+    font-size: 0.6rem;
+  }
+
+  .conquistas-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .badge-unlocked-modal {
+    padding: 1.5rem;
+  }
+}

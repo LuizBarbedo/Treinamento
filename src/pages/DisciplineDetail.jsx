@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
+import { computeDisciplineBadges } from '../lib/badges'
+import { BadgeGrid, InlineBadges, BadgeUnlocked } from '../components/Badges'
 import { FiPlay, FiFileText, FiCheckCircle, FiLock, FiCheck, FiX } from 'react-icons/fi'
 import AIChat from '../components/AIChat'
 import './DisciplineDetail.css'
@@ -42,6 +44,14 @@ export default function DisciplineDetail() {
   const [watchTimers, setWatchTimers] = useState({})
   const [watchReady, setWatchReady] = useState(new Set())
 
+  // Badge state
+  const [disciplineBadges, setDisciplineBadges] = useState([])
+  const [perfectLessonIds, setPerfectLessonIds] = useState(new Set())
+  const [lessonBadges, setLessonBadges] = useState(new Map())
+  const [newBadge, setNewBadge] = useState(null)
+  const [lessonQuizResultsData, setLessonQuizResultsData] = useState([])
+  const [finalQuizResultData, setFinalQuizResultData] = useState(null)
+
   const completedCount = completedLessons.size
   const allLessonsCompleted = lessons.length > 0 && completedLessons.size >= lessons.length
   const progressPercent = lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0
@@ -51,19 +61,40 @@ export default function DisciplineDetail() {
   }, [id])
 
   const fetchData = async () => {
-    const [discRes, lessonsRes, materialsRes, progressRes] = await Promise.all([
+    const [discRes, lessonsRes, materialsRes, progressRes, quizResultsRes, finalResultRes] = await Promise.all([
       supabase.from('disciplines').select('*').eq('id', id).single(),
       supabase.from('lessons').select('*').eq('discipline_id', id).order('order_index'),
       supabase.from('materials').select('*').eq('discipline_id', id).order('created_at'),
-      supabase.from('lesson_progress').select('lesson_id').eq('user_id', user.id).eq('discipline_id', id)
+      supabase.from('lesson_progress').select('lesson_id').eq('user_id', user.id).eq('discipline_id', id),
+      supabase.from('lesson_quiz_results').select('lesson_id, discipline_id, score, correct_answers, total_questions').eq('user_id', user.id).eq('discipline_id', id),
+      supabase.from('quiz_results').select('discipline_id, score, correct_answers, total_questions').eq('user_id', user.id).eq('discipline_id', id).single(),
     ])
 
     if (discRes.data) setDiscipline(discRes.data)
     if (lessonsRes.data) setLessons(lessonsRes.data)
     if (materialsRes.data) setMaterials(materialsRes.data)
-    if (progressRes.data) {
-      setCompletedLessons(new Set(progressRes.data.map(p => p.lesson_id)))
+
+    const completedIds = new Set((progressRes.data || []).map(p => p.lesson_id))
+    setCompletedLessons(completedIds)
+
+    const quizResults = quizResultsRes.data || []
+    setLessonQuizResultsData(quizResults)
+    const finalResult = finalResultRes.data || null
+    setFinalQuizResultData(finalResult)
+
+    // Compute badges
+    if (lessonsRes.data) {
+      const badgeResult = computeDisciplineBadges({
+        lessons: lessonsRes.data,
+        completedLessonIds: completedIds,
+        lessonQuizResults: quizResults,
+        finalQuizResult: finalResult,
+      })
+      setDisciplineBadges(badgeResult.badges)
+      setPerfectLessonIds(badgeResult.perfectLessonIds)
+      setLessonBadges(badgeResult.lessonBadges)
     }
+
     setLoading(false)
   }
 
@@ -148,6 +179,46 @@ export default function DisciplineDetail() {
 
       setCompletedLessons(prev => new Set([...prev, lessonId]))
     }
+
+    // Recompute badges after quiz
+    const updatedQuizResults = [...lessonQuizResultsData.filter(r => r.lesson_id !== lessonId), {
+      lesson_id: lessonId,
+      discipline_id: id,
+      score: scorePercent,
+      correct_answers: correct,
+      total_questions: total,
+    }]
+    setLessonQuizResultsData(updatedQuizResults)
+
+    const updatedCompletedIds = passed
+      ? new Set([...completedLessons, lessonId])
+      : completedLessons
+
+    const badgeResult = computeDisciplineBadges({
+      lessons,
+      completedLessonIds: updatedCompletedIds,
+      lessonQuizResults: updatedQuizResults,
+      finalQuizResult: finalQuizResultData,
+    })
+
+    // Check for new badges
+    const oldBadgeIds = new Set(disciplineBadges.map(b => b.id))
+    const newBadges = badgeResult.badges.filter(b => !oldBadgeIds.has(b.id))
+    if (newBadges.length > 0) {
+      setNewBadge(newBadges[0]) // Show first new badge
+    }
+
+    // Also check per-lesson badge (quiz perfect)
+    if (scorePercent === 100) {
+      const prevLessonBadges = lessonBadges.get(lessonId) || []
+      if (!prevLessonBadges.some(b => b.id === 'lesson_quiz_perfect')) {
+        setNewBadge({ id: 'lesson_quiz_perfect', name: 'Nota Máxima', description: 'Acertou 100% no quiz da aula', icon: '⭐', tier: 'gold' })
+      }
+    }
+
+    setDisciplineBadges(badgeResult.badges)
+    setPerfectLessonIds(badgeResult.perfectLessonIds)
+    setLessonBadges(badgeResult.lessonBadges)
   }
 
   // Mark lesson complete manually (when no quiz questions exist)
@@ -235,6 +306,17 @@ export default function DisciplineDetail() {
         </div>
       )}
 
+      {/* Badges da Disciplina */}
+      {disciplineBadges.length > 0 && (
+        <div className="detail-badges-section">
+          <div className="detail-badges-header">
+            <h3>🏅 Conquistas</h3>
+            <span className="detail-badges-count">{disciplineBadges.length}</span>
+          </div>
+          <BadgeGrid badges={disciplineBadges} />
+        </div>
+      )}
+
       <div className="tabs">
         <button
           className={`tab ${activeTab === 'aulas' ? 'active' : ''}`}
@@ -276,7 +358,10 @@ export default function DisciplineDetail() {
                     {isCompleted ? <FiCheck /> : !accessible ? <FiLock /> : <span className="lesson-number-text">{index + 1}</span>}
                   </div>
                   <div className="lesson-info">
-                    <h3 className={isCompleted ? 'lesson-done' : ''}>{lesson.title}</h3>
+                    <h3 className={isCompleted ? 'lesson-done' : ''}>
+                      {lesson.title}
+                      <InlineBadges badges={lessonBadges.get(lesson.id)?.filter(b => b.id === 'lesson_quiz_perfect') || []} />
+                    </h3>
                     {lesson.description && <p>{lesson.description}</p>}
                     {!accessible && <span className="lesson-locked-msg">🔒 Complete a aula anterior primeiro</span>}
                     {isCompleted && <span className="lesson-completed-badge">✅ Concluída</span>}
@@ -481,6 +566,9 @@ export default function DisciplineDetail() {
       )}
 
       <AIChat discipline={discipline} lessons={lessons} materials={materials} />
+
+      {/* Badge Unlocked Popup */}
+      {newBadge && <BadgeUnlocked badge={newBadge} onClose={() => setNewBadge(null)} />}
     </div>
   )
 }

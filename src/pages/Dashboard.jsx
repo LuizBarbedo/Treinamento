@@ -2,58 +2,87 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
+import { computeDisciplineBadges } from '../lib/badges'
+import { Badge } from '../components/Badges'
 import { FiBook, FiAward, FiTrendingUp, FiLock, FiCheck } from 'react-icons/fi'
 import './Dashboard.css'
 
 export default function Dashboard() {
   const { user } = useAuth()
-  const [stats, setStats] = useState({ total: 0, completed: 0, inProgress: 0 })
+  const [stats, setStats] = useState({ total: 0, completed: 0, inProgress: 0, badges: 0 })
   const [disciplines, setDisciplines] = useState([])
   const [completedDisciplines, setCompletedDisciplines] = useState(new Set())
+  const [recentBadges, setRecentBadges] = useState([])
 
   useEffect(() => {
     fetchData()
   }, [])
 
   const fetchData = async () => {
-    // Buscar todas as disciplinas
-    const { data: allDiscs } = await supabase
-      .from('disciplines')
-      .select('*')
-      .order('order_index')
+    // Buscar todos os dados em paralelo
+    const [discRes, lessonsRes, progressRes, lessonProgressRes, quizResultsRes, finalResultsRes] = await Promise.all([
+      supabase.from('disciplines').select('*').order('order_index'),
+      supabase.from('lessons').select('*').order('order_index'),
+      supabase.from('user_progress').select('discipline_id').eq('user_id', user.id).eq('completed', true),
+      supabase.from('lesson_progress').select('lesson_id, discipline_id').eq('user_id', user.id),
+      supabase.from('lesson_quiz_results').select('lesson_id, discipline_id, score, correct_answers, total_questions').eq('user_id', user.id),
+      supabase.from('quiz_results').select('discipline_id, score, correct_answers, total_questions').eq('user_id', user.id),
+    ])
 
-    if (allDiscs) setDisciplines(allDiscs)
+    const allDiscs = discRes.data || []
+    const allLessons = lessonsRes.data || []
+    const completedProgress = progressRes.data || []
+    const lessonProgress = lessonProgressRes.data || []
+    const allQuizResults = quizResultsRes.data || []
+    const allFinalResults = finalResultsRes.data || []
 
-    // Buscar disciplinas concluídas (quiz final aprovado)
-    const { data: completedProgress } = await supabase
-      .from('user_progress')
-      .select('discipline_id')
-      .eq('user_id', user.id)
-      .eq('completed', true)
+    setDisciplines(allDiscs)
 
-    const completedIds = new Set((completedProgress || []).map(p => p.discipline_id))
+    const completedIds = new Set(completedProgress.map(p => p.discipline_id))
     setCompletedDisciplines(completedIds)
 
-    // Buscar aulas com progresso (para detectar "em andamento")
-    const { data: lessonProgress } = await supabase
-      .from('lesson_progress')
-      .select('discipline_id')
-      .eq('user_id', user.id)
-
-    // Disciplinas em andamento = tem pelo menos 1 aula concluída mas disciplina não está completa
+    // Disciplinas em andamento
     const inProgressIds = new Set()
-    if (lessonProgress) {
-      lessonProgress.forEach(lp => {
-        if (!completedIds.has(lp.discipline_id)) {
-          inProgressIds.add(lp.discipline_id)
-        }
+    lessonProgress.forEach(lp => {
+      if (!completedIds.has(lp.discipline_id)) {
+        inProgressIds.add(lp.discipline_id)
+      }
+    })
+
+    // Computar badges por disciplina
+    let totalBadgeCount = 0
+    const allBadges = []
+
+    allDiscs.forEach(disc => {
+      const lessons = allLessons.filter(l => l.discipline_id === disc.id)
+      const completedLessonIds = new Set(lessonProgress.filter(p => p.discipline_id === disc.id).map(p => p.lesson_id))
+      const quizResults = allQuizResults.filter(r => r.discipline_id === disc.id)
+      const finalResult = allFinalResults.find(r => r.discipline_id === disc.id) || null
+
+      const { badges, perfectLessonIds } = computeDisciplineBadges({
+        lessons,
+        completedLessonIds,
+        lessonQuizResults: quizResults,
+        finalQuizResult: finalResult,
       })
-    }
+
+      totalBadgeCount += badges.length + completedLessonIds.size + perfectLessonIds.size
+
+      badges.forEach(b => {
+        allBadges.push({ ...b, disciplineName: disc.name })
+      })
+    })
+
+    // Pegar badges mais notáveis (diamond e gold primeiro)
+    const tierOrder = { diamond: 0, gold: 1, silver: 2, bronze: 3 }
+    allBadges.sort((a, b) => (tierOrder[a.tier] || 3) - (tierOrder[b.tier] || 3))
+    setRecentBadges(allBadges.slice(0, 6))
 
     setStats({
-      total: allDiscs?.length || 0,
+      total: allDiscs.length,
       completed: completedIds.size,
-      inProgress: inProgressIds.size
+      inProgress: inProgressIds.size,
+      badges: totalBadgeCount,
     })
   }
 
@@ -93,6 +122,32 @@ export default function Dashboard() {
             <span className="stat-label">Concluídas</span>
           </div>
         </div>
+        <div className="stat-card stat-card-badges">
+          <span className="stat-icon stat-icon-emoji">🏆</span>
+          <div>
+            <span className="stat-number">{stats.badges}</span>
+            <span className="stat-label">Badges</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Seção de Conquistas Recentes */}
+      <div className="section dashboard-badges-section">
+        <div className="section-header">
+          <h2>🏅 Conquistas</h2>
+          <Link to="/conquistas" className="btn-see-all">Ver todas →</Link>
+        </div>
+        {recentBadges.length > 0 ? (
+          <div className="dashboard-badges-preview">
+            {recentBadges.map((badge, i) => (
+              <Badge key={`${badge.id}-${i}`} {...badge} size="md" />
+            ))}
+          </div>
+        ) : (
+          <div className="dashboard-badges-empty">
+            <p>🎮 Complete aulas e quizzes para ganhar badges!</p>
+          </div>
+        )}
       </div>
 
       <div className="section">

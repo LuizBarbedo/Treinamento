@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard'
 import Disciplines from './pages/Disciplines'
 import DisciplineDetail from './pages/DisciplineDetail'
 import Quiz from './pages/Quiz'
+import Conquistas from './pages/Conquistas'
 import AdminDisciplines from './pages/admin/AdminDisciplines'
 import AdminDisciplineEdit from './pages/admin/AdminDisciplineEdit'
 import AdminReports from './pages/admin/AdminReports'
@@ -34,6 +35,7 @@ function App() {
             <Route path="/disciplinas" element={<Disciplines />} />
             <Route path="/disciplinas/:id" element={<DisciplineDetail />} />
             <Route path="/disciplinas/:id/quiz" element={<Quiz />} />
+            <Route path="/conquistas" element={<Conquistas />} />
 
             {/* Admin Routes */}
             <Route path="/admin/disciplinas" element={
