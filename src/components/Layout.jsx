@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { FiHome, FiBook, FiLogOut, FiUser, FiSettings } from 'react-icons/fi'
+import { FiHome, FiBook, FiLogOut, FiUser, FiSettings, FiBarChart2 } from 'react-icons/fi'
 import './Layout.css'
 
 export default function Layout() {
@@ -35,6 +35,9 @@ export default function Layout() {
               <span className="nav-section-label">Admin</span>
               <NavLink to="/admin/disciplinas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                 <FiSettings /> <span>Gerenciar</span>
+              </NavLink>
+              <NavLink to="/admin/relatorios" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+                <FiBarChart2 /> <span>Relatórios</span>
               </NavLink>
             </>
           )}

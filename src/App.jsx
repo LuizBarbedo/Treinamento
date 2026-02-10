@@ -10,6 +10,7 @@ import DisciplineDetail from './pages/DisciplineDetail'
 import Quiz from './pages/Quiz'
 import AdminDisciplines from './pages/admin/AdminDisciplines'
 import AdminDisciplineEdit from './pages/admin/AdminDisciplineEdit'
+import AdminReports from './pages/admin/AdminReports'
 
 function App() {
   return (
@@ -36,6 +37,9 @@ function App() {
             } />
             <Route path="/admin/disciplinas/:id" element={
               <AdminRoute><AdminDisciplineEdit /></AdminRoute>
+            } />
+            <Route path="/admin/relatorios" element={
+              <AdminRoute><AdminReports /></AdminRoute>
             } />
           </Route>
 
