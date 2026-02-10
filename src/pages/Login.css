@@ -116,6 +116,12 @@
   color: #666;
 }
 
+.forgot-password {
+  text-align: center;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+}
+
 .btn-link {
   background: none;
   border: none;

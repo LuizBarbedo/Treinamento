@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import './Login.css'
 
 export default function Login() {
@@ -92,6 +92,12 @@ export default function Login() {
           <button type="submit" className="btn-primary" disabled={loading}>
             {loading ? 'Aguarde...' : isSignUp ? 'Criar Conta' : 'Entrar'}
           </button>
+
+          {!isSignUp && (
+            <p className="forgot-password">
+              <Link to="/esqueci-senha" className="btn-link">Esqueci minha senha</Link>
+            </p>
+          )}
 
           <p className="toggle-auth">
             {isSignUp ? 'Já tem uma conta?' : 'Não tem uma conta?'}{' '}
