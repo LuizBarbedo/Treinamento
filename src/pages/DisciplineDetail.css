@@ -723,3 +723,72 @@
   color: #e94560;
   font-size: 1.1rem;
 }
+
+/* Doubt CTA Section */
+.doubt-cta-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #f0f4ff, #e8ecff);
+  border: 1px solid #d4dcff;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-top: 1.5rem;
+  gap: 1rem;
+}
+
+.doubt-cta-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.doubt-cta-icon {
+  font-size: 1.8rem;
+  color: #4361ee;
+  flex-shrink: 0;
+}
+
+.doubt-cta-content h3 {
+  font-size: 0.95rem;
+  color: #1a1a2e;
+  margin-bottom: 0.15rem;
+}
+
+.doubt-cta-content p {
+  font-size: 0.82rem;
+  color: #666;
+}
+
+.btn-doubt-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  background: #4361ee;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.btn-doubt-cta:hover {
+  background: #3651d4;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 600px) {
+  .doubt-cta-section {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .doubt-cta-content {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

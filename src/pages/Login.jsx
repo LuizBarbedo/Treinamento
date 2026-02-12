@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate, Link } from 'react-router-dom'
+import { FiShield } from 'react-icons/fi'
 import './Login.css'
 
 export default function Login() {
@@ -8,6 +9,8 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
+  const [isMonitorSignUp, setIsMonitorSignUp] = useState(false)
+  const [monitorCode, setMonitorCode] = useState('')
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -21,11 +24,28 @@ export default function Login() {
     setLoading(true)
 
     if (isSignUp) {
-      const { error } = await signUp(email, password, fullName)
+      if (isMonitorSignUp && !monitorCode.trim()) {
+        setError('Informe o código de acesso do monitor.')
+        setLoading(false)
+        return
+      }
+
+      const { error, monitorError } = await signUp(
+        email,
+        password,
+        fullName,
+        isMonitorSignUp ? monitorCode.trim() : null
+      )
       if (error) {
         setError(error.message)
+      } else if (monitorError) {
+        setError(monitorError)
       } else {
-        setMessage('Conta criada! Verifique seu e-mail para confirmar o cadastro.')
+        setMessage(
+          isMonitorSignUp
+            ? 'Conta de monitor criada! Verifique seu e-mail para confirmar o cadastro.'
+            : 'Conta criada! Verifique seu e-mail para confirmar o cadastro.'
+        )
       }
     } else {
       const { error } = await signIn(email, password)
@@ -90,8 +110,41 @@ export default function Login() {
           {message && <div className="form-success">{message}</div>}
 
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'Aguarde...' : isSignUp ? 'Criar Conta' : 'Entrar'}
+            {loading ? 'Aguarde...' : isSignUp ? (isMonitorSignUp ? 'Criar Conta de Monitor' : 'Criar Conta') : 'Entrar'}
           </button>
+
+          {isSignUp && (
+            <div className={`monitor-signup-toggle ${isMonitorSignUp ? 'active' : ''}`}>
+              <button
+                type="button"
+                className="btn-monitor-toggle"
+                onClick={() => {
+                  setIsMonitorSignUp(!isMonitorSignUp)
+                  setMonitorCode('')
+                  setError('')
+                }}
+              >
+                <FiShield /> {isMonitorSignUp ? 'Cancelar cadastro como monitor' : 'Sou Monitor'}
+              </button>
+
+              {isMonitorSignUp && (
+                <div className="monitor-code-section">
+                  <p className="monitor-code-hint">Insira o código de acesso fornecido pelo administrador</p>
+                  <div className="form-group">
+                    <label>Código de Acesso</label>
+                    <input
+                      type="text"
+                      value={monitorCode}
+                      onChange={(e) => setMonitorCode(e.target.value.toUpperCase())}
+                      placeholder="Ex: MONITOR2026"
+                      required
+                      className="monitor-code-input"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {!isSignUp && (
             <p className="forgot-password">
@@ -108,6 +161,8 @@ export default function Login() {
                 setIsSignUp(!isSignUp)
                 setError('')
                 setMessage('')
+                setIsMonitorSignUp(false)
+                setMonitorCode('')
               }}
             >
               {isSignUp ? 'Fazer login' : 'Criar conta'}

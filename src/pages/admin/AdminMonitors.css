@@ -1,0 +1,395 @@
+.admin-monitors-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.admin-monitors-page .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.admin-monitors-page .page-header h1 {
+  font-size: 1.6rem;
+  color: #1a1a2e;
+  margin-bottom: 0.25rem;
+}
+
+.admin-monitors-page .page-header p {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1.25rem;
+  background: #4361ee;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-primary:hover {
+  background: #3651d4;
+}
+
+/* Add Monitor Card */
+.add-monitor-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e4ff;
+}
+
+.add-monitor-card h3 {
+  font-size: 1rem;
+  color: #1a1a2e;
+  margin-bottom: 1rem;
+}
+
+.user-select-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.user-select-list.compact {
+  max-height: 200px;
+}
+
+.user-select-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.user-select-item:hover {
+  background: #f8f9ff;
+}
+
+.user-select-item.compact {
+  padding: 0.4rem 0.5rem;
+}
+
+.user-select-info {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.user-avatar-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4361ee, #7c3aed);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.user-avatar-xs {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4361ee, #7c3aed);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.65rem;
+  flex-shrink: 0;
+}
+
+.user-select-name {
+  display: block;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #1a1a2e;
+}
+
+.user-select-email {
+  display: block;
+  font-size: 0.72rem;
+  color: #999;
+}
+
+.user-select-name-sm {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #1a1a2e;
+}
+
+.user-select-email-sm {
+  display: block;
+  font-size: 0.68rem;
+  color: #999;
+}
+
+.btn-promote {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.75rem;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-promote:hover {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.btn-cancel {
+  padding: 0.5rem 1rem;
+  background: #f5f5f5;
+  color: #666;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.btn-cancel:hover {
+  background: #eee;
+}
+
+.empty-text {
+  color: #aaa;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* Monitors List */
+.monitors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.monitor-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f0f0f0;
+}
+
+.monitor-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.monitor-card-header:hover {
+  background: #f8f9ff;
+}
+
+.monitor-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.monitor-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.monitor-name {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #1a1a2e;
+}
+
+.monitor-email {
+  display: block;
+  font-size: 0.78rem;
+  color: #999;
+}
+
+.monitor-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.student-count {
+  font-size: 0.82rem;
+  color: #666;
+  background: #f5f5f5;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+}
+
+/* Expanded */
+.monitor-expanded {
+  border-top: 1px solid #f0f0f0;
+  padding: 1rem 1.25rem;
+}
+
+.monitor-actions-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.btn-sm {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border: none;
+  transition: all 0.15s;
+}
+
+.btn-assign {
+  background: rgba(67, 97, 238, 0.1);
+  color: #4361ee;
+}
+
+.btn-assign:hover {
+  background: rgba(67, 97, 238, 0.2);
+}
+
+.btn-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.btn-xs {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-remove {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.btn-remove:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* Assign student panel */
+.assign-student-panel {
+  background: #f8f9ff;
+  border: 1px solid #e0e4ff;
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.search-bar.compact {
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.search-bar.compact input {
+  font-size: 0.82rem;
+}
+
+/* Monitor Students Section */
+.monitor-students-section h4 {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.assigned-students-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.assigned-student-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+}
+
+.assigned-student-item:hover {
+  background: #f5f5f5;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  background: #fff;
+  border-radius: 12px;
+  color: #888;
+}
+
+.empty-state svg {
+  color: #ccc;
+  margin-bottom: 0.5rem;
+}
+
+.help-text {
+  font-size: 0.82rem;
+  color: #aaa;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 600px) {
+  .admin-monitors-page .page-header {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .monitor-actions-bar {
+    flex-direction: column;
+  }
+}

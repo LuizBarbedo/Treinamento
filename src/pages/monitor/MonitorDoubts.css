@@ -1,0 +1,138 @@
+.monitor-doubts-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Toolbar */
+.doubts-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.doubts-filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.82rem;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover {
+  border-color: #4361ee;
+  color: #4361ee;
+}
+
+.filter-btn.active {
+  background: #4361ee;
+  color: #fff;
+  border-color: #4361ee;
+}
+
+.doubts-toolbar .search-bar {
+  max-width: 280px;
+  margin-bottom: 0;
+}
+
+/* Doubts list */
+.doubts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.doubt-card-full {
+  display: block;
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid #f0f0f0;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.doubt-card-full:hover {
+  border-color: #e0e4ff;
+  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.08);
+  transform: translateY(-1px);
+}
+
+.doubt-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.doubt-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 0.35rem;
+}
+
+.doubt-card-desc {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+.doubt-card-footer {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: #999;
+  flex-wrap: wrap;
+}
+
+.doubt-student {
+  font-weight: 600;
+  color: #666;
+}
+
+.doubt-discipline {
+  color: #4361ee;
+}
+
+.doubt-lesson {
+  color: #7c3aed;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #888;
+  background: #fff;
+  border-radius: 12px;
+}
+
+.empty-state svg {
+  margin-bottom: 0.75rem;
+  color: #ccc;
+}
+
+@media (max-width: 600px) {
+  .doubts-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .doubts-toolbar .search-bar {
+    max-width: none;
+  }
+}

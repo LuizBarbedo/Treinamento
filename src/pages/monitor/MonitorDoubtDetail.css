@@ -1,0 +1,251 @@
+.doubt-detail-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Doubt Main */
+.doubt-main {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.doubt-main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.doubt-main-header > div {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.doubt-date-full {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.btn-resolve {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-resolve:hover {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.doubt-main-title {
+  font-size: 1.4rem;
+  color: #1a1a2e;
+  margin-bottom: 0.75rem;
+}
+
+.doubt-tags {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  background: #f5f5f5;
+  color: #666;
+}
+
+.tag-student {
+  background: rgba(124, 58, 237, 0.1);
+  color: #7c3aed;
+}
+
+.tag-disc {
+  background: rgba(67, 97, 238, 0.1);
+  color: #4361ee;
+}
+
+.tag-lesson {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.doubt-main-body {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* Replies */
+.replies-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.replies-section h3 {
+  font-size: 1rem;
+  color: #1a1a2e;
+  margin-bottom: 1rem;
+}
+
+.no-replies {
+  text-align: center;
+  padding: 2rem;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.replies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.reply-bubble {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  max-width: 85%;
+}
+
+.reply-bubble.own {
+  background: #4361ee;
+  color: #fff;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.reply-bubble.other {
+  background: #f0f1f5;
+  color: #1a1a2e;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.reply-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+  gap: 1rem;
+}
+
+.reply-author {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.reply-bubble.own .reply-author {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.reply-bubble.other .reply-author {
+  color: #4361ee;
+}
+
+.reply-time {
+  font-size: 0.68rem;
+  opacity: 0.6;
+}
+
+.reply-message {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+/* Reply Form */
+.reply-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.reply-form textarea {
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.reply-form textarea:focus {
+  outline: none;
+  border-color: #4361ee;
+}
+
+.btn-send {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.5rem;
+  background: #4361ee;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  align-self: flex-end;
+  transition: all 0.2s;
+}
+
+.btn-send:hover:not(:disabled) {
+  background: #3651d4;
+}
+
+.btn-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.resolved-notice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+  .reply-bubble {
+    max-width: 95%;
+  }
+
+  .doubt-main-header {
+    flex-direction: column;
+  }
+}

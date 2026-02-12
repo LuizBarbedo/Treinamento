@@ -134,3 +134,63 @@
 .btn-link:hover {
   text-decoration: underline;
 }
+
+/* Monitor Signup Toggle */
+.monitor-signup-toggle {
+  margin-top: 0.5rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1rem;
+}
+
+.btn-monitor-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: transparent;
+  border: 2px dashed #94a3b8;
+  border-radius: 0.5rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-monitor-toggle:hover {
+  border-color: #6366f1;
+  color: #6366f1;
+  background: #eef2ff;
+}
+
+.monitor-signup-toggle.active .btn-monitor-toggle {
+  border-color: #6366f1;
+  color: #6366f1;
+  background: #eef2ff;
+  border-style: solid;
+}
+
+.monitor-code-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.monitor-code-hint {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.monitor-code-input {
+  text-align: center;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+  font-size: 1.1rem !important;
+  text-transform: uppercase;
+}
