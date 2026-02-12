@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { FiHome, FiBook, FiLogOut, FiUser, FiSettings, FiBarChart2, FiAward, FiMessageCircle, FiUsers, FiClipboard } from 'react-icons/fi'
+import { FiHome, FiBook, FiLogOut, FiUser, FiSettings, FiBarChart2, FiAward, FiMessageCircle, FiUsers, FiClipboard, FiMessageSquare } from 'react-icons/fi'
 import './Layout.css'
 
 export default function Layout() {
@@ -30,6 +30,9 @@ export default function Layout() {
           </NavLink>
           <NavLink to="/conquistas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
             <FiAward /> <span>Conquistas</span>
+          </NavLink>
+          <NavLink to="/forum" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+            <FiMessageSquare /> <span>Fórum</span>
           </NavLink>
 
           {/* Dúvidas - visível para alunos (não monitor, não admin) */}

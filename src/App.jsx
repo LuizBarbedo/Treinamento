@@ -23,6 +23,8 @@ import MonitorDoubts from './pages/monitor/MonitorDoubts'
 import MonitorDoubtDetail from './pages/monitor/MonitorDoubtDetail'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
+import Forum from './pages/Forum'
+import ForumPost from './pages/ForumPost'
 
 function App() {
   return (
@@ -45,6 +47,8 @@ function App() {
             <Route path="/disciplinas/:id" element={<DisciplineDetail />} />
             <Route path="/disciplinas/:id/quiz" element={<Quiz />} />
             <Route path="/conquistas" element={<Conquistas />} />
+            <Route path="/forum" element={<Forum />} />
+            <Route path="/forum/:postId" element={<ForumPost />} />
 
             {/* Student Doubts Routes */}
             <Route path="/minhas-duvidas" element={<MyDoubts />} />
