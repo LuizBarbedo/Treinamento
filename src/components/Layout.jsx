@@ -72,6 +72,9 @@ export default function Layout() {
               <NavLink to="/admin/monitores" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                 <FiUsers /> <span>Monitores</span>
               </NavLink>
+              <NavLink to="/admin/relatorio-monitores" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+                <FiClipboard /> <span>Rel. Monitores</span>
+              </NavLink>
             </>
           )}
         </nav>

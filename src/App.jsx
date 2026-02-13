@@ -16,6 +16,7 @@ import AdminDisciplines from './pages/admin/AdminDisciplines'
 import AdminDisciplineEdit from './pages/admin/AdminDisciplineEdit'
 import AdminReports from './pages/admin/AdminReports'
 import AdminMonitors from './pages/admin/AdminMonitors'
+import AdminMonitorReports from './pages/admin/AdminMonitorReports'
 import MonitorDashboard from './pages/monitor/MonitorDashboard'
 import MonitorStudents from './pages/monitor/MonitorStudents'
 import MonitorStudentDetail from './pages/monitor/MonitorStudentDetail'
@@ -83,6 +84,9 @@ function App() {
             } />
             <Route path="/admin/monitores" element={
               <AdminRoute><AdminMonitors /></AdminRoute>
+            } />
+            <Route path="/admin/relatorio-monitores" element={
+              <AdminRoute><AdminMonitorReports /></AdminRoute>
             } />
           </Route>
 
