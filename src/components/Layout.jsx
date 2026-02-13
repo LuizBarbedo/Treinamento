@@ -1,11 +1,16 @@
+import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { FiHome, FiBook, FiLogOut, FiUser, FiSettings, FiBarChart2, FiAward, FiMessageCircle, FiUsers, FiClipboard, FiMessageSquare } from 'react-icons/fi'
+import { FiHome, FiBook, FiLogOut, FiUser, FiSettings, FiBarChart2, FiAward, FiMessageCircle, FiUsers, FiClipboard, FiMessageSquare, FiMenu, FiX } from 'react-icons/fi'
 import './Layout.css'
 
 export default function Layout() {
   const { user, signOut, isAdmin, isMonitor } = useAuth()
   const navigate = useNavigate()
+  const [collapsed, setCollapsed] = useState(true)
+  const [hovering, setHovering] = useState(false)
+
+  const expanded = !collapsed || hovering
 
   const handleSignOut = async () => {
     await signOut()
@@ -15,10 +20,22 @@ export default function Layout() {
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuário'
 
   return (
-    <div className="layout">
-      <aside className="sidebar">
+    <div className={`layout ${expanded ? 'sidebar-expanded' : 'sidebar-collapsed'}`}>
+      <aside
+        className={`sidebar ${expanded ? 'expanded' : 'collapsed'}`}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
+      >
         <div className="sidebar-header">
-          <h2>🎓 Treinamento</h2>
+          <span className="sidebar-logo">🎓</span>
+          <h2 className="sidebar-title">Treinamento</h2>
+          <button
+            className="sidebar-toggle"
+            onClick={() => setCollapsed(prev => !prev)}
+            title={collapsed ? 'Fixar menu' : 'Recolher menu'}
+          >
+            {collapsed ? <FiMenu /> : <FiX />}
+          </button>
         </div>
 
         <nav className="sidebar-nav">
@@ -51,10 +68,10 @@ export default function Layout() {
                 <FiClipboard /> <span>Painel</span>
               </NavLink>
               <NavLink to="/monitor/alunos" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-                <FiUsers /> <span>Alunos</span>
+                <FiUsers /> <span>Meus Alunos</span>
               </NavLink>
               <NavLink to="/monitor/duvidas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-                <FiMessageCircle /> <span>Dúvidas</span>
+                <FiMessageCircle /> <span>Dúvidas/Monitor</span>
               </NavLink>
             </>
           )}
