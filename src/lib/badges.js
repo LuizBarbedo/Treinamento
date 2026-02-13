@@ -20,6 +20,13 @@ export const BADGE_DEFS = {
     icon: '📗',
     tier: 'bronze',
   },
+  lesson_quiz_done: {
+    id: 'lesson_quiz_done',
+    name: 'Quiz Respondido',
+    description: 'Respondeu o quiz da aula',
+    icon: '📝',
+    tier: 'bronze',
+  },
   lesson_quiz_perfect: {
     id: 'lesson_quiz_perfect',
     name: 'Nota Máxima',
@@ -28,60 +35,35 @@ export const BADGE_DEFS = {
     tier: 'gold',
   },
 
-  // ---- Por disciplina (aulas) ----
+  // ---- Por disciplina ----
   all_lessons_complete: {
     id: 'all_lessons_complete',
     name: 'Todas as Aulas',
     description: 'Completou todas as aulas da disciplina',
     icon: '🏆',
-    tier: 'gold',
-  },
-
-  // ---- Por disciplina (quizzes de aula) ----
-  all_quizzes_perfect: {
-    id: 'all_quizzes_perfect',
-    name: 'Mestre dos Quizzes',
-    description: 'Acertou 100% em todos os quizzes de aula',
-    icon: '💎',
-    tier: 'diamond',
-  },
-  all_quizzes_great: {
-    id: 'all_quizzes_great',
-    name: 'Quase Perfeito',
-    description: 'Média acima de 80% nos quizzes de aula',
-    icon: '🌟',
     tier: 'silver',
   },
-  all_quizzes_good: {
-    id: 'all_quizzes_good',
-    name: 'Bom Desempenho',
-    description: 'Média acima de 60% nos quizzes de aula',
-    icon: '✨',
-    tier: 'bronze',
-  },
-
-  // ---- Quiz final da disciplina ----
-  final_quiz_passed: {
-    id: 'final_quiz_passed',
-    name: 'Aprovado',
-    description: 'Aprovado no quiz final da disciplina',
+  final_quiz_complete: {
+    id: 'final_quiz_complete',
+    name: 'Quiz Aprovado',
+    description: 'Aprovado no quiz geral da disciplina',
     icon: '🎯',
     tier: 'silver',
   },
-  final_quiz_perfect: {
-    id: 'final_quiz_perfect',
-    name: 'Gabaritou',
-    description: 'Nota máxima no quiz final da disciplina',
-    icon: '👑',
-    tier: 'diamond',
+  discipline_complete: {
+    id: 'discipline_complete',
+    name: 'Disciplina Completa',
+    description: 'Completou todas as aulas e o quiz geral da disciplina',
+    icon: '🎖️',
+    tier: 'gold',
   },
 
-  // ---- Maestria total ----
-  discipline_master: {
-    id: 'discipline_master',
-    name: 'Especialista',
-    description: 'Completou tudo com nota máxima na disciplina',
-    icon: '🎖️',
+  // ---- Global ----
+  all_disciplines_complete: {
+    id: 'all_disciplines_complete',
+    name: 'Formatura',
+    description: 'Completou todas as disciplinas da plataforma',
+    icon: '👑',
     tier: 'diamond',
   },
 }
@@ -110,11 +92,16 @@ export function computeDisciplineBadges({ lessons, completedLessonIds, lessonQui
       lb.push({ ...BADGE_DEFS.lesson_complete })
     }
 
-    // Quiz perfeito da aula
+    // Quiz respondido
     const quizResult = lessonQuizResults.find(r => r.lesson_id === lesson.id)
-    if (quizResult && quizResult.score === 100) {
-      lb.push({ ...BADGE_DEFS.lesson_quiz_perfect })
-      perfectLessonIds.add(lesson.id)
+    if (quizResult) {
+      lb.push({ ...BADGE_DEFS.lesson_quiz_done })
+
+      // Quiz perfeito da aula
+      if (quizResult.score === 100) {
+        lb.push({ ...BADGE_DEFS.lesson_quiz_perfect })
+        perfectLessonIds.add(lesson.id)
+      }
     }
 
     if (lb.length > 0) {
@@ -128,57 +115,34 @@ export function computeDisciplineBadges({ lessons, completedLessonIds, lessonQui
     badges.push({ ...BADGE_DEFS.all_lessons_complete })
   }
 
-  // --- Badges de performance dos quizzes de aula ---
-  // Só computa se o aluno fez pelo menos 1 quiz de aula
-  if (lessonQuizResults.length > 0) {
-    const avgScore = lessonQuizResults.reduce((sum, r) => sum + r.score, 0) / lessonQuizResults.length
-    const allPerfect = lessonQuizResults.every(r => r.score === 100)
-    const didAllQuizzes = lessonQuizResults.length >= lessons.length
-
-    if (allPerfect && didAllQuizzes) {
-      badges.push({ ...BADGE_DEFS.all_quizzes_perfect })
-    } else if (avgScore >= 80) {
-      badges.push({ ...BADGE_DEFS.all_quizzes_great })
-    } else if (avgScore >= 60) {
-      badges.push({ ...BADGE_DEFS.all_quizzes_good })
-    }
+  // --- Badge: Quiz geral aprovado ---
+  const finalQuizPassed = finalQuizResult && finalQuizResult.score >= 70
+  if (finalQuizPassed) {
+    badges.push({ ...BADGE_DEFS.final_quiz_complete })
   }
 
-  // --- Badge: Quiz final ---
-  if (finalQuizResult) {
-    if (finalQuizResult.score === 100) {
-      badges.push({ ...BADGE_DEFS.final_quiz_perfect })
-    } else if (finalQuizResult.score >= 70) {
-      badges.push({ ...BADGE_DEFS.final_quiz_passed })
-    }
-  }
-
-  // --- Badge: Maestria total ---
-  const allQuizzesPerfect = lessonQuizResults.length >= lessons.length && lessonQuizResults.every(r => r.score === 100)
-  const finalPerfect = finalQuizResult?.score === 100
-  if (allLessonsComplete && allQuizzesPerfect && finalPerfect) {
-    badges.push({ ...BADGE_DEFS.discipline_master })
+  // --- Badge: Disciplina completa (todas as aulas + quiz geral) ---
+  if (allLessonsComplete && finalQuizPassed) {
+    badges.push({ ...BADGE_DEFS.discipline_complete })
   }
 
   return { badges, perfectLessonIds, lessonBadges }
 }
 
 /**
- * Computa badges globais (cross-disciplina).
- *
- * @param {Array} disciplineResults - Array de { disciplineId, disciplineName, disciplineIcon, badges, totalLessons, completedLessons }
- * @returns {{ totalBadges: number, disciplineResults: Array }}
+ * Conta o total de badges de uma disciplina (discipline-level + lesson-level).
  */
-export function computeGlobalStats(disciplineResults) {
-  let totalBadges = 0
+export function countDisciplineBadges({ badges, lessonBadges }) {
+  let count = badges.length
+  lessonBadges.forEach(lb => { count += lb.length })
+  return count
+}
 
-  disciplineResults.forEach(dr => {
-    // Conta badges de disciplina
-    totalBadges += dr.badges.length
-    // Conta badges por aula (lesson_complete + lesson_quiz_perfect)
-    totalBadges += dr.perfectLessonCount
-    totalBadges += dr.completedLessons
-  })
-
-  return { totalBadges, disciplineResults }
+/**
+ * Junta todos os badges de uma disciplina em uma lista única.
+ */
+export function getAllDisciplineBadges({ badges, lessonBadges }) {
+  const all = [...badges]
+  lessonBadges.forEach(lb => { all.push(...lb) })
+  return all
 }

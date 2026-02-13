@@ -116,12 +116,13 @@ export default function Quiz() {
 
       // Show the most notable new badge
       if (finalScore === 100) {
-        const masterBadge = badges.find(b => b.id === 'discipline_master')
-        const perfectBadge = badges.find(b => b.id === 'final_quiz_perfect')
-        setNewBadge(masterBadge || perfectBadge || null)
+        const completeBadge = badges.find(b => b.id === 'discipline_complete')
+        const quizBadge = badges.find(b => b.id === 'final_quiz_complete')
+        setNewBadge(completeBadge || quizBadge || null)
       } else {
-        const passedBadge = badges.find(b => b.id === 'final_quiz_passed')
-        setNewBadge(passedBadge || null)
+        const completeBadge = badges.find(b => b.id === 'discipline_complete')
+        const quizBadge = badges.find(b => b.id === 'final_quiz_complete')
+        setNewBadge(completeBadge || quizBadge || null)
       }
     }
   }

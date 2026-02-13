@@ -218,6 +218,12 @@ export default function DisciplineDetail() {
       if (!prevLessonBadges.some(b => b.id === 'lesson_quiz_perfect')) {
         setNewBadge({ id: 'lesson_quiz_perfect', name: 'Nota Máxima', description: 'Acertou 100% no quiz da aula', icon: '⭐', tier: 'gold' })
       }
+    } else {
+      // Badge de quiz respondido (se ainda não tinha)
+      const prevLessonBadges = lessonBadges.get(lessonId) || []
+      if (!prevLessonBadges.some(b => b.id === 'lesson_quiz_done')) {
+        setNewBadge({ id: 'lesson_quiz_done', name: 'Quiz Respondido', description: 'Respondeu o quiz da aula', icon: '📝', tier: 'bronze' })
+      }
     }
 
     setDisciplineBadges(badgeResult.badges)

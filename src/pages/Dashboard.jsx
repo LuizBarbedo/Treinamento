@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import { computeDisciplineBadges } from '../lib/badges'
+import { computeDisciplineBadges, countDisciplineBadges, getAllDisciplineBadges, BADGE_DEFS } from '../lib/badges'
 import { Badge } from '../components/Badges'
 import { FiBook, FiAward, FiTrendingUp, FiLock, FiCheck } from 'react-icons/fi'
 import './Dashboard.css'
@@ -52,6 +52,7 @@ export default function Dashboard() {
     // Computar badges por disciplina
     let totalBadgeCount = 0
     const allBadges = []
+    let allDisciplinesCompleted = true
 
     allDiscs.forEach(disc => {
       const lessons = allLessons.filter(l => l.discipline_id === disc.id)
@@ -59,19 +60,32 @@ export default function Dashboard() {
       const quizResults = allQuizResults.filter(r => r.discipline_id === disc.id)
       const finalResult = allFinalResults.find(r => r.discipline_id === disc.id) || null
 
-      const { badges, perfectLessonIds } = computeDisciplineBadges({
+      const result = computeDisciplineBadges({
         lessons,
         completedLessonIds,
         lessonQuizResults: quizResults,
         finalQuizResult: finalResult,
       })
 
-      totalBadgeCount += badges.length + completedLessonIds.size + perfectLessonIds.size
+      // Usar a função centralizada de contagem
+      totalBadgeCount += countDisciplineBadges(result)
 
-      badges.forEach(b => {
+      // Verificar se disciplina está completa
+      const discComplete = result.badges.some(b => b.id === 'discipline_complete')
+      if (!discComplete) allDisciplinesCompleted = false
+
+      // Coletar todos os badges para exibir na seção de conquistas
+      const discBadges = getAllDisciplineBadges(result)
+      discBadges.forEach(b => {
         allBadges.push({ ...b, disciplineName: disc.name })
       })
     })
+
+    // Badge global: completou todas as disciplinas
+    if (allDiscs.length > 0 && allDisciplinesCompleted) {
+      totalBadgeCount += 1
+      allBadges.push({ ...BADGE_DEFS.all_disciplines_complete })
+    }
 
     // Pegar badges mais notáveis (diamond e gold primeiro)
     const tierOrder = { diamond: 0, gold: 1, silver: 2, bronze: 3 }
