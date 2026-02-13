@@ -53,12 +53,17 @@ export default function DisciplineDetail() {
   const [lessonQuizResultsData, setLessonQuizResultsData] = useState([])
   const [finalQuizResultData, setFinalQuizResultData] = useState(null)
 
+  // Ranking state
+  const [ranking, setRanking] = useState([])
+  const [loadingRanking, setLoadingRanking] = useState(true)
+
   const completedCount = completedLessons.size
   const allLessonsCompleted = lessons.length > 0 && completedLessons.size >= lessons.length
   const progressPercent = lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0
 
   useEffect(() => {
     fetchData()
+    fetchRanking()
   }, [id])
 
   const fetchData = async () => {
@@ -100,6 +105,26 @@ export default function DisciplineDetail() {
     }
 
     setLoading(false)
+  }
+
+  const fetchRanking = async () => {
+    setLoadingRanking(true)
+    try {
+      const { data, error } = await supabase.rpc('get_discipline_badge_ranking', { p_discipline_id: id })
+      if (!error && data) {
+        setRanking(data)
+      }
+    } catch (e) {
+      console.error('Erro ao carregar ranking:', e)
+    }
+    setLoadingRanking(false)
+  }
+
+  const getMedalEmoji = (position) => {
+    if (position === 0) return '🥇'
+    if (position === 1) return '🥈'
+    if (position === 2) return '🥉'
+    return `${position + 1}º`
   }
 
   // Check if lesson is accessible (sequential order)
@@ -590,6 +615,60 @@ export default function DisciplineDetail() {
           </Link>
         </div>
       )}
+
+      {/* Ranking da Disciplina */}
+      <div className="discipline-ranking-section">
+        <div className="discipline-ranking-header">
+          <h3>🏅 Ranking da Disciplina</h3>
+          <p>Os alunos com mais badges nesta disciplina</p>
+        </div>
+
+        {loadingRanking ? (
+          <div className="discipline-ranking-loading">
+            <div className="spinner"></div>
+          </div>
+        ) : ranking.length === 0 ? (
+          <div className="discipline-ranking-empty">
+            <p>Nenhum aluno completou atividades nesta disciplina ainda.</p>
+          </div>
+        ) : (
+          <div className="discipline-ranking-table-wrapper">
+            <table className="discipline-ranking-table">
+              <thead>
+                <tr>
+                  <th className="dr-col-pos">#</th>
+                  <th className="dr-col-name">Aluno</th>
+                  <th className="dr-col-badges">Badges</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ranking.map((entry, index) => {
+                  const isCurrentUser = entry.user_id === user.id
+                  return (
+                    <tr
+                      key={entry.user_id}
+                      className={`dr-row ${isCurrentUser ? 'dr-row-current' : ''} ${index < 3 ? 'dr-row-top' : ''}`}
+                    >
+                      <td className="dr-col-pos">
+                        <span className={`dr-medal ${index < 3 ? `dr-medal-${index + 1}` : ''}`}>
+                          {getMedalEmoji(index)}
+                        </span>
+                      </td>
+                      <td className="dr-col-name">
+                        <span className="dr-name">{entry.user_name}</span>
+                        {isCurrentUser && <span className="dr-you-tag">Você</span>}
+                      </td>
+                      <td className="dr-col-badges">
+                        <span className="dr-badge-count">🏆 {entry.badge_count}</span>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       <AIChat discipline={discipline} lessons={lessons} materials={materials} />
 

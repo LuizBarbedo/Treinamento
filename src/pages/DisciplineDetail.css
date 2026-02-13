@@ -792,3 +792,159 @@
     gap: 0.5rem;
   }
 }
+
+/* ---------- Discipline Ranking ---------- */
+.discipline-ranking-section {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 2px solid #f0f0f0;
+}
+
+.discipline-ranking-header {
+  margin-bottom: 1.25rem;
+}
+
+.discipline-ranking-header h3 {
+  font-size: 1.3rem;
+  color: #1a1a2e;
+  margin: 0 0 0.2rem 0;
+}
+
+.discipline-ranking-header p {
+  color: #888;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.discipline-ranking-loading {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.discipline-ranking-empty {
+  text-align: center;
+  padding: 1.5rem;
+  color: #888;
+  background: #fafafa;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+.discipline-ranking-table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.discipline-ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.discipline-ranking-table thead {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+}
+
+.discipline-ranking-table thead th {
+  padding: 0.8rem 1rem;
+  text-align: left;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.discipline-ranking-table tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s;
+}
+
+.discipline-ranking-table tbody tr:hover {
+  background: #f8f9ff;
+}
+
+.discipline-ranking-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.discipline-ranking-table td {
+  padding: 0.7rem 1rem;
+}
+
+.dr-col-pos {
+  width: 50px;
+  text-align: center !important;
+}
+
+.dr-col-badges {
+  width: 100px;
+  text-align: center !important;
+}
+
+.dr-medal {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.dr-medal-1 { font-size: 1.4rem; }
+.dr-medal-2 { font-size: 1.3rem; }
+.dr-medal-3 { font-size: 1.2rem; }
+
+.dr-name {
+  font-weight: 500;
+  color: #1a1a2e;
+}
+
+.dr-you-tag {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.45rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dr-badge-count {
+  font-weight: 700;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.dr-row-current {
+  background: linear-gradient(90deg, #f0f4ff, #e8f0ff) !important;
+  border-left: 3px solid #667eea;
+}
+
+.dr-row-top:nth-child(1) {
+  background: linear-gradient(90deg, #fff9e6, #fff3cc);
+}
+
+.dr-row-top:nth-child(2) {
+  background: linear-gradient(90deg, #f5f5f5, #ececec);
+}
+
+.dr-row-top:nth-child(3) {
+  background: linear-gradient(90deg, #fef3e8, #fde8d0);
+}
+
+@media (max-width: 600px) {
+  .discipline-ranking-section {
+    margin-top: 1.5rem;
+  }
+
+  .discipline-ranking-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .discipline-ranking-table {
+    font-size: 0.85rem;
+  }
+}

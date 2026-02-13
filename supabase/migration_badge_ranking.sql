@@ -128,3 +128,113 @@ $$;
 
 -- Permitir que usuários autenticados chamem a função
 GRANT EXECUTE ON FUNCTION get_badge_ranking() TO authenticated;
+
+-- ============================================
+-- Função para ranking de badges por disciplina
+-- Desempate por qualidade dos badges (diamond=4, gold=3, silver=2, bronze=1)
+-- ============================================
+CREATE OR REPLACE FUNCTION get_discipline_badge_ranking(p_discipline_id UUID)
+RETURNS TABLE (
+  user_id UUID,
+  user_name TEXT,
+  badge_count BIGINT,
+  tier_score BIGINT
+)
+LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+  RETURN QUERY
+  WITH
+  -- Contagem de aulas da disciplina
+  disc_lesson_count AS (
+    SELECT COUNT(*)::BIGINT AS total_lessons
+    FROM lessons l
+    WHERE l.discipline_id = p_discipline_id
+  ),
+  -- Progresso por usuário nesta disciplina
+  user_progress AS (
+    SELECT lp.user_id, COUNT(DISTINCT lp.lesson_id)::BIGINT AS completed_lessons
+    FROM lesson_progress lp
+    WHERE lp.discipline_id = p_discipline_id
+    GROUP BY lp.user_id
+  ),
+  -- 1. lesson_complete (bronze=1): 1 por aula concluída
+  b_lesson_complete AS (
+    SELECT lp.user_id, COUNT(*)::BIGINT AS cnt, COUNT(*)::BIGINT * 1 AS score
+    FROM lesson_progress lp
+    WHERE lp.discipline_id = p_discipline_id
+    GROUP BY lp.user_id
+  ),
+  -- 2. lesson_quiz_done (bronze=1): 1 por quiz de aula respondido
+  b_quiz_done AS (
+    SELECT lqr.user_id, COUNT(*)::BIGINT AS cnt, COUNT(*)::BIGINT * 1 AS score
+    FROM lesson_quiz_results lqr
+    WHERE lqr.discipline_id = p_discipline_id
+    GROUP BY lqr.user_id
+  ),
+  -- 3. lesson_quiz_perfect (gold=3): 1 por quiz com 100%
+  b_quiz_perfect AS (
+    SELECT lqr.user_id, COUNT(*)::BIGINT AS cnt, COUNT(*)::BIGINT * 3 AS score
+    FROM lesson_quiz_results lqr
+    WHERE lqr.discipline_id = p_discipline_id AND lqr.score = 100
+    GROUP BY lqr.user_id
+  ),
+  -- 4. all_lessons_complete (silver=2): 1 se completou todas as aulas
+  b_all_lessons AS (
+    SELECT up.user_id, 1::BIGINT AS cnt, 2::BIGINT AS score
+    FROM user_progress up, disc_lesson_count dlc
+    WHERE up.completed_lessons >= dlc.total_lessons AND dlc.total_lessons > 0
+  ),
+  -- 5. final_quiz_complete (silver=2): 1 se aprovado no quiz geral
+  b_final_quiz AS (
+    SELECT qr.user_id, 1::BIGINT AS cnt, 2::BIGINT AS score
+    FROM quiz_results qr
+    WHERE qr.discipline_id = p_discipline_id AND qr.score >= 70
+  ),
+  -- 6. discipline_complete (gold=3): 1 se completou aulas + quiz geral
+  b_disc_complete AS (
+    SELECT up.user_id, 1::BIGINT AS cnt, 3::BIGINT AS score
+    FROM user_progress up
+    JOIN disc_lesson_count dlc ON true
+    JOIN quiz_results qr ON qr.user_id = up.user_id AND qr.discipline_id = p_discipline_id AND qr.score >= 70
+    WHERE up.completed_lessons >= dlc.total_lessons AND dlc.total_lessons > 0
+  ),
+  -- Juntar todos os usuários com atividade nesta disciplina
+  all_users AS (
+    SELECT DISTINCT u_id AS uid FROM (
+      SELECT blc.user_id AS u_id FROM b_lesson_complete blc
+      UNION SELECT bqd.user_id FROM b_quiz_done bqd
+      UNION SELECT bqp.user_id FROM b_quiz_perfect bqp
+      UNION SELECT bal.user_id FROM b_all_lessons bal
+      UNION SELECT bfq.user_id FROM b_final_quiz bfq
+      UNION SELECT bdc.user_id FROM b_disc_complete bdc
+    ) sub
+  )
+  SELECT
+    au.uid AS user_id,
+    COALESCE(u.raw_user_meta_data ->> 'full_name', split_part(u.email::TEXT, '@', 1))::TEXT AS user_name,
+    (
+      COALESCE(blc.cnt, 0) + COALESCE(bqd.cnt, 0) + COALESCE(bqp.cnt, 0) +
+      COALESCE(bal.cnt, 0) + COALESCE(bfq.cnt, 0) + COALESCE(bdc.cnt, 0)
+    )::BIGINT AS badge_count,
+    (
+      COALESCE(blc.score, 0) + COALESCE(bqd.score, 0) + COALESCE(bqp.score, 0) +
+      COALESCE(bal.score, 0) + COALESCE(bfq.score, 0) + COALESCE(bdc.score, 0)
+    )::BIGINT AS tier_score
+  FROM all_users au
+  JOIN auth.users u ON u.id = au.uid
+  LEFT JOIN b_lesson_complete blc ON blc.user_id = au.uid
+  LEFT JOIN b_quiz_done bqd ON bqd.user_id = au.uid
+  LEFT JOIN b_quiz_perfect bqp ON bqp.user_id = au.uid
+  LEFT JOIN b_all_lessons bal ON bal.user_id = au.uid
+  LEFT JOIN b_final_quiz bfq ON bfq.user_id = au.uid
+  LEFT JOIN b_disc_complete bdc ON bdc.user_id = au.uid
+  -- Excluir admins e monitores
+  WHERE NOT EXISTS (
+    SELECT 1 FROM user_roles ur WHERE ur.user_id = au.uid AND ur.role IN ('admin', 'monitor')
+  )
+  ORDER BY badge_count DESC, tier_score DESC, user_name ASC
+  LIMIT 50;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION get_discipline_badge_ranking(UUID) TO authenticated;
