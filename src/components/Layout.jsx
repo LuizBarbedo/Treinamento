@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
 import { FiHome, FiBook, FiLogOut, FiUser, FiSettings, FiBarChart2, FiAward, FiMessageCircle, FiUsers, FiClipboard, FiMessageSquare, FiMenu, FiX } from 'react-icons/fi'
 import './Layout.css'
 
@@ -9,6 +10,53 @@ export default function Layout() {
   const navigate = useNavigate()
   const [collapsed, setCollapsed] = useState(true)
   const [hovering, setHovering] = useState(false)
+  const [doubtsBadge, setDoubtsBadge] = useState(0)
+
+  const fetchDoubtsBadge = useCallback(async () => {
+    if (!user) return
+
+    try {
+      if (isMonitor) {
+        // Monitor: contar dúvidas abertas dos alunos vinculados
+        const { data: students } = await supabase
+          .from('monitor_students')
+          .select('student_id')
+          .eq('monitor_id', user.id)
+
+        if (students && students.length > 0) {
+          const studentIds = students.map(s => s.student_id)
+          const { count } = await supabase
+            .from('doubts')
+            .select('*', { count: 'exact', head: true })
+            .in('user_id', studentIds)
+            .eq('status', 'open')
+
+          setDoubtsBadge(count || 0)
+        } else {
+          setDoubtsBadge(0)
+        }
+      } else if (!isAdmin) {
+        // Aluno: contar dúvidas respondidas pelo monitor mas não visualizadas
+        const { count } = await supabase
+          .from('doubts')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('status', 'answered')
+
+        setDoubtsBadge(count || 0)
+      }
+    } catch (err) {
+      console.error('Erro ao buscar notificações de dúvidas:', err)
+    }
+  }, [user, isMonitor, isAdmin])
+
+  useEffect(() => {
+    fetchDoubtsBadge()
+
+    // Atualizar a cada 30 segundos
+    const interval = setInterval(fetchDoubtsBadge, 30000)
+    return () => clearInterval(interval)
+  }, [fetchDoubtsBadge])
 
   const expanded = !collapsed || hovering
 
@@ -55,7 +103,11 @@ export default function Layout() {
           {/* Dúvidas - visível para alunos (não monitor, não admin) */}
           {!isAdmin && !isMonitor && (
             <NavLink to="/minhas-duvidas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-              <FiMessageCircle /> <span>Dúvidas</span>
+              <span className="nav-icon-wrapper">
+                <FiMessageCircle />
+                {doubtsBadge > 0 && <span className="nav-badge">{doubtsBadge}</span>}
+              </span>
+              <span>Dúvidas</span>
             </NavLink>
           )}
 
@@ -71,7 +123,11 @@ export default function Layout() {
                 <FiUsers /> <span>Meus Alunos</span>
               </NavLink>
               <NavLink to="/monitor/duvidas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-                <FiMessageCircle /> <span>Dúvidas/Monitor</span>
+                <span className="nav-icon-wrapper">
+                  <FiMessageCircle />
+                  {doubtsBadge > 0 && <span className="nav-badge">{doubtsBadge}</span>}
+                </span>
+                <span>Dúvidas/Monitor</span>
               </NavLink>
             </>
           )}
