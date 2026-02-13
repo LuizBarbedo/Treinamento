@@ -60,6 +60,20 @@
   color: #aaa;
 }
 
+.student-last-access {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0.35rem;
+}
+
+.student-last-access svg {
+  color: #4361ee;
+  font-size: 0.85rem;
+}
+
 /* Stats Grid */
 .student-stats-grid {
   display: grid;
@@ -186,6 +200,18 @@
   background: #f5f5f5;
 }
 
+.disc-badge-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+.disc-completed-date {
+  font-size: 0.68rem;
+  color: #888;
+}
+
 /* Lessons detail */
 .disc-lessons-detail {
   border-top: 1px solid #f0f0f0;
@@ -221,6 +247,24 @@
 
 .lesson-title {
   flex: 1;
+}
+
+.lesson-row-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.lesson-completed-date {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  color: #999;
+}
+
+.lesson-completed-date svg {
+  font-size: 0.7rem;
 }
 
 .lesson-quiz-score {

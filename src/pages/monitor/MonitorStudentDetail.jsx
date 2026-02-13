@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
-import { FiArrowLeft, FiBook, FiCheckCircle, FiClock, FiAward, FiMessageCircle, FiChevronDown, FiChevronUp } from 'react-icons/fi'
+import { FiArrowLeft, FiBook, FiCheckCircle, FiClock, FiAward, FiMessageCircle, FiChevronDown, FiChevronUp, FiLogIn } from 'react-icons/fi'
 import './MonitorStudentDetail.css'
 
 export default function MonitorStudentDetail() {
@@ -66,16 +66,35 @@ export default function MonitorStudentDetail() {
   const getDiscProgress = (discId) => {
     const discLessons = lessons.filter(l => l.discipline_id === discId)
     const completedLessons = lessonProgress.filter(lp => lp.discipline_id === discId)
-    const isCompleted = progress.some(p => p.discipline_id === discId && p.completed)
+    const discProgress = progress.find(p => p.discipline_id === discId && p.completed)
+    const isCompleted = !!discProgress
     const finalQuiz = quizResults.find(q => q.discipline_id === discId)
+    const completedAt = discProgress?.completed_at || finalQuiz?.completed_at || null
 
     return {
       totalLessons: discLessons.length,
       completedLessons: completedLessons.length,
       isCompleted,
+      completedAt,
       finalQuiz,
       lessons: discLessons,
     }
+  }
+
+  const getLessonCompletedAt = (lessonId) => {
+    const lp = lessonProgress.find(l => l.lesson_id === lessonId)
+    return lp?.completed_at || null
+  }
+
+  const formatDateTime = (dateStr) => {
+    if (!dateStr) return null
+    return new Date(dateStr).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
   }
 
   const getLessonQuiz = (lessonId) => {
@@ -137,6 +156,13 @@ export default function MonitorStudentDetail() {
           <span className="student-since">
             Vinculado desde {new Date(student.assigned_at).toLocaleDateString('pt-BR')}
           </span>
+          <div className="student-last-access">
+            <FiLogIn />
+            <span>Último acesso: {student.last_sign_in_at
+              ? new Date(student.last_sign_in_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+              : 'Nunca acessou'}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -201,7 +227,12 @@ export default function MonitorStudentDetail() {
                   </div>
                   <div className="disc-right">
                     {dp.isCompleted ? (
-                      <span className="disc-badge completed">✅ Concluída</span>
+                      <div className="disc-badge-group">
+                        <span className="disc-badge completed">✅ Concluída</span>
+                        {dp.completedAt && (
+                          <span className="disc-completed-date">{formatDateTime(dp.completedAt)}</span>
+                        )}
+                      </div>
                     ) : pct > 0 ? (
                       <span className="disc-badge in-progress">{pct}%</span>
                     ) : (
@@ -222,11 +253,18 @@ export default function MonitorStudentDetail() {
                             {completed ? <FiCheckCircle className="icon-completed" /> : <FiClock className="icon-pending" />}
                           </span>
                           <span className="lesson-title">{lesson.title}</span>
-                          {quiz && (
-                            <span className={`lesson-quiz-score ${quiz.score >= 70 ? 'good' : 'low'}`}>
-                              Quiz: {quiz.score}%
-                            </span>
-                          )}
+                          <div className="lesson-row-right">
+                            {completed && getLessonCompletedAt(lesson.id) && (
+                              <span className="lesson-completed-date">
+                                <FiClock /> {formatDateTime(getLessonCompletedAt(lesson.id))}
+                              </span>
+                            )}
+                            {quiz && (
+                              <span className={`lesson-quiz-score ${quiz.score >= 70 ? 'good' : 'low'}`}>
+                                Quiz: {quiz.score}%
+                              </span>
+                            )}
+                          </div>
                         </div>
                       )
                     })}

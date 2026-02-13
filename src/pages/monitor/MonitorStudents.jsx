@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
-import { FiChevronRight, FiSearch } from 'react-icons/fi'
+import { FiChevronRight, FiSearch, FiClock } from 'react-icons/fi'
 import './MonitorStudents.css'
 
 export default function MonitorStudents() {
@@ -125,6 +125,7 @@ export default function MonitorStudents() {
             <thead>
               <tr>
                 <th>Aluno</th>
+                <th>Último Acesso</th>
                 <th>Progresso</th>
                 <th>Média Quiz</th>
                 <th>Aulas</th>
@@ -149,6 +150,16 @@ export default function MonitorStudents() {
                           <span className="student-name">{student.full_name || student.email}</span>
                           <span className="student-email">{student.email}</span>
                         </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="last-access-cell">
+                        <FiClock className="last-access-icon" />
+                        <span className={`last-access-text ${!student.last_sign_in_at ? 'never' : ''}`}>
+                          {student.last_sign_in_at
+                            ? new Date(student.last_sign_in_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                            : 'Nunca'}
+                        </span>
                       </div>
                     </td>
                     <td>
