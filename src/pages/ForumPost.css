@@ -59,6 +59,11 @@
   gap: 0.35rem;
 }
 
+.post-author-name {
+  font-weight: 600;
+  color: #333;
+}
+
 .forum-post-main .post-content {
   font-size: 0.95rem;
   line-height: 1.7;

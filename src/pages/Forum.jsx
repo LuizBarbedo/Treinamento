@@ -78,8 +78,15 @@ export default function Forum() {
         profiles?.forEach(p => { rolesMap[p.user_id] = p.role })
 
         // Buscar nomes via auth (metadata)
+        const { data: userNames } = await supabase.rpc('get_user_names', {
+          p_user_ids: userIds
+        })
+        const namesMap = {}
+        userNames?.forEach(u => { namesMap[u.user_id] = u.full_name })
+
         const enriched = postsData.map(post => ({
           ...post,
+          author_name: namesMap[post.user_id] || 'Usuário',
           author_role: rolesMap[post.user_id] || 'user',
           reply_count: post.forum_replies?.[0]?.count || 0,
           like_count: post.forum_post_likes?.[0]?.count || 0,
@@ -164,8 +171,12 @@ export default function Forum() {
   }
 
   const getAuthorInitials = (post) => {
-    // user_id to initial (first 2 chars)
-    return (post.user_id || '').substring(0, 2).toUpperCase()
+    const name = post.author_name || ''
+    if (name.includes(' ')) {
+      const parts = name.split(' ')
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+    }
+    return (name || '??').substring(0, 2).toUpperCase()
   }
 
   const getCategoryLabel = (cat) => {
@@ -342,7 +353,8 @@ export default function Forum() {
                   <span className={`post-author-avatar ${post.author_role === 'monitor' ? 'monitor' : ''}`}>
                     {getAuthorInitials(post)}
                   </span>
-                  <span>{formatDate(post.created_at)}</span>
+                  <span className="post-author-name">{post.author_name || 'Usuário'}</span>
+                  <span>• {formatDate(post.created_at)}</span>
                   {post.author_role === 'monitor' && (
                     <span className="post-author-role monitor">Monitor</span>
                   )}

@@ -55,7 +55,13 @@ export default function ForumPost() {
         .eq('user_id', postData.user_id)
         .single()
 
-      setPost({ ...postData, author_role: authorRole?.role || 'user' })
+      // Buscar nome do autor do post
+      const { data: authorNames } = await supabase.rpc('get_user_names', {
+        p_user_ids: [postData.user_id]
+      })
+      const authorName = authorNames?.[0]?.full_name || 'Usuário'
+
+      setPost({ ...postData, author_role: authorRole?.role || 'user', author_name: authorName })
 
       // Buscar likes do post
       const { data: postLikes } = await supabase
@@ -87,6 +93,13 @@ export default function ForumPost() {
         const rolesMap = {}
         replyRoles?.forEach(r => { rolesMap[r.user_id] = r.role })
 
+        // Buscar nomes dos autores das respostas
+        const { data: replyUserNames } = await supabase.rpc('get_user_names', {
+          p_user_ids: replyUserIds
+        })
+        const namesMap = {}
+        replyUserNames?.forEach(u => { namesMap[u.user_id] = u.full_name })
+
         // Likes das respostas
         const { data: allReplyLikes } = await supabase
           .from('forum_reply_likes')
@@ -105,6 +118,7 @@ export default function ForumPost() {
 
         const enriched = repliesData.map(r => ({
           ...r,
+          author_name: namesMap[r.user_id] || 'Usuário',
           author_role: rolesMap[r.user_id] || 'user',
         }))
         setReplies(enriched)
@@ -241,8 +255,13 @@ export default function ForumPost() {
     })
   }
 
-  const getInitials = (userId) => {
-    return (userId || '').substring(0, 2).toUpperCase()
+  const getInitials = (name) => {
+    if (!name) return '??'
+    if (name.includes(' ')) {
+      const parts = name.split(' ')
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+    }
+    return name.substring(0, 2).toUpperCase()
   }
 
   const getCategoryLabel = (cat) => {
@@ -293,8 +312,9 @@ export default function ForumPost() {
         <div className="post-meta">
           <div className="author-info">
             <span className={`post-author-avatar ${post.author_role === 'monitor' ? 'monitor' : ''}`}>
-              {getInitials(post.user_id)}
+              {getInitials(post.author_name)}
             </span>
+            <span className="post-author-name">{post.author_name || 'Usuário'}</span>
             {post.author_role === 'monitor' && (
               <span className="post-author-role monitor">Monitor</span>
             )}
@@ -354,8 +374,9 @@ export default function ForumPost() {
                 <div className="reply-header">
                   <div className="reply-author">
                     <span className={`post-author-avatar ${reply.author_role === 'monitor' ? 'monitor' : ''}`}>
-                      {getInitials(reply.user_id)}
+                      {getInitials(reply.author_name)}
                     </span>
+                    <span className="post-author-name">{reply.author_name || 'Usuário'}</span>
                     {reply.author_role === 'monitor' && (
                       <span className="post-author-role monitor">Monitor</span>
                     )}
