@@ -213,6 +213,11 @@
   background: rgba(233, 69, 96, 0.25);
 }
 
+/* ==================== MOBILE MENU BUTTON ==================== */
+.mobile-menu-btn {
+  display: none;
+}
+
 /* ==================== MAIN CONTENT ==================== */
 
 /* Notification badge */
@@ -323,8 +328,8 @@
     justify-content: center;
   }
 
-  .sidebar.expanded ~ .main-content::before {
-    content: '';
+  .sidebar-expanded .mobile-overlay {
+    display: block;
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.4);

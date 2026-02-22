@@ -67,8 +67,23 @@ export default function Layout() {
 
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuário'
 
+  // Fecha sidebar no mobile ao navegar
+  const isMobile = () => window.innerWidth <= 768
+  const handleNavClick = () => {
+    if (isMobile()) setCollapsed(true)
+  }
+
   return (
     <div className={`layout ${expanded ? 'sidebar-expanded' : 'sidebar-collapsed'}`}>
+      {/* Botão de menu visível apenas no mobile */}
+      <button
+        className="mobile-menu-btn"
+        onClick={() => setCollapsed(prev => !prev)}
+        aria-label="Abrir menu"
+      >
+        {expanded ? <FiX /> : <FiMenu />}
+      </button>
+
       <aside
         className={`sidebar ${expanded ? 'expanded' : 'collapsed'}`}
         onMouseEnter={() => setHovering(true)}
@@ -87,22 +102,22 @@ export default function Layout() {
         </div>
 
         <nav className="sidebar-nav">
-          <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+          <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
             <FiHome /> <span>Início</span>
           </NavLink>
-          <NavLink to="/disciplinas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+          <NavLink to="/disciplinas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
             <FiBook /> <span>Disciplinas</span>
           </NavLink>
-          <NavLink to="/conquistas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+          <NavLink to="/conquistas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
             <FiAward /> <span>Conquistas</span>
           </NavLink>
-          <NavLink to="/forum" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+          <NavLink to="/forum" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
             <FiMessageSquare /> <span>Fórum</span>
           </NavLink>
 
           {/* Dúvidas - visível para alunos (não monitor, não admin) */}
           {!isAdmin && !isMonitor && (
-            <NavLink to="/minhas-duvidas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+            <NavLink to="/minhas-duvidas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
               <span className="nav-icon-wrapper">
                 <FiMessageCircle />
                 {doubtsBadge > 0 && <span className="nav-badge">{doubtsBadge}</span>}
@@ -116,13 +131,13 @@ export default function Layout() {
             <>
               <div className="nav-divider" />
               <span className="nav-section-label">Monitor</span>
-              <NavLink to="/monitor" end className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+              <NavLink to="/monitor" end className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
                 <FiClipboard /> <span>Painel</span>
               </NavLink>
-              <NavLink to="/monitor/alunos" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+              <NavLink to="/monitor/alunos" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
                 <FiUsers /> <span>Meus Alunos</span>
               </NavLink>
-              <NavLink to="/monitor/duvidas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+              <NavLink to="/monitor/duvidas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
                 <span className="nav-icon-wrapper">
                   <FiMessageCircle />
                   {doubtsBadge > 0 && <span className="nav-badge">{doubtsBadge}</span>}
@@ -136,16 +151,16 @@ export default function Layout() {
             <>
               <div className="nav-divider" />
               <span className="nav-section-label">Admin</span>
-              <NavLink to="/admin/disciplinas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+              <NavLink to="/admin/disciplinas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
                 <FiSettings /> <span>Gerenciar</span>
               </NavLink>
-              <NavLink to="/admin/relatorios" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+              <NavLink to="/admin/relatorios" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
                 <FiBarChart2 /> <span>Relatórios</span>
               </NavLink>
-              <NavLink to="/admin/monitores" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+              <NavLink to="/admin/monitores" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
                 <FiUsers /> <span>Monitores</span>
               </NavLink>
-              <NavLink to="/admin/relatorio-monitores" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+              <NavLink to="/admin/relatorio-monitores" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
                 <FiClipboard /> <span>Rel. Monitores</span>
               </NavLink>
             </>
@@ -162,6 +177,14 @@ export default function Layout() {
           </button>
         </div>
       </aside>
+
+      {/* Overlay para fechar menu no mobile */}
+      {expanded && (
+        <div
+          className="mobile-overlay"
+          onClick={() => setCollapsed(true)}
+        />
+      )}
 
       <main className="main-content">
         <Outlet />
