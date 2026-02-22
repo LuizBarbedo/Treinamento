@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { FiArrowLeft, FiSave, FiPlus, FiTrash2, FiEdit2, FiCheck } from 'react-icons/fi'
+import { FiArrowLeft, FiSave, FiPlus, FiTrash2, FiEdit2, FiCheck, FiUpload, FiFile } from 'react-icons/fi'
 import './AdminDisciplineEdit.css'
 
 export default function AdminDisciplineEdit() {
@@ -27,6 +27,9 @@ export default function AdminDisciplineEdit() {
   const [materialForm, setMaterialForm] = useState({ title: '', type: 'link', url: '' })
   const [editingMaterialId, setEditingMaterialId] = useState(null)
   const [showMaterialForm, setShowMaterialForm] = useState(false)
+  const [uploadingFile, setUploadingFile] = useState(false)
+  const [selectedFile, setSelectedFile] = useState(null)
+  const fileInputRef = useRef(null)
 
   // Quiz form
   const [quizForm, setQuizForm] = useState({
@@ -129,6 +132,8 @@ export default function AdminDisciplineEdit() {
     setMaterialForm({ title: '', type: 'link', url: '' })
     setEditingMaterialId(null)
     setShowMaterialForm(false)
+    setSelectedFile(null)
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   const editMaterial = (mat) => {
@@ -141,23 +146,127 @@ export default function AdminDisciplineEdit() {
     setShowMaterialForm(true)
   }
 
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ]
+
+    if (!allowedTypes.includes(file.type)) {
+      alert('Tipo de arquivo não permitido. Envie apenas PDF ou Word (.doc, .docx).')
+      e.target.value = ''
+      return
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+      alert('Arquivo muito grande. O limite é 50MB.')
+      e.target.value = ''
+      return
+    }
+
+    setSelectedFile(file)
+
+    // Auto-detectar tipo
+    if (file.type === 'application/pdf') {
+      setMaterialForm(f => ({ ...f, type: 'pdf' }))
+    } else {
+      setMaterialForm(f => ({ ...f, type: 'word' }))
+    }
+
+    // Auto-preencher título se vazio
+    if (!materialForm.title.trim()) {
+      const nameWithoutExt = file.name.replace(/\.[^/.]+$/, '')
+      setMaterialForm(f => ({ ...f, title: nameWithoutExt }))
+    }
+  }
+
+  const uploadFile = async (file) => {
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`
+
+    const { data, error } = await supabase.storage
+      .from('materials')
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false
+      })
+
+    if (error) throw error
+
+    const { data: publicUrlData } = supabase.storage
+      .from('materials')
+      .getPublicUrl(fileName)
+
+    return { url: publicUrlData.publicUrl, filePath: fileName }
+  }
+
   const saveMaterial = async () => {
     if (!materialForm.title.trim()) return alert('Título é obrigatório')
-    setSaving(true)
 
-    if (editingMaterialId) {
-      await supabase.from('materials').update(materialForm).eq('id', editingMaterialId)
-    } else {
-      await supabase.from('materials').insert({ ...materialForm, discipline_id: id })
+    const isFileUpload = materialForm.type === 'pdf' || materialForm.type === 'word'
+
+    if (!isFileUpload && !materialForm.url.trim()) {
+      return alert('URL é obrigatória para materiais do tipo link, livro ou artigo.')
+    }
+
+    if (isFileUpload && !selectedFile && !editingMaterialId) {
+      return alert('Selecione um arquivo para enviar.')
+    }
+
+    setSaving(true)
+    setUploadingFile(!!selectedFile)
+
+    try {
+      let materialData = {
+        title: materialForm.title,
+        type: materialForm.type,
+        url: materialForm.url
+      }
+
+      // Upload do arquivo se selecionado
+      if (selectedFile) {
+        const { url, filePath } = await uploadFile(selectedFile)
+        materialData.url = url
+        materialData.file_path = filePath
+      }
+
+      if (editingMaterialId) {
+        // Se está editando e tem novo arquivo, deletar o antigo do storage
+        if (selectedFile) {
+          const oldMat = materials.find(m => m.id === editingMaterialId)
+          if (oldMat?.file_path) {
+            await supabase.storage.from('materials').remove([oldMat.file_path])
+          }
+        }
+        await supabase.from('materials').update(materialData).eq('id', editingMaterialId)
+      } else {
+        await supabase.from('materials').insert({ ...materialData, discipline_id: id })
+      }
+
+      resetMaterialForm()
+      fetchAll()
+    } catch (err) {
+      console.error('Erro ao salvar material:', err)
+      alert('Erro ao salvar material. Tente novamente.')
     }
 
     setSaving(false)
-    resetMaterialForm()
-    fetchAll()
+    setUploadingFile(false)
   }
 
   const deleteMaterial = async (matId, title) => {
     if (!confirm(`Excluir material "${title}"?`)) return
+
+    // Deletar arquivo do storage se existir
+    const mat = materials.find(m => m.id === matId)
+    if (mat?.file_path) {
+      await supabase.storage.from('materials').remove([mat.file_path])
+    }
+
     await supabase.from('materials').delete().eq('id', matId)
     fetchAll()
   }
@@ -451,27 +560,91 @@ export default function AdminDisciplineEdit() {
                   <label>Tipo</label>
                   <select
                     value={materialForm.type}
-                    onChange={e => setMaterialForm(f => ({ ...f, type: e.target.value }))}
+                    onChange={e => {
+                      setMaterialForm(f => ({ ...f, type: e.target.value }))
+                      if (e.target.value !== 'pdf' && e.target.value !== 'word') {
+                        setSelectedFile(null)
+                        if (fileInputRef.current) fileInputRef.current.value = ''
+                      }
+                    }}
                   >
                     <option value="link">Link</option>
                     <option value="pdf">PDF</option>
+                    <option value="word">Word</option>
                     <option value="livro">Livro</option>
                     <option value="artigo">Artigo</option>
                   </select>
                 </div>
-                <div className="form-group form-full">
-                  <label>URL</label>
-                  <input
-                    value={materialForm.url}
-                    onChange={e => setMaterialForm(f => ({ ...f, url: e.target.value }))}
-                    placeholder="https://..."
-                  />
-                </div>
+
+                {/* Upload de arquivo para PDF e Word */}
+                {(materialForm.type === 'pdf' || materialForm.type === 'word') && (
+                  <div className="form-group form-full">
+                    <label>Arquivo ({materialForm.type === 'pdf' ? 'PDF' : 'Word (.doc, .docx)'})</label>
+                    <div className="file-upload-area">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept={materialForm.type === 'pdf'
+                          ? '.pdf,application/pdf'
+                          : '.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                        }
+                        onChange={handleFileSelect}
+                        className="file-input-hidden"
+                        id="material-file-input"
+                      />
+                      <label htmlFor="material-file-input" className="file-upload-label">
+                        <FiUpload />
+                        <span>
+                          {selectedFile
+                            ? selectedFile.name
+                            : `Clique para selecionar um arquivo ${materialForm.type === 'pdf' ? 'PDF' : 'Word'}`
+                          }
+                        </span>
+                      </label>
+                      {selectedFile && (
+                        <div className="file-selected-info">
+                          <FiFile />
+                          <span>{selectedFile.name}</span>
+                          <span className="file-size">
+                            ({(selectedFile.size / (1024 * 1024)).toFixed(2)} MB)
+                          </span>
+                          <button
+                            type="button"
+                            className="btn-remove-file"
+                            onClick={() => {
+                              setSelectedFile(null)
+                              if (fileInputRef.current) fileInputRef.current.value = ''
+                            }}
+                          >
+                            <FiTrash2 />
+                          </button>
+                        </div>
+                      )}
+                      {editingMaterialId && !selectedFile && (
+                        <small className="file-edit-hint">
+                          Selecione um novo arquivo para substituir o atual, ou deixe em branco para manter.
+                        </small>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* URL para links, livros e artigos */}
+                {materialForm.type !== 'pdf' && materialForm.type !== 'word' && (
+                  <div className="form-group form-full">
+                    <label>URL</label>
+                    <input
+                      value={materialForm.url}
+                      onChange={e => setMaterialForm(f => ({ ...f, url: e.target.value }))}
+                      placeholder="https://..."
+                    />
+                  </div>
+                )}
               </div>
               <div className="form-actions">
                 <button className="btn-secondary" onClick={resetMaterialForm}>Cancelar</button>
-                <button className="btn-primary" onClick={saveMaterial} disabled={saving}>
-                  {saving ? 'Salvando...' : editingMaterialId ? 'Salvar' : 'Adicionar Material'}
+                <button className="btn-primary" onClick={saveMaterial} disabled={saving || uploadingFile}>
+                  {uploadingFile ? 'Enviando arquivo...' : saving ? 'Salvando...' : editingMaterialId ? 'Salvar' : 'Adicionar Material'}
                 </button>
               </div>
             </div>
@@ -483,7 +656,10 @@ export default function AdminDisciplineEdit() {
                 <span className="item-type-badge">{mat.type}</span>
                 <div className="item-info">
                   <strong>{mat.title}</strong>
-                  {mat.url && <small className="item-url">🔗 {mat.url}</small>}
+                  {mat.file_path
+                    ? <small className="item-url">📎 Arquivo enviado</small>
+                    : mat.url && <small className="item-url">🔗 {mat.url}</small>
+                  }
                 </div>
                 <div className="item-actions">
                   <button className="btn-icon btn-edit" onClick={() => editMaterial(mat)} title="Editar">

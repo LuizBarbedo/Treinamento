@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { computeDisciplineBadges } from '../lib/badges'
 import { BadgeGrid, InlineBadges, BadgeUnlocked } from '../components/Badges'
-import { FiPlay, FiFileText, FiCheckCircle, FiLock, FiCheck, FiX, FiMessageCircle } from 'react-icons/fi'
+import { FiPlay, FiFileText, FiCheckCircle, FiLock, FiCheck, FiX, FiMessageCircle, FiDownload } from 'react-icons/fi'
 import AIChat from '../components/AIChat'
 import './DisciplineDetail.css'
 
@@ -583,11 +583,19 @@ export default function DisciplineDetail() {
               target="_blank"
               rel="noopener noreferrer"
               className="material-card"
+              {...(mat.file_path ? { download: mat.title } : {})}
             >
               <div className="material-type">{getTypeIcon(mat.type)}</div>
               <div className="material-info">
                 <h3>{mat.title}</h3>
-                <span className="material-badge">{mat.type}</span>
+                <div className="material-meta">
+                  <span className="material-badge">{mat.type}</span>
+                  {mat.file_path && (
+                    <span className="material-download-hint">
+                      <FiDownload /> Baixar arquivo
+                    </span>
+                  )}
+                </div>
               </div>
             </a>
           ))}
@@ -683,6 +691,7 @@ function getTypeIcon(type) {
     case 'livro': return '📕'
     case 'artigo': return '📄'
     case 'pdf': return '📑'
+    case 'word': return '📘'
     case 'link': return '🔗'
     default: return '📎'
   }
