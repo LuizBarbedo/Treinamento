@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
-import { FiHome, FiBook, FiLogOut, FiUser, FiSettings, FiBarChart2, FiAward, FiMessageCircle, FiUsers, FiClipboard, FiMessageSquare, FiMenu, FiX } from 'react-icons/fi'
+import { FiLogOut, FiUser, FiSettings, FiMessageCircle, FiUsers, FiClipboard, FiMessageSquare, FiMenu, FiX } from 'react-icons/fi'
+import { HomeIcon, BookOpenIcon, MedalIcon, BarChartIcon, GraduationCapIcon } from './Icons'
 import './Layout.css'
 
 export default function Layout() {
@@ -90,7 +91,7 @@ export default function Layout() {
         onMouseLeave={() => setHovering(false)}
       >
         <div className="sidebar-header">
-          <span className="sidebar-logo">🎓</span>
+          <span className="sidebar-logo"><GraduationCapIcon size={28} gradient /></span>
           <h2 className="sidebar-title">Treinamento</h2>
           <button
             className="sidebar-toggle"
@@ -103,13 +104,13 @@ export default function Layout() {
 
         <nav className="sidebar-nav">
           <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
-            <FiHome /> <span>Início</span>
+            <HomeIcon size={20} /> <span>Início</span>
           </NavLink>
           <NavLink to="/disciplinas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
-            <FiBook /> <span>Disciplinas</span>
+            <BookOpenIcon size={20} /> <span>Disciplinas</span>
           </NavLink>
           <NavLink to="/conquistas" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
-            <FiAward /> <span>Conquistas</span>
+            <MedalIcon size={20} /> <span>Conquistas</span>
           </NavLink>
           <NavLink to="/forum" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
             <FiMessageSquare /> <span>Fórum</span>
@@ -155,7 +156,7 @@ export default function Layout() {
                 <FiSettings /> <span>Gerenciar</span>
               </NavLink>
               <NavLink to="/admin/relatorios" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
-                <FiBarChart2 /> <span>Relatórios</span>
+                <BarChartIcon size={20} /> <span>Relatórios</span>
               </NavLink>
               <NavLink to="/admin/monitores" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
                 <FiUsers /> <span>Monitores</span>

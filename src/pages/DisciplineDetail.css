@@ -8,7 +8,7 @@
 
 .back-link {
   display: inline-block;
-  color: #533483;
+  color: #009b8f;
   text-decoration: none;
   font-weight: 600;
   margin-bottom: 1rem;
@@ -31,7 +31,7 @@
 
 .detail-title h1 {
   font-size: 1.6rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.25rem;
 }
 
@@ -57,13 +57,13 @@
 
 .progress-label {
   font-weight: 600;
-  color: #1a1a2e;
+  color: #00405b;
   font-size: 0.9rem;
 }
 
 .progress-value {
   font-size: 0.85rem;
-  color: #533483;
+  color: #009b8f;
   font-weight: 600;
 }
 
@@ -77,7 +77,7 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #533483, #27ae60);
+  background: linear-gradient(90deg, #009b8f, #27ae60);
   border-radius: 10px;
   transition: width 0.5s ease;
 }
@@ -115,12 +115,12 @@
 }
 
 .tab:hover {
-  color: #533483;
+  color: #009b8f;
 }
 
 .tab.active {
-  color: #533483;
-  border-bottom-color: #533483;
+  color: #009b8f;
+  border-bottom-color: #009b8f;
   font-weight: 600;
 }
 
@@ -213,7 +213,7 @@
 }
 
 .lesson-info h3 {
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.25rem;
 }
 
@@ -231,7 +231,7 @@
   font-size: 0.8rem;
   color: #bbb;
   margin-top: 0.25rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .lesson-completed-badge {
@@ -246,7 +246,7 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  background: linear-gradient(135deg, #0f3460, #533483);
+  background: linear-gradient(135deg, #002d3d, #009b8f);
   color: #fff;
   padding: 0.5rem 1rem;
   border-radius: 8px;
@@ -274,7 +274,7 @@
 .lesson-card.playing {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
-  border-left-color: #533483;
+  border-left-color: #009b8f;
 }
 
 .video-player-inline {
@@ -313,7 +313,7 @@
 /* Lesson Actions (below video) */
 .lesson-actions {
   padding: 1rem 1.25rem;
-  background: #1a1a2e;
+  background: #00405b;
   display: flex;
   justify-content: center;
 }
@@ -397,7 +397,7 @@
 /* Lesson Quiz Inline */
 .lesson-quiz-inline {
   background: #fff;
-  border: 2px solid #533483;
+  border: 2px solid #009b8f;
   border-top: none;
   border-radius: 0 0 12px 12px;
   padding: 1.5rem;
@@ -410,7 +410,7 @@
 
 .lesson-quiz-header h4 {
   font-size: 1.1rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.25rem;
 }
 
@@ -466,13 +466,13 @@
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: #533483;
+  color: #009b8f;
   letter-spacing: 0.5px;
 }
 
 .lq-question-text {
   font-size: 1rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin: 0.5rem 0 0.75rem;
   line-height: 1.4;
 }
@@ -498,13 +498,13 @@
 }
 
 .lq-option:hover:not(:disabled) {
-  border-color: #533483;
-  background: #f5f0ff;
+  border-color: #009b8f;
+  background: #f0faf9;
 }
 
 .lq-option.selected {
-  border-color: #533483;
-  background: #f0e6ff;
+  border-color: #009b8f;
+  background: #e0f7f5;
 }
 
 .lq-option.correct {
@@ -536,7 +536,7 @@
 }
 
 .lq-option.selected .lq-option-letter {
-  background: #533483;
+  background: #009b8f;
   color: #fff;
 }
 
@@ -570,7 +570,7 @@
 
 .lq-result-score {
   font-size: 2rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .lesson-quiz-result.passed .lq-result-score {
@@ -609,7 +609,7 @@
 }
 
 .btn-next-lesson {
-  background: linear-gradient(135deg, #0f3460, #533483);
+  background: linear-gradient(135deg, #002d3d, #009b8f);
   color: #fff;
 }
 
@@ -621,7 +621,7 @@
 .btn-submit-lesson-quiz {
   width: 100%;
   padding: 0.75rem;
-  background: linear-gradient(135deg, #0f3460, #533483);
+  background: linear-gradient(135deg, #002d3d, #009b8f);
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -693,7 +693,7 @@
 }
 
 .material-card:hover {
-  border-color: #533483;
+  border-color: #009b8f;
 }
 
 .material-type {
@@ -701,15 +701,15 @@
 }
 
 .material-info h3 {
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.25rem;
   font-size: 0.95rem;
 }
 
 .material-badge {
   display: inline-block;
-  background: #f0e6ff;
-  color: #533483;
+  background: #e0f7f5;
+  color: #009b8f;
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
   font-size: 0.75rem;
@@ -729,8 +729,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(135deg, #f0f4ff, #e8ecff);
-  border: 1px solid #d4dcff;
+  background: linear-gradient(135deg, #f0faf9, #d6f0ee);
+  border: 1px solid #b2dfdb;
   border-radius: 12px;
   padding: 1.25rem 1.5rem;
   margin-top: 1.5rem;
@@ -745,13 +745,13 @@
 
 .doubt-cta-icon {
   font-size: 1.8rem;
-  color: #4361ee;
+  color: #009b8f;
   flex-shrink: 0;
 }
 
 .doubt-cta-content h3 {
   font-size: 0.95rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.15rem;
 }
 
@@ -765,19 +765,19 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.6rem 1.25rem;
-  background: #4361ee;
+  background: #009b8f;
   color: #fff;
   border: none;
   border-radius: 8px;
   text-decoration: none;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   transition: all 0.2s;
 }
 
 .btn-doubt-cta:hover {
-  background: #3651d4;
+  background: #007a71;
   transform: translateY(-1px);
 }
 
@@ -806,7 +806,7 @@
 
 .discipline-ranking-header h3 {
   font-size: 1.3rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin: 0 0 0.2rem 0;
 }
 
@@ -845,7 +845,7 @@
 }
 
 .discipline-ranking-table thead {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  background: linear-gradient(135deg, #00405b, #003347);
 }
 
 .discipline-ranking-table thead th {
@@ -864,7 +864,7 @@
 }
 
 .discipline-ranking-table tbody tr:hover {
-  background: #f8f9ff;
+  background: #f5fbfa;
 }
 
 .discipline-ranking-table tbody tr:last-child {
@@ -895,15 +895,15 @@
 .dr-medal-3 { font-size: 1.2rem; }
 
 .dr-name {
-  font-weight: 500;
-  color: #1a1a2e;
+  font-weight: 600;
+  color: #00405b;
 }
 
 .dr-you-tag {
   display: inline-block;
   margin-left: 0.5rem;
   padding: 0.1rem 0.45rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #009b8f, #007a71);
   color: #fff;
   font-size: 0.65rem;
   font-weight: 700;
@@ -919,8 +919,8 @@
 }
 
 .dr-row-current {
-  background: linear-gradient(90deg, #f0f4ff, #e8f0ff) !important;
-  border-left: 3px solid #667eea;
+  background: linear-gradient(90deg, #f0faf9, #d6f0ee) !important;
+  border-left: 3px solid #009b8f;
 }
 
 .dr-row-top:nth-child(1) {

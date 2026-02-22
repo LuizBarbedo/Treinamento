@@ -114,13 +114,13 @@
 
 /* ---------- Tier: Diamond ---------- */
 .badge-diamond {
-  border-color: #b388ff;
-  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 50%, #ce93d8 100%);
-  box-shadow: 0 2px 16px rgba(179, 136, 255, 0.35);
+  border-color: #4dd4c8;
+  background: linear-gradient(135deg, #e0f7f5 0%, #b2dfdb 50%, #80cbc4 100%);
+  box-shadow: 0 2px 16px rgba(77, 212, 200, 0.35);
 }
 
 .badge-diamond .badge-tier-tag {
-  color: #7c4dff;
+  color: #00b3a6;
   font-weight: 700;
 }
 
@@ -138,7 +138,7 @@
   content: '✦';
   position: absolute;
   font-size: 0.6rem;
-  color: rgba(179, 136, 255, 0.8);
+  color: rgba(77, 212, 200, 0.8);
   animation: sparkle 2s ease-in-out infinite;
 }
 
@@ -218,7 +218,7 @@
 
 .discipline-badge-title {
   font-weight: 600;
-  color: #1a1a2e;
+  color: #00405b;
   font-size: 0.95rem;
   flex: 1;
 }
@@ -257,8 +257,8 @@
 }
 
 .inline-badge.badge-diamond {
-  background: #f3e5f5;
-  box-shadow: 0 0 6px rgba(179, 136, 255, 0.5);
+  background: #e0f7f5;
+  box-shadow: 0 0 6px rgba(77, 212, 200, 0.5);
 }
 
 /* ---------- Badge Unlocked Overlay ---------- */
@@ -289,7 +289,7 @@
 .badge-unlocked-header {
   font-size: 1.3rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 1.2rem;
 }
 
@@ -326,7 +326,7 @@
 .badge-unlocked-name {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.25rem;
 }
 
@@ -335,7 +335,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #7c4dff;
+  color: #00b3a6;
   margin-bottom: 0.5rem;
 }
 
@@ -347,7 +347,7 @@
 }
 
 .badge-unlocked-btn {
-  background: linear-gradient(135deg, #533483, #7c4dff);
+  background: linear-gradient(135deg, #009b8f, #00b3a6);
   color: #fff;
   border: none;
   padding: 0.65rem 2rem;
@@ -360,7 +360,7 @@
 
 .badge-unlocked-btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 16px rgba(83, 52, 131, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 155, 143, 0.3);
 }
 
 /* ---------- Animations ---------- */
@@ -402,7 +402,7 @@
 
 .conquistas-header h1 {
   font-size: 1.8rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.5rem;
 }
 
@@ -430,7 +430,7 @@
   display: block;
   font-size: 2rem;
   font-weight: 700;
-  color: #533483;
+  color: #009b8f;
 }
 
 .conquista-stat-label {
@@ -515,15 +515,15 @@
 
 .detail-badges-header h3 {
   font-size: 1rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin: 0;
   flex: 1;
 }
 
 .detail-badges-count {
   font-size: 0.75rem;
-  color: #533483;
-  background: #f0e6ff;
+  color: #009b8f;
+  background: #e0f7f5;
   padding: 0.15rem 0.5rem;
   border-radius: 10px;
   font-weight: 600;
@@ -546,7 +546,7 @@
 }
 
 .lesson-badge-mini.badge-diamond {
-  filter: drop-shadow(0 0 3px rgba(179, 136, 255, 0.6));
+  filter: drop-shadow(0 0 3px rgba(77, 212, 200, 0.6));
 }
 
 /* ---------- Responsive ---------- */
@@ -584,8 +584,8 @@
   gap: 1.5rem;
   padding: 1.5rem 2rem;
   margin-bottom: 2rem;
-  background: linear-gradient(135deg, #f3e8ff 0%, #e8f4fd 50%, #fff9e6 100%);
-  border: 2px solid #b388ff;
+  background: linear-gradient(135deg, #e0f7f5 0%, #d6f0ee 50%, #fff9e6 100%);
+  border: 2px solid #4dd4c8;
   border-radius: 16px;
   animation: globalBadgePulse 3s ease-in-out infinite;
 }
@@ -593,13 +593,13 @@
 .conquistas-global-badge p {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #4a148c;
+  color: #005f56;
   margin: 0;
 }
 
 @keyframes globalBadgePulse {
-  0%, 100% { box-shadow: 0 0 10px rgba(179, 136, 255, 0.2); }
-  50% { box-shadow: 0 0 25px rgba(179, 136, 255, 0.4); }
+  0%, 100% { box-shadow: 0 0 10px rgba(77, 212, 200, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(77, 212, 200, 0.4); }
 }
 
 /* ---------- Ranking Section ---------- */
@@ -615,7 +615,7 @@
 
 .ranking-header h2 {
   font-size: 1.5rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin: 0 0 0.25rem 0;
 }
 
@@ -653,7 +653,7 @@
 }
 
 .ranking-table thead {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  background: linear-gradient(135deg, #00405b, #003347);
 }
 
 .ranking-table thead th {
@@ -672,7 +672,7 @@
 }
 
 .ranking-table tbody tr:hover {
-  background: #f8f9ff;
+  background: #f5fbfa;
 }
 
 .ranking-table tbody tr:last-child {
@@ -711,15 +711,15 @@
 }
 
 .ranking-name {
-  font-weight: 500;
-  color: #1a1a2e;
+  font-weight: 600;
+  color: #00405b;
 }
 
 .ranking-you-tag {
   display: inline-block;
   margin-left: 0.5rem;
   padding: 0.1rem 0.5rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #009b8f, #007a71);
   color: #fff;
   font-size: 0.7rem;
   font-weight: 700;
@@ -735,8 +735,8 @@
 }
 
 .ranking-row-current {
-  background: linear-gradient(90deg, #f0f4ff, #e8f0ff) !important;
-  border-left: 3px solid #667eea;
+  background: linear-gradient(90deg, #f0faf9, #d6f0ee) !important;
+  border-left: 3px solid #009b8f;
 }
 
 .ranking-row-top:nth-child(1) {

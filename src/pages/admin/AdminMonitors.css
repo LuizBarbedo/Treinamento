@@ -12,7 +12,7 @@
 
 .admin-monitors-page .page-header h1 {
   font-size: 1.6rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.25rem;
 }
 
@@ -26,19 +26,19 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.65rem 1.25rem;
-  background: #4361ee;
+  background: #009b8f;
   color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.2s;
   white-space: nowrap;
 }
 
 .btn-primary:hover {
-  background: #3651d4;
+  background: #007a71;
 }
 
 /* Add Monitor Card */
@@ -48,12 +48,12 @@
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e0e4ff;
+  border: 1px solid #c8edea;
 }
 
 .add-monitor-card h3 {
   font-size: 1rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 1rem;
 }
 
@@ -77,7 +77,7 @@
 }
 
 .user-select-item:hover {
-  background: #f8f9ff;
+  background: #f5fbfa;
 }
 
 .user-select-item.compact {
@@ -95,7 +95,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4361ee, #7c3aed);
+  background: linear-gradient(135deg, #009b8f, #00b3a6);
   color: #fff;
   display: flex;
   align-items: center;
@@ -109,7 +109,7 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4361ee, #7c3aed);
+  background: linear-gradient(135deg, #009b8f, #00b3a6);
   color: #fff;
   display: flex;
   align-items: center;
@@ -123,7 +123,7 @@
   display: block;
   font-weight: 600;
   font-size: 0.85rem;
-  color: #1a1a2e;
+  color: #00405b;
 }
 
 .user-select-email {
@@ -134,8 +134,8 @@
 
 .user-select-name-sm {
   font-size: 0.82rem;
-  font-weight: 500;
-  color: #1a1a2e;
+  font-weight: 600;
+  color: #00405b;
 }
 
 .user-select-email-sm {
@@ -155,7 +155,7 @@
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.78rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.2s;
 }
 
@@ -209,7 +209,7 @@
 }
 
 .monitor-card-header:hover {
-  background: #f8f9ff;
+  background: #f5fbfa;
 }
 
 .monitor-info {
@@ -236,7 +236,7 @@
   display: block;
   font-weight: 600;
   font-size: 0.95rem;
-  color: #1a1a2e;
+  color: #00405b;
 }
 
 .monitor-email {
@@ -279,18 +279,18 @@
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.78rem;
-  font-weight: 500;
+  font-weight: 600;
   border: none;
   transition: all 0.15s;
 }
 
 .btn-assign {
-  background: rgba(67, 97, 238, 0.1);
-  color: #4361ee;
+  background: rgba(0, 155, 143, 0.1);
+  color: #009b8f;
 }
 
 .btn-assign:hover {
-  background: rgba(67, 97, 238, 0.2);
+  background: rgba(0, 155, 143, 0.2);
 }
 
 .btn-danger {
@@ -321,8 +321,8 @@
 
 /* Assign student panel */
 .assign-student-panel {
-  background: #f8f9ff;
-  border: 1px solid #e0e4ff;
+  background: #f5fbfa;
+  border: 1px solid #c8edea;
   border-radius: 8px;
   padding: 0.75rem;
   margin-bottom: 1rem;

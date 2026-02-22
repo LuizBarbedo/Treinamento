@@ -7,7 +7,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #4361ee;
+  color: #009b8f;
   text-decoration: none;
   font-size: 0.9rem;
   margin-bottom: 1.5rem;
@@ -33,7 +33,7 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4361ee, #7c3aed);
+  background: linear-gradient(135deg, #009b8f, #00b3a6);
   color: #fff;
   display: flex;
   align-items: center;
@@ -45,7 +45,7 @@
 
 .student-profile-info h1 {
   font-size: 1.3rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.15rem;
 }
 
@@ -70,7 +70,7 @@
 }
 
 .student-last-access svg {
-  color: #4361ee;
+  color: #009b8f;
   font-size: 0.85rem;
 }
 
@@ -94,13 +94,13 @@
 
 .student-stat svg {
   font-size: 1.3rem;
-  color: #4361ee;
+  color: #009b8f;
 }
 
 .student-stat strong {
   display: block;
   font-size: 1.2rem;
-  color: #1a1a2e;
+  color: #00405b;
 }
 
 .student-stat span {
@@ -119,7 +119,7 @@
 
 .detail-section h2 {
   font-size: 1.1rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 1rem;
 }
 
@@ -146,7 +146,7 @@
 }
 
 .disc-progress-header:hover {
-  background: #f8f9ff;
+  background: #f5fbfa;
 }
 
 .disc-info {
@@ -163,7 +163,7 @@
   display: block;
   font-weight: 600;
   font-size: 0.9rem;
-  color: #1a1a2e;
+  color: #00405b;
 }
 
 .disc-stats-text {
@@ -191,8 +191,8 @@
 }
 
 .disc-badge.in-progress {
-  color: #4361ee;
-  background: rgba(67, 97, 238, 0.1);
+  color: #009b8f;
+  background: rgba(0, 155, 143, 0.1);
 }
 
 .disc-badge.not-started {
@@ -229,7 +229,7 @@
 }
 
 .lesson-row.completed {
-  color: #1a1a2e;
+  color: #00405b;
 }
 
 .lesson-status-icon {
@@ -310,13 +310,13 @@
 }
 
 .student-doubt-item:hover {
-  background: #f8f9ff;
-  border-color: #e0e4ff;
+  background: #f5fbfa;
+  border-color: #c8edea;
 }
 
 .student-doubt-item h4 {
   font-size: 0.9rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.25rem;
 }
 
@@ -328,7 +328,7 @@
 
 .doubt-disc {
   font-size: 0.72rem;
-  color: #4361ee;
+  color: #009b8f;
 }
 
 @media (max-width: 768px) {

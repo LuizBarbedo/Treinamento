@@ -31,14 +31,14 @@
 }
 
 .filter-btn:hover {
-  border-color: #4361ee;
-  color: #4361ee;
+  border-color: #009b8f;
+  color: #009b8f;
 }
 
 .filter-btn.active {
-  background: #4361ee;
+  background: #009b8f;
   color: #fff;
-  border-color: #4361ee;
+  border-color: #009b8f;
 }
 
 .doubts-toolbar .search-bar {
@@ -66,8 +66,8 @@
 }
 
 .doubt-card-full:hover {
-  border-color: #e0e4ff;
-  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.08);
+  border-color: #c8edea;
+  box-shadow: 0 4px 12px rgba(0, 155, 143, 0.08);
   transform: translateY(-1px);
 }
 
@@ -81,7 +81,7 @@
 .doubt-card-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.35rem;
 }
 
@@ -106,11 +106,11 @@
 }
 
 .doubt-discipline {
-  color: #4361ee;
+  color: #009b8f;
 }
 
 .doubt-lesson {
-  color: #7c3aed;
+  color: #00b3a6;
 }
 
 .empty-state {

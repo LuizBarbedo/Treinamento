@@ -4,7 +4,8 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { computeDisciplineBadges, countDisciplineBadges, getAllDisciplineBadges, BADGE_DEFS } from '../lib/badges'
 import { Badge } from '../components/Badges'
-import { FiBook, FiAward, FiTrendingUp, FiLock, FiCheck } from 'react-icons/fi'
+import { FiLock, FiCheck } from 'react-icons/fi'
+import { BooksStackIcon, TrendingUpIcon, MedalIcon, TrophyIcon } from '../components/Icons'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -116,28 +117,28 @@ export default function Dashboard() {
 
       <div className="stats-grid">
         <div className="stat-card">
-          <FiBook className="stat-icon" />
+          <BooksStackIcon size={22} className="stat-icon" />
           <div>
             <span className="stat-number">{stats.total}</span>
             <span className="stat-label">Disciplinas</span>
           </div>
         </div>
         <div className="stat-card">
-          <FiTrendingUp className="stat-icon" />
+          <TrendingUpIcon size={22} className="stat-icon" />
           <div>
             <span className="stat-number">{stats.inProgress}</span>
             <span className="stat-label">Em Andamento</span>
           </div>
         </div>
         <div className="stat-card">
-          <FiAward className="stat-icon" />
+          <MedalIcon size={22} className="stat-icon" />
           <div>
             <span className="stat-number">{stats.completed}</span>
             <span className="stat-label">Concluídas</span>
           </div>
         </div>
         <div className="stat-card stat-card-badges">
-          <span className="stat-icon stat-icon-emoji">🏆</span>
+          <TrophyIcon size={22} className="stat-icon" />
           <div>
             <span className="stat-number">{stats.badges}</span>
             <span className="stat-label">Badges</span>

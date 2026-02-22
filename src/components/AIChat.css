@@ -3,7 +3,7 @@
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  background: linear-gradient(135deg, #0f3460, #533483);
+  background: linear-gradient(135deg, #002d3d, #009b8f);
   color: #fff;
   border: none;
   border-radius: 50px;
@@ -13,14 +13,14 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  box-shadow: 0 4px 20px rgba(83, 52, 131, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 155, 143, 0.4);
   transition: all 0.3s ease;
   z-index: 999;
 }
 
 .chat-fab:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 28px rgba(83, 52, 131, 0.5);
+  box-shadow: 0 6px 28px rgba(0, 155, 143, 0.5);
 }
 
 .chat-fab svg {
@@ -70,7 +70,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.85rem 1rem;
-  background: linear-gradient(135deg, #0f3460, #533483);
+  background: linear-gradient(135deg, #002d3d, #009b8f);
   border-radius: 16px 16px 0 0;
   color: #fff;
 }
@@ -170,7 +170,7 @@
 }
 
 .chat-msg.user .msg-bubble {
-  background: linear-gradient(135deg, #0f3460, #533483);
+  background: linear-gradient(135deg, #002d3d, #009b8f);
   color: #fff;
   border-radius: 14px 14px 4px 14px;
 }
@@ -225,11 +225,11 @@
 }
 
 .chat-input-area textarea:focus {
-  border-color: #533483;
+  border-color: #009b8f;
 }
 
 .chat-send {
-  background: linear-gradient(135deg, #0f3460, #533483);
+  background: linear-gradient(135deg, #002d3d, #009b8f);
   color: #fff;
   border: none;
   width: 38px;

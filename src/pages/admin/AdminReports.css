@@ -42,12 +42,12 @@
 }
 
 .report-stat-icon.users {
-  background: #ede7f6;
-  color: #533483;
+  background: #e0f7f5;
+  color: #009b8f;
 }
 
 .report-stat-icon.disciplines {
-  background: #e3f2fd;
+  background: #d6f0ee;
   color: #1565c0;
 }
 
@@ -62,12 +62,12 @@
 }
 
 .report-stat-icon.quizzes {
-  background: #fce4ec;
+  background: #e0f7f5;
   color: #c62828;
 }
 
 .report-stat-icon.lessons {
-  background: #e0f7fa;
+  background: #d6f0ee;
   color: #00695c;
 }
 
@@ -79,7 +79,7 @@
 .report-stat-number {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #00405b;
   line-height: 1.2;
 }
 
@@ -107,7 +107,7 @@
   border: none;
   border-bottom: 3px solid transparent;
   font-size: 0.92rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #888;
   cursor: pointer;
   transition: all 0.2s;
@@ -115,12 +115,12 @@
 }
 
 .report-tab:hover {
-  color: #533483;
+  color: #009b8f;
 }
 
 .report-tab.active {
-  color: #533483;
-  border-bottom-color: #533483;
+  color: #009b8f;
+  border-bottom-color: #009b8f;
   font-weight: 600;
 }
 
@@ -131,7 +131,7 @@
 
 .report-section h2 {
   font-size: 1.15rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 1rem;
 }
 
@@ -159,7 +159,7 @@
 
 .report-search input:focus {
   outline: none;
-  border-color: #533483;
+  border-color: #009b8f;
 }
 
 /* Table */
@@ -205,7 +205,7 @@
 }
 
 .report-table-row-clickable:hover {
-  background: #f5f0ff;
+  background: #f0faf9;
 }
 
 /* Users tab: different column layout */
@@ -231,7 +231,7 @@
 }
 
 .col-disc-name strong {
-  color: #1a1a2e;
+  color: #00405b;
   font-size: 0.92rem;
 }
 
@@ -250,7 +250,7 @@
 }
 
 .col-user-name strong {
-  color: #1a1a2e;
+  color: #00405b;
   font-size: 0.9rem;
 }
 
@@ -278,7 +278,7 @@
 .metric-value {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #00405b;
 }
 
 .metric-value-sm {
@@ -325,18 +325,18 @@
 }
 
 .report-user-block.expanded .report-table-row {
-  background: #f5f0ff;
-  border-bottom: 1px solid #ede7f6;
+  background: #f0faf9;
+  border-bottom: 1px solid #e0f7f5;
 }
 
 .user-detail-panel {
   padding: 1rem 1.25rem 1.25rem;
-  border-bottom: 2px solid #ede7f6;
+  border-bottom: 2px solid #e0f7f5;
 }
 
 .user-detail-panel h4 {
   font-size: 0.88rem;
-  color: #533483;
+  color: #009b8f;
   margin-bottom: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -386,7 +386,7 @@
 
 .user-disc-title strong {
   font-size: 0.88rem;
-  color: #1a1a2e;
+  color: #00405b;
 }
 
 .badge-completed {
@@ -411,7 +411,7 @@
 
 .badge-inactive {
   font-size: 0.72rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #999;
   background: #f5f5f5;
   padding: 0.15rem 0.5rem;
@@ -435,7 +435,7 @@
 }
 
 .user-disc-metric svg {
-  color: #533483;
+  color: #009b8f;
   font-size: 0.85rem;
   flex-shrink: 0;
 }
@@ -452,7 +452,7 @@
 
 .mini-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #533483, #7c4dff);
+  background: linear-gradient(90deg, #009b8f, #00b3a6);
   border-radius: 3px;
   transition: width 0.3s ease;
 }
@@ -460,7 +460,7 @@
 .mini-progress-text {
   font-weight: 600;
   font-size: 0.78rem;
-  color: #533483;
+  color: #009b8f;
   min-width: 30px;
 }
 

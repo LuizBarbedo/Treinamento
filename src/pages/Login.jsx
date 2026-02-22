@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate, Link } from 'react-router-dom'
 import { FiShield } from 'react-icons/fi'
+import { GraduationCapIcon } from '../components/Icons'
 import './Login.css'
 
 export default function Login() {
@@ -63,7 +64,7 @@ export default function Login() {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <h1>🎓 Treinamento</h1>
+          <h1><GraduationCapIcon size={36} className="login-logo-icon" /> Treinamento</h1>
           <p>Plataforma de Ensino Corporativo</p>
         </div>
 

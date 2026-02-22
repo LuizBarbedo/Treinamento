@@ -9,7 +9,7 @@
 
 .page-header h1 {
   font-size: 1.6rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.25rem;
 }
 
@@ -77,7 +77,7 @@
 }
 
 .students-table tr:hover td {
-  background: #f8f9ff;
+  background: #f5fbfa;
 }
 
 .student-cell {
@@ -90,7 +90,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4361ee, #7c3aed);
+  background: linear-gradient(135deg, #009b8f, #00b3a6);
   color: #fff;
   display: flex;
   align-items: center;
@@ -104,7 +104,7 @@
   display: block;
   font-weight: 600;
   font-size: 0.85rem;
-  color: #1a1a2e;
+  color: #00405b;
 }
 
 .student-cell .student-email {
@@ -130,7 +130,7 @@
 
 .progress-fill-mini {
   height: 100%;
-  background: linear-gradient(90deg, #4361ee, #7c3aed);
+  background: linear-gradient(90deg, #009b8f, #00b3a6);
   border-radius: 3px;
   transition: width 0.3s;
 }
@@ -176,8 +176,8 @@
 }
 
 .status-badge.in-progress {
-  background: rgba(67, 97, 238, 0.1);
-  color: #4361ee;
+  background: rgba(0, 155, 143, 0.1);
+  color: #009b8f;
 }
 
 .status-badge.not-started {
@@ -186,7 +186,7 @@
 }
 
 .btn-detail {
-  color: #4361ee;
+  color: #009b8f;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -196,7 +196,7 @@
 }
 
 .btn-detail:hover {
-  background: rgba(67, 97, 238, 0.1);
+  background: rgba(0, 155, 143, 0.1);
 }
 
 /* Last access cell */

@@ -9,7 +9,7 @@
 
 .monitor-header h1 {
   font-size: 1.8rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.5rem;
 }
 
@@ -38,8 +38,8 @@
 
 .monitor-stat-icon {
   font-size: 1.5rem;
-  color: #4361ee;
-  background: rgba(67, 97, 238, 0.1);
+  color: #009b8f;
+  background: rgba(0, 155, 143, 0.1);
   padding: 0.75rem;
   border-radius: 10px;
 }
@@ -58,7 +58,7 @@
   display: block;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #00405b;
 }
 
 .monitor-stat-label {
@@ -94,14 +94,14 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 1.1rem;
-  color: #1a1a2e;
+  color: #00405b;
 }
 
 .btn-see-all {
-  color: #4361ee;
+  color: #009b8f;
   text-decoration: none;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .btn-see-all:hover {
@@ -140,8 +140,8 @@
 }
 
 .monitor-student-card:hover {
-  background: #f8f9ff;
-  border-color: #e0e4ff;
+  background: #f5fbfa;
+  border-color: #c8edea;
 }
 
 .student-info {
@@ -156,7 +156,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #4361ee, #7c3aed);
+  background: linear-gradient(135deg, #009b8f, #00b3a6);
   color: #fff;
   display: flex;
   align-items: center;
@@ -170,7 +170,7 @@
   display: block;
   font-weight: 600;
   font-size: 0.9rem;
-  color: #1a1a2e;
+  color: #00405b;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -232,8 +232,8 @@
 }
 
 .monitor-doubt-card:hover {
-  background: #f8f9ff;
-  border-color: #e0e4ff;
+  background: #f5fbfa;
+  border-color: #c8edea;
 }
 
 .doubt-header {
@@ -258,8 +258,8 @@
 }
 
 .status-answered {
-  color: #4361ee;
-  background: rgba(67, 97, 238, 0.1);
+  color: #009b8f;
+  background: rgba(0, 155, 143, 0.1);
 }
 
 .status-resolved {
@@ -275,7 +275,7 @@
 .doubt-title {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.3rem;
 }
 

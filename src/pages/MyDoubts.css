@@ -12,7 +12,7 @@
 
 .my-doubts-page .page-header h1 {
   font-size: 1.6rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.25rem;
 }
 
@@ -26,19 +26,19 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.6rem 1.25rem;
-  background: #4361ee;
+  background: #009b8f;
   color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.2s;
   white-space: nowrap;
 }
 
 .btn-new-doubt:hover {
-  background: #3651d4;
+  background: #007a71;
 }
 
 /* No monitor notice */
@@ -73,7 +73,7 @@
 
 .doubt-form-card h3 {
   font-size: 1.1rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 1rem;
 }
 
@@ -106,7 +106,7 @@
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #4361ee;
+  border-color: #009b8f;
 }
 
 .form-group textarea {
@@ -136,17 +136,17 @@
 
 .btn-submit {
   padding: 0.6rem 1.5rem;
-  background: #4361ee;
+  background: #009b8f;
   color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .btn-submit:hover:not(:disabled) {
-  background: #3651d4;
+  background: #007a71;
 }
 
 .btn-submit:disabled {
@@ -174,14 +174,14 @@
 }
 
 .filter-btn:hover {
-  border-color: #4361ee;
-  color: #4361ee;
+  border-color: #009b8f;
+  color: #009b8f;
 }
 
 .filter-btn.active {
-  background: #4361ee;
+  background: #009b8f;
   color: #fff;
-  border-color: #4361ee;
+  border-color: #009b8f;
 }
 
 /* Doubts list */
@@ -203,8 +203,8 @@
 }
 
 .my-doubt-card:hover {
-  border-color: #e0e4ff;
-  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.08);
+  border-color: #c8edea;
+  box-shadow: 0 4px 12px rgba(0, 155, 143, 0.08);
 }
 
 .my-doubt-top {
@@ -216,7 +216,7 @@
 
 .my-doubt-card h3 {
   font-size: 1rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.3rem;
 }
 
@@ -234,8 +234,8 @@
 
 .doubt-disc-tag {
   font-size: 0.72rem;
-  background: rgba(67, 97, 238, 0.1);
-  color: #4361ee;
+  background: rgba(0, 155, 143, 0.1);
+  color: #009b8f;
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
 }
@@ -268,7 +268,7 @@
   gap: 0.4rem;
   margin-top: 1rem;
   padding: 0.6rem 1.25rem;
-  background: #4361ee;
+  background: #009b8f;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -277,7 +277,7 @@
 }
 
 .btn-new-doubt-alt:hover {
-  background: #3651d4;
+  background: #007a71;
 }
 
 @media (max-width: 600px) {

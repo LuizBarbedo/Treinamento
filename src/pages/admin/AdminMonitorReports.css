@@ -42,12 +42,12 @@
 }
 
 .monitor-report-stat-icon.monitors {
-  background: #ede7f6;
-  color: #533483;
+  background: #e0f7f5;
+  color: #009b8f;
 }
 
 .monitor-report-stat-icon.students {
-  background: #e3f2fd;
+  background: #d6f0ee;
   color: #1565c0;
 }
 
@@ -67,18 +67,18 @@
 }
 
 .monitor-report-stat-icon.resolved {
-  background: #e0f7fa;
+  background: #d6f0ee;
   color: #00695c;
 }
 
 .monitor-report-stat-icon.replies {
-  background: #f3e5f5;
-  color: #7b1fa2;
+  background: #e0f7f5;
+  color: #007a71;
 }
 
 .monitor-report-stat-icon.time {
-  background: #fce4ec;
-  color: #ad1457;
+  background: #e0f7f5;
+  color: #007a71;
 }
 
 .monitor-report-stat-info {
@@ -89,7 +89,7 @@
 .monitor-report-stat-number {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #00405b;
   line-height: 1.2;
 }
 
@@ -115,7 +115,7 @@
 
 .monitor-report-section-header h2 {
   font-size: 1.15rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin: 0;
 }
 
@@ -131,7 +131,7 @@
 }
 
 .monitor-report-search:focus-within {
-  border-color: #533483;
+  border-color: #009b8f;
 }
 
 .monitor-report-search svg {
@@ -188,7 +188,7 @@
 }
 
 .monitor-report-table-row-clickable:hover {
-  background: #f5f0ff;
+  background: #f0faf9;
 }
 
 /* Column styles */
@@ -199,7 +199,7 @@
 }
 
 .col-monitor-name strong {
-  color: #1a1a2e;
+  color: #00405b;
   font-size: 0.9rem;
 }
 
@@ -227,7 +227,7 @@
 .monitor-metric-value {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #00405b;
 }
 
 .monitor-metric-value.good {
@@ -264,7 +264,7 @@
 }
 
 .monitor-performance-badge.good {
-  background: #e3f2fd;
+  background: #d6f0ee;
   color: #1565c0;
 }
 
@@ -293,7 +293,7 @@
 }
 
 .monitor-status-badge.answered {
-  background: #e3f2fd;
+  background: #d6f0ee;
   color: #1565c0;
 }
 
@@ -316,19 +316,19 @@
 }
 
 .monitor-report-user-block.expanded .monitor-report-table-row {
-  background: #f5f0ff;
-  border-bottom: 1px solid #ede7f6;
+  background: #f0faf9;
+  border-bottom: 1px solid #e0f7f5;
 }
 
 /* Detail Panel */
 .monitor-detail-panel {
   padding: 1rem 1.25rem 1.25rem;
-  border-bottom: 2px solid #ede7f6;
+  border-bottom: 2px solid #e0f7f5;
 }
 
 .monitor-detail-panel h4 {
   font-size: 0.88rem;
-  color: #533483;
+  color: #009b8f;
   margin: 1.25rem 0 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -354,7 +354,7 @@
 }
 
 .monitor-detail-card svg {
-  color: #533483;
+  color: #009b8f;
   font-size: 1.15rem;
   flex-shrink: 0;
 }
@@ -375,8 +375,8 @@
 
 .monitor-detail-card span {
   font-size: 0.92rem;
-  color: #1a1a2e;
-  font-weight: 500;
+  color: #00405b;
+  font-weight: 600;
 }
 
 /* Doubts List */
@@ -425,7 +425,7 @@
 
 .col-doubt-student strong {
   font-size: 0.82rem;
-  color: #1a1a2e;
+  color: #00405b;
 }
 
 .col-doubt-student small {
@@ -460,8 +460,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #ede7f6;
-  color: #533483;
+  background: #e0f7f5;
+  color: #009b8f;
   width: 26px;
   height: 26px;
   border-radius: 50%;

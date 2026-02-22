@@ -4,7 +4,7 @@
 
 .dashboard-welcome h1 {
   font-size: 1.8rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.5rem;
 }
 
@@ -32,15 +32,16 @@
 
 .stat-icon {
   font-size: 1.8rem;
-  color: #533483;
+  color: #009b8f;
   flex-shrink: 0;
+  stroke: currentColor;
 }
 
 .stat-number {
   display: block;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #00405b;
 }
 
 .stat-label {
@@ -71,11 +72,11 @@
 
 .section-header h2 {
   font-size: 1.3rem;
-  color: #1a1a2e;
+  color: #00405b;
 }
 
 .btn-see-all {
-  color: #533483;
+  color: #009b8f;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.9rem;
@@ -103,7 +104,7 @@
 }
 
 .discipline-card:hover {
-  border-color: #533483;
+  border-color: #009b8f;
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
@@ -137,7 +138,7 @@
   font-size: 0.8rem;
   color: #bbb;
   margin-top: 0.5rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .card-completed-badge {
@@ -156,7 +157,7 @@
 }
 
 .discipline-card h3 {
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
 }

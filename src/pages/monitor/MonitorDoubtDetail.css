@@ -43,7 +43,7 @@
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.82rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.2s;
 }
 
@@ -53,7 +53,7 @@
 
 .doubt-main-title {
   font-size: 1.4rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 0.75rem;
 }
 
@@ -73,13 +73,13 @@
 }
 
 .tag-student {
-  background: rgba(124, 58, 237, 0.1);
-  color: #7c3aed;
+  background: rgba(0, 155, 143, 0.1);
+  color: #00b3a6;
 }
 
 .tag-disc {
-  background: rgba(67, 97, 238, 0.1);
-  color: #4361ee;
+  background: rgba(0, 155, 143, 0.1);
+  color: #009b8f;
 }
 
 .tag-lesson {
@@ -104,7 +104,7 @@
 
 .replies-section h3 {
   font-size: 1rem;
-  color: #1a1a2e;
+  color: #00405b;
   margin-bottom: 1rem;
 }
 
@@ -129,7 +129,7 @@
 }
 
 .reply-bubble.own {
-  background: #4361ee;
+  background: #009b8f;
   color: #fff;
   align-self: flex-end;
   border-bottom-right-radius: 4px;
@@ -137,7 +137,7 @@
 
 .reply-bubble.other {
   background: #f0f1f5;
-  color: #1a1a2e;
+  color: #00405b;
   align-self: flex-start;
   border-bottom-left-radius: 4px;
 }
@@ -162,7 +162,7 @@
 }
 
 .reply-bubble.other .reply-author {
-  color: #4361ee;
+  color: #009b8f;
 }
 
 .reply-time {
@@ -198,7 +198,7 @@
 
 .reply-form textarea:focus {
   outline: none;
-  border-color: #4361ee;
+  border-color: #009b8f;
 }
 
 .btn-send {
@@ -207,19 +207,19 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.7rem 1.5rem;
-  background: #4361ee;
+  background: #009b8f;
   color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   align-self: flex-end;
   transition: all 0.2s;
 }
 
 .btn-send:hover:not(:disabled) {
-  background: #3651d4;
+  background: #007a71;
 }
 
 .btn-send:disabled {
@@ -236,7 +236,7 @@
   background: rgba(16, 185, 129, 0.1);
   color: #10b981;
   border-radius: 8px;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.9rem;
 }
 
