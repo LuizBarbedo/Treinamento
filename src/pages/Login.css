@@ -9,7 +9,7 @@
 
 .login-card {
   background: #fff;
-  border-radius: 16px;
+  border-radius: 10px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   width: 100%;
   max-width: 420px;
@@ -19,28 +19,20 @@
 .login-header {
   background: linear-gradient(135deg, #002d3d, #009b8f);
   color: #fff;
-  padding: 2rem;
+  padding: 0;
   text-align: center;
+  overflow: hidden;
 }
 
-.login-header h1 {
-  font-size: 1.8rem;
-  margin-bottom: 0.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+.login-logo {
+  max-width: 320px;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: -5rem auto -5rem;
 }
 
-.login-logo-icon {
-  color: #fff;
-  flex-shrink: 0;
-}
 
-.login-header p {
-  opacity: 0.85;
-  font-size: 0.95rem;
-}
 
 .login-form {
   padding: 2rem;

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate, Link } from 'react-router-dom'
 import { FiShield } from 'react-icons/fi'
-import { GraduationCapIcon } from '../components/Icons'
+import logoImg from '../assets/logo-branco-aprendiz-longa.png'
 import './Login.css'
 
 export default function Login() {
@@ -64,8 +64,7 @@ export default function Login() {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <h1><GraduationCapIcon size={36} className="login-logo-icon" /> Treinamento</h1>
-          <p>Plataforma de Ensino Corporativo</p>
+          <img src={logoImg} alt="Aprendiz" className="login-logo" />
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
