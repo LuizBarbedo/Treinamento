@@ -149,7 +149,6 @@ export default function DisciplineDetail() {
       .select('*')
       .eq('lesson_id', lessonId)
       .order('order_index')
-      .limit(3)
 
     setLessonQuizQuestions(prev => ({ ...prev, [lessonId]: data || [] }))
     setActiveLessonQuiz(lessonId)
