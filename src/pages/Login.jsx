@@ -102,7 +102,6 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Sua senha"
               required
-              minLength={6}
             />
           </div>
 

@@ -43,10 +43,6 @@ export default function ResetPassword() {
       return
     }
 
-    if (password.length < 6) {
-      setError('A senha deve ter no mínimo 6 caracteres.')
-      return
-    }
 
     setLoading(true)
     const { error } = await updatePassword(password)
@@ -82,9 +78,8 @@ export default function ResetPassword() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Mínimo 6 caracteres"
+              placeholder="Nova senha"
               required
-              minLength={6}
               disabled={!sessionReady}
             />
           </div>
@@ -97,7 +92,6 @@ export default function ResetPassword() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Repita a nova senha"
               required
-              minLength={6}
               disabled={!sessionReady}
             />
           </div>
