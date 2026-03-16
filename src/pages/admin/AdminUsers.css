@@ -1,0 +1,257 @@
+.admin-users-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.admin-users-page .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.admin-users-page .page-header h1 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.6rem;
+  color: #00405b;
+  margin-bottom: 0.25rem;
+}
+
+.admin-users-page .page-header p {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+/* Form Card */
+.admin-users-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e8f5f4;
+}
+
+.admin-users-card h2 {
+  font-size: 1.1rem;
+  color: #00405b;
+  margin-bottom: 1.25rem;
+}
+
+.admin-users-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.admin-users-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.admin-users-form .form-group label {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.88rem;
+}
+
+.admin-users-form .form-group input,
+.admin-users-form .form-group select {
+  padding: 0.65rem 0.85rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+  background: #fff;
+}
+
+.admin-users-form .form-group input:focus,
+.admin-users-form .form-group select:focus {
+  outline: none;
+  border-color: #009b8f;
+}
+
+.form-error {
+  background: #ffe0e0;
+  color: #c0392b;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.form-success {
+  background: #e0f7f4;
+  color: #00695c;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.form-hint {
+  font-size: 0.82rem;
+  color: #888;
+  margin-bottom: 1.25rem;
+  padding: 0.5rem 0.75rem;
+  background: #f9f9f9;
+  border-radius: 6px;
+  border-left: 3px solid #009b8f;
+}
+
+.btn-submit {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.7rem 1.5rem;
+  background: #009b8f;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: #007a71;
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Users List Card */
+.admin-users-list-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.75rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e8f5f4;
+}
+
+.admin-users-list-card .list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.admin-users-list-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  color: #00405b;
+  margin: 0;
+}
+
+.btn-refresh {
+  background: none;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.btn-refresh:hover:not(:disabled) {
+  background: #f5fbfa;
+  border-color: #009b8f;
+  color: #009b8f;
+}
+
+.btn-refresh:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-refresh .spinning {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loading-state,
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #888;
+  font-size: 0.95rem;
+}
+
+.users-table-wrapper {
+  overflow-x: auto;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.users-table th {
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  color: #555;
+  font-weight: 600;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.users-table td {
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid #f5f5f5;
+  color: #333;
+}
+
+.users-table tr:last-child td {
+  border-bottom: none;
+}
+
+.users-table tr:hover td {
+  background: #f9fdfd;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.role-badge.role-user {
+  background: #e8f4fd;
+  color: #1a6fa8;
+}
+
+.role-badge.role-monitor {
+  background: #e8f5f0;
+  color: #1a7a5e;
+}
+
+.role-badge.role-admin {
+  background: #fef3e2;
+  color: #b45309;
+}
+
+@media (max-width: 600px) {
+  .admin-users-form .form-row {
+    grid-template-columns: 1fr;
+  }
+}

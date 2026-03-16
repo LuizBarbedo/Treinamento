@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
-import { FiLogOut, FiUser, FiSettings, FiMessageCircle, FiUsers, FiClipboard, FiMessageSquare, FiMenu, FiX } from 'react-icons/fi'
+import { FiLogOut, FiUser, FiSettings, FiMessageCircle, FiUsers, FiClipboard, FiMessageSquare, FiMenu, FiX, FiUserPlus } from 'react-icons/fi'
 import { HomeIcon, BookOpenIcon, MedalIcon, BarChartIcon, GraduationCapIcon } from './Icons'
 import './Layout.css'
 
@@ -163,6 +163,9 @@ export default function Layout() {
               </NavLink>
               <NavLink to="/admin/relatorio-monitores" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
                 <FiClipboard /> <span>Rel. Monitores</span>
+              </NavLink>
+              <NavLink to="/admin/usuarios" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} onClick={handleNavClick}>
+                <FiUserPlus /> <span>Cadastrar Usuários</span>
               </NavLink>
             </>
           )}
