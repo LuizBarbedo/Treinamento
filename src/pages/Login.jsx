@@ -49,12 +49,12 @@ export default function Login() {
         )
       }
     } else {
-      const { error } = await signIn(email, password)
+      const { error, mustResetPassword } = await signIn(email, password)
       if (error) {
         console.error('Login error:', error)
         setError(error.message || 'E-mail ou senha incorretos.')
       } else {
-        navigate('/')
+        navigate(mustResetPassword ? '/redefinir-senha' : '/')
       }
     }
     setLoading(false)

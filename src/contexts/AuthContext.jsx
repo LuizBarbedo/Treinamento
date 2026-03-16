@@ -13,14 +13,22 @@ export function AuthProvider({ children }) {
   const [isAdmin, setIsAdmin] = useState(false)
   const [isMonitor, setIsMonitor] = useState(false)
   const [userRole, setUserRole] = useState('user') // 'admin' | 'monitor' | 'user'
+  const [mustResetPassword, setMustResetPassword] = useState(false)
+
+  const shouldResetPassword = (currentUser) =>
+    Boolean(currentUser?.user_metadata?.must_reset_password)
 
   const checkRoles = async (currentUser) => {
     if (!currentUser) {
       setIsAdmin(false)
       setIsMonitor(false)
       setUserRole('user')
+      setMustResetPassword(false)
       return
     }
+
+    setMustResetPassword(shouldResetPassword(currentUser))
+
     // Verifica pelo email do master admin
     if (currentUser.email === ADMIN_EMAIL) {
       setIsAdmin(true)
@@ -78,15 +86,23 @@ export function AuthProvider({ children }) {
   }, [])
 
   const signIn = async (email, password) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    return { error }
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    return {
+      error,
+      mustResetPassword: shouldResetPassword(data?.user)
+    }
   }
 
   const signUp = async (email, password, fullName, monitorCode = null) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } }
+      options: {
+        data: {
+          full_name: fullName,
+          must_reset_password: true
+        }
+      }
     })
 
     // Se cadastro OK e tem código de monitor, tentar atribuir role
@@ -115,7 +131,19 @@ export function AuthProvider({ children }) {
   }
 
   const updatePassword = async (newPassword) => {
-    const { error } = await supabase.auth.updateUser({ password: newPassword })
+    const currentMetadata = user?.user_metadata || {}
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+      data: {
+        ...currentMetadata,
+        must_reset_password: false
+      }
+    })
+
+    if (!error) {
+      setMustResetPassword(false)
+    }
+
     return { error }
   }
 
@@ -124,10 +152,11 @@ export function AuthProvider({ children }) {
     setIsAdmin(false)
     setIsMonitor(false)
     setUserRole('user')
+    setMustResetPassword(false)
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAdmin, isMonitor, userRole, signIn, signUp, signOut, resetPassword, updatePassword }}>
+    <AuthContext.Provider value={{ user, loading, isAdmin, isMonitor, userRole, mustResetPassword, signIn, signUp, signOut, resetPassword, updatePassword }}>
       {children}
     </AuthContext.Provider>
   )
