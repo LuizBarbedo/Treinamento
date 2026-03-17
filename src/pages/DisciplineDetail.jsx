@@ -57,6 +57,9 @@ export default function DisciplineDetail() {
   const [ranking, setRanking] = useState([])
   const [loadingRanking, setLoadingRanking] = useState(true)
 
+  // Track whether the discipline has a final quiz
+  const [hasFinalQuiz, setHasFinalQuiz] = useState(null)
+
   const completedCount = completedLessons.size
   const allLessonsCompleted = lessons.length > 0 && completedLessons.size >= lessons.length
   const progressPercent = lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0
@@ -66,8 +69,23 @@ export default function DisciplineDetail() {
     fetchRanking()
   }, [id])
 
+  // When all lessons are completed and discipline has no final quiz, auto-complete discipline
+  useEffect(() => {
+    if (allLessonsCompleted && hasFinalQuiz === false) {
+      const autoCompleteDiscipline = async () => {
+        await supabase.from('user_progress').upsert({
+          user_id: user.id,
+          discipline_id: id,
+          completed: true,
+          completed_at: new Date().toISOString()
+        }, { onConflict: 'user_id,discipline_id' })
+      }
+      autoCompleteDiscipline()
+    }
+  }, [allLessonsCompleted, hasFinalQuiz])
+
   const fetchData = async () => {
-    const [discRes, lessonsRes, materialsRes, progressRes, quizResultsRes, finalResultRes, monitorRes] = await Promise.all([
+    const [discRes, lessonsRes, materialsRes, progressRes, quizResultsRes, finalResultRes, monitorRes, finalQuizRes] = await Promise.all([
       supabase.from('disciplines').select('*').eq('id', id).single(),
       supabase.from('lessons').select('*').eq('discipline_id', id).order('order_index'),
       supabase.from('materials').select('*').eq('discipline_id', id).order('created_at'),
@@ -75,9 +93,11 @@ export default function DisciplineDetail() {
       supabase.from('lesson_quiz_results').select('lesson_id, discipline_id, score, correct_answers, total_questions').eq('user_id', user.id).eq('discipline_id', id),
       supabase.from('quiz_results').select('discipline_id, score, correct_answers, total_questions').eq('user_id', user.id).eq('discipline_id', id).single(),
       supabase.from('monitor_students').select('monitor_id').eq('student_id', user.id).maybeSingle(),
+      supabase.from('quiz_questions').select('id').eq('discipline_id', id).is('lesson_id', null).limit(1),
     ])
 
     setHasMonitor(!!monitorRes.data)
+    setHasFinalQuiz((finalQuizRes.data || []).length > 0)
 
     if (discRes.data) setDiscipline(discRes.data)
     if (lessonsRes.data) setLessons(lessonsRes.data)
@@ -335,7 +355,11 @@ export default function DisciplineDetail() {
             <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
           </div>
           {allLessonsCompleted && (
-            <p className="progress-complete-msg">✅ Todas as aulas foram concluídas! O quiz final está liberado.</p>
+            <p className="progress-complete-msg">
+              {hasFinalQuiz === false
+                ? '✅ Todas as aulas foram concluídas! Disciplina finalizada com sucesso.'
+                : '✅ Todas as aulas foram concluídas! O quiz final está liberado.'}
+            </p>
           )}
         </div>
       )}
@@ -366,9 +390,15 @@ export default function DisciplineDetail() {
         </button>
 
         {allLessonsCompleted ? (
-          <Link to={`/disciplinas/${id}/quiz`} className="tab tab-quiz tab-quiz-unlocked">
-            <FiCheckCircle /> Quiz Final
-          </Link>
+          hasFinalQuiz === false ? (
+            <span className="tab tab-quiz tab-quiz-unlocked" title="Disciplina concluída - sem quiz final">
+              <FiCheckCircle /> Disciplina Concluída
+            </span>
+          ) : (
+            <Link to={`/disciplinas/${id}/quiz`} className="tab tab-quiz tab-quiz-unlocked">
+              <FiCheckCircle /> Quiz Final
+            </Link>
+          )
         ) : (
           <span className="tab tab-quiz tab-quiz-locked" title="Conclua todas as aulas para liberar o quiz final">
             <FiLock /> Quiz Final (bloqueado)

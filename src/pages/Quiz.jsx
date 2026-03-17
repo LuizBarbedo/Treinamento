@@ -43,7 +43,21 @@ export default function Quiz() {
     setCompletedLessonsCount(completed)
 
     // Quiz liberado se completou todas as aulas (ou se não há aulas cadastradas)
-    setContentCompleted(total === 0 || completed >= total)
+    const isContentCompleted = total === 0 || completed >= total
+    setContentCompleted(isContentCompleted)
+
+    // If there are no quiz questions and all lessons are completed,
+    // auto-complete the discipline so the next one is unlocked
+    const quizQuestions = questionsRes.data || []
+    if (quizQuestions.length === 0 && isContentCompleted) {
+      await supabase.from('user_progress').upsert({
+        user_id: user.id,
+        discipline_id: id,
+        completed: true,
+        completed_at: new Date().toISOString()
+      }, { onConflict: 'user_id,discipline_id' })
+    }
+
     setLoading(false)
   }
 
@@ -81,8 +95,8 @@ export default function Quiz() {
       onConflict: 'user_id,discipline_id'
     })
 
-    // Atualizar progresso se passou (>= 70%)
-    if (finalScore >= 70) {
+    // Atualizar progresso se passou (>= 50%)
+    if (finalScore >= 50) {
       await supabase.from('user_progress').upsert({
         user_id: user.id,
         discipline_id: id,
@@ -94,7 +108,7 @@ export default function Quiz() {
     }
 
     // Compute badges for the quiz result
-    if (finalScore >= 70) {
+    if (finalScore >= 50) {
       // Fetch data needed for badge computation
       const [lessonsRes, progressRes, quizResultsRes] = await Promise.all([
         supabase.from('lessons').select('*').eq('discipline_id', id),
@@ -178,22 +192,22 @@ export default function Quiz() {
 
       <div className="quiz-header">
         <h1>📝 Quiz Final: {discipline.name}</h1>
-        <p>Avaliação geral da disciplina. Responda todas as questões abaixo. Você precisa de pelo menos <strong>70%</strong> de acertos para ser aprovado.</p>
+        <p>Avaliação geral da disciplina. Responda todas as questões abaixo. Você precisa de pelo menos <strong>50%</strong> de acertos para ser aprovado.</p>
         <div className="quiz-info-bar">
           <span>📋 {questions.length} questões</span>
-          <span>✅ Mínimo: 70%</span>
+          <span>✅ Mínimo: 50%</span>
           <span>🔄 Pode refazer</span>
         </div>
       </div>
 
       {submitted && (
-        <div className={`quiz-result ${score >= 70 ? 'passed' : 'failed'}`}>
+        <div className={`quiz-result ${score >= 50 ? 'passed' : 'failed'}`}>
           <div className="result-score">{score}%</div>
           <div className="result-detail">
             {Math.round(score * questions.length / 100)} de {questions.length} acertos
           </div>
           <div className="result-text">
-            {score >= 70
+            {score >= 50
               ? '🎉 Parabéns! Você foi aprovado nesta disciplina!'
               : '😕 Você não atingiu a pontuação mínima. Revise o conteúdo e tente novamente!'}
           </div>
@@ -205,7 +219,10 @@ export default function Quiz() {
 
       {questions.length === 0 ? (
         <div className="empty-state">
-          <p>Nenhuma questão cadastrada para esta disciplina.</p>
+          <p>Esta disciplina não possui quiz final. A disciplina foi marcada como concluída!</p>
+          <Link to="/disciplinas" className="btn-go-back">
+            Voltar às Disciplinas
+          </Link>
         </div>
       ) : (
         <div className="questions-list">
