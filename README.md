@@ -2,6 +2,8 @@
 
 Plataforma de e-learning gamificada, desenvolvida com React, Vite e Supabase. Permite que alunos estudem disciplinas sequenciais, realizem quizzes, tirem dúvidas com monitores e acumulem badges de conquistas.
 
+Teste de deploy automatico 3.
+
 Teste de deploy automatico.
 
 ## Funcionalidades
