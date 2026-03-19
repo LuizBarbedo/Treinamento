@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
@@ -28,9 +29,32 @@ import ResetPassword from './pages/ResetPassword'
 import Forum from './pages/Forum'
 import ForumPost from './pages/ForumPost'
 
+function RecoveryRedirectHandler() {
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const hash = window.location.hash
+    if (!hash) {
+      return
+    }
+
+    const params = new URLSearchParams(hash.replace(/^#/, ''))
+    const isRecovery = params.get('type') === 'recovery'
+    const hasAccessToken = Boolean(params.get('access_token'))
+
+    if (isRecovery && hasAccessToken && location.pathname !== '/redefinir-senha') {
+      navigate({ pathname: '/redefinir-senha', hash }, { replace: true })
+    }
+  }, [location.pathname, navigate])
+
+  return null
+}
+
 function App() {
   return (
     <BrowserRouter>
+      <RecoveryRedirectHandler />
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />

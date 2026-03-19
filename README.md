@@ -53,6 +53,7 @@ Teste de deploy automatico.
    | `VITE_SUPABASE_URL` | URL do projeto Supabase |
    | `VITE_SUPABASE_ANON_KEY` | Chave anônima do Supabase |
    | `VITE_GEMINI_API_KEY` | Chave de API do Google Gemini |
+   | `VITE_PASSWORD_RESET_REDIRECT_URL` | URL completa de redefinição de senha (ex.: `https://capacitaportos.com.br/redefinir-senha`) |
 
 3. Aplique as migrações no Supabase executando os arquivos da pasta `supabase/` (começando por `schema.sql` e depois os arquivos `migration_*.sql`).
 

@@ -15,6 +15,9 @@ export function AuthProvider({ children }) {
   const [userRole, setUserRole] = useState('user') // 'admin' | 'monitor' | 'user'
   const [mustResetPassword, setMustResetPassword] = useState(false)
 
+  const configuredResetRedirect = import.meta.env.VITE_PASSWORD_RESET_REDIRECT_URL?.trim()
+  const passwordResetRedirectTo = configuredResetRedirect || `${window.location.origin}/redefinir-senha`
+
   const shouldResetPassword = (currentUser) =>
     Boolean(currentUser?.user_metadata?.must_reset_password)
 
@@ -125,7 +128,7 @@ export function AuthProvider({ children }) {
 
   const resetPassword = async (email) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/redefinir-senha`
+      redirectTo: passwordResetRedirectTo
     })
     return { error }
   }
