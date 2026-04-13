@@ -965,3 +965,41 @@
     font-size: 0.85rem;
   }
 }
+
+.reflexao-panel,
+.artigo-panel {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+
+.reflexao-panel .panel-header,
+.artigo-panel .panel-header {
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.reflexao-panel .panel-header h2,
+.artigo-panel .panel-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #009b8f;
+  margin: 0 0 0.25rem 0;
+  font-size: 1.25rem;
+}
+
+.reflexao-panel .panel-header p,
+.artigo-panel .panel-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.reflexao-panel .panel-body,
+.artigo-panel .panel-body {
+  min-height: 120px;
+}

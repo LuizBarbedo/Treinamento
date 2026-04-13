@@ -4,8 +4,9 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { computeDisciplineBadges } from '../lib/badges'
 import { BadgeGrid, InlineBadges, BadgeUnlocked } from '../components/Badges'
-import { FiPlay, FiFileText, FiCheckCircle, FiLock, FiCheck, FiX, FiMessageCircle, FiDownload } from 'react-icons/fi'
+import { FiPlay, FiFileText, FiCheckCircle, FiLock, FiCheck, FiX, FiMessageCircle, FiDownload, FiEdit3, FiBookOpen } from 'react-icons/fi'
 import AIChat from '../components/AIChat'
+import { canSeeReflexao, canSeeArtigoTecnico } from '../lib/accessLevels'
 import './DisciplineDetail.css'
 
 function getEmbedUrl(url) {
@@ -22,7 +23,9 @@ function getEmbedUrl(url) {
 
 export default function DisciplineDetail() {
   const { id } = useParams()
-  const { user, isAdmin, isMonitor } = useAuth()
+  const { user, isAdmin, isMonitor, accessLevel } = useAuth()
+  const showReflexao = canSeeReflexao(accessLevel)
+  const showArtigoTecnico = canSeeArtigoTecnico(accessLevel)
   const [discipline, setDiscipline] = useState(null)
   const [lessons, setLessons] = useState([])
   const [materials, setMaterials] = useState([])
@@ -389,6 +392,24 @@ export default function DisciplineDetail() {
           <FiFileText /> Materiais ({materials.length})
         </button>
 
+        {showReflexao && (
+          <button
+            className={`tab ${activeTab === 'reflexao' ? 'active' : ''}`}
+            onClick={() => setActiveTab('reflexao')}
+          >
+            <FiEdit3 /> Atividade de Reflexão
+          </button>
+        )}
+
+        {showArtigoTecnico && (
+          <button
+            className={`tab ${activeTab === 'artigo' ? 'active' : ''}`}
+            onClick={() => setActiveTab('artigo')}
+          >
+            <FiBookOpen /> Artigo e Texto Técnico
+          </button>
+        )}
+
         {allLessonsCompleted ? (
           hasFinalQuiz === false ? (
             <span className="tab tab-quiz tab-quiz-unlocked" title="Disciplina concluída - sem quiz final">
@@ -634,6 +655,34 @@ export default function DisciplineDetail() {
               <p>Nenhum material disponível para esta disciplina.</p>
             </div>
           )}
+        </div>
+      )}
+
+      {activeTab === 'reflexao' && showReflexao && (
+        <div className="reflexao-panel">
+          <div className="panel-header">
+            <h2><FiEdit3 /> Atividade de Reflexão</h2>
+            <p>Espaço para atividades reflexivas sobre os temas da disciplina.</p>
+          </div>
+          <div className="panel-body">
+            <div className="empty-state">
+              <p>Em breve: conteúdo da atividade de reflexão desta disciplina.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'artigo' && showArtigoTecnico && (
+        <div className="artigo-panel">
+          <div className="panel-header">
+            <h2><FiBookOpen /> Artigo e Texto Técnico</h2>
+            <p>Leituras avançadas: artigos e textos técnicos complementares.</p>
+          </div>
+          <div className="panel-body">
+            <div className="empty-state">
+              <p>Em breve: artigos e textos técnicos desta disciplina.</p>
+            </div>
+          </div>
         </div>
       )}
 

@@ -9,6 +9,12 @@ const ROLES = [
   { value: 'admin', label: 'Admin' },
 ]
 
+const ACCESS_LEVELS = [
+  { value: 'basico', label: 'Básico' },
+  { value: 'intermediario', label: 'Intermediário' },
+  { value: 'avancado', label: 'Avançado' },
+]
+
 export default function AdminUsers() {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
@@ -90,6 +96,21 @@ export default function AdminUsers() {
       console.error(err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleAccessLevelChange = async (userId, newLevel) => {
+    const previous = users
+    setUsers((prev) =>
+      prev.map((u) => (u.id === userId ? { ...u, access_level: newLevel } : u))
+    )
+    const { error: rpcError } = await supabase.rpc('set_user_access_level', {
+      p_user_id: userId,
+      p_access_level: newLevel,
+    })
+    if (rpcError) {
+      setUsers(previous)
+      setError('Não foi possível atualizar o nível de acesso: ' + rpcError.message)
     }
   }
 
@@ -195,6 +216,7 @@ export default function AdminUsers() {
                   <th>Nome</th>
                   <th>E-mail</th>
                   <th>Perfil</th>
+                  <th>Nível de Acesso</th>
                 </tr>
               </thead>
               <tbody>
@@ -206,6 +228,17 @@ export default function AdminUsers() {
                       <span className={`role-badge role-${u.role || 'user'}`}>
                         {ROLES.find(r => r.value === (u.role || 'user'))?.label || 'Aluno'}
                       </span>
+                    </td>
+                    <td>
+                      <select
+                        value={u.access_level || 'basico'}
+                        onChange={(e) => handleAccessLevelChange(u.id, e.target.value)}
+                        className="access-level-select"
+                      >
+                        {ACCESS_LEVELS.map((lvl) => (
+                          <option key={lvl.value} value={lvl.value}>{lvl.label}</option>
+                        ))}
+                      </select>
                     </td>
                   </tr>
                 ))}
