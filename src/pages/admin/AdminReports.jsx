@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
+import * as XLSX from 'xlsx'
 import { supabase } from '../../lib/supabase'
-import { FiUsers, FiBook, FiAward, FiTrendingUp, FiChevronDown, FiChevronUp, FiBarChart2, FiCheckCircle, FiClock, FiPercent } from 'react-icons/fi'
+import { FiUsers, FiBook, FiAward, FiTrendingUp, FiChevronDown, FiChevronUp, FiBarChart2, FiCheckCircle, FiClock, FiPercent, FiDownload } from 'react-icons/fi'
 import './AdminReports.css'
 
 export default function AdminReports() {
@@ -202,6 +203,80 @@ export default function AdminReports() {
     })
   }
 
+  const exportStudentsToExcel = () => {
+    const dataset = filteredUsers.length > 0 ? filteredUsers : users
+
+    const summaryRows = dataset.map(u => {
+      const m = getUserMetrics(u.id)
+      return {
+        'Nome': u.full_name || '',
+        'Email': u.email || '',
+        'Cadastrado em': u.created_at ? new Date(u.created_at).toLocaleDateString('pt-BR') : '',
+        'Último acesso': u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString('pt-BR') : '',
+        'Disciplinas concluídas': m.completedDiscs,
+        'Disciplinas em andamento': m.inProgressDiscs,
+        'Total de disciplinas na plataforma': disciplines.length,
+        'Aulas concluídas': m.totalLessonsCompleted,
+        'Quizzes finais realizados': m.quizAttempts,
+        'Quizzes de aula realizados': m.lessonQuizAttempts,
+        'Média do quiz final (%)': m.avgQuizScore ?? ''
+      }
+    })
+
+    const detailRows = []
+    dataset.forEach(u => {
+      disciplines.forEach(disc => {
+        const d = getUserDisciplineDetail(u.id, disc.id)
+        const hasActivity = d.lessonsCompleted > 0 || d.quizScore !== null || d.lessonQuizzes.length > 0
+        if (!hasActivity) return
+
+        const lessonQuizzesPassed = d.lessonQuizzes.filter(lq => lq.passed).length
+        const status = d.completed
+          ? 'Concluída'
+          : hasActivity
+          ? 'Em andamento'
+          : 'Não iniciada'
+
+        detailRows.push({
+          'Nome': u.full_name || '',
+          'Email': u.email || '',
+          'Disciplina': d.disciplineName,
+          'Status': status,
+          'Aulas concluídas': d.lessonsCompleted,
+          'Total de aulas': d.totalLessons,
+          'Progresso (%)': d.progressPercent,
+          'Quizzes de aula aprovados': lessonQuizzesPassed,
+          'Quizzes de aula realizados': d.lessonQuizzes.length,
+          'Quiz final (%)': d.quizScore ?? '',
+          'Quiz final - acertos': d.quizCorrect ?? '',
+          'Quiz final - total questões': d.quizTotal ?? '',
+          'Concluída em': d.completedAt ? new Date(d.completedAt).toLocaleString('pt-BR') : ''
+        })
+      })
+    })
+
+    const wb = XLSX.utils.book_new()
+    const wsResumo = XLSX.utils.json_to_sheet(summaryRows)
+    const wsDetalhado = XLSX.utils.json_to_sheet(detailRows)
+
+    wsResumo['!cols'] = [
+      { wch: 28 }, { wch: 32 }, { wch: 14 }, { wch: 14 },
+      { wch: 14 }, { wch: 18 }, { wch: 18 }, { wch: 14 },
+      { wch: 18 }, { wch: 18 }, { wch: 18 }
+    ]
+    wsDetalhado['!cols'] = [
+      { wch: 28 }, { wch: 32 }, { wch: 24 }, { wch: 14 },
+      { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 18 },
+      { wch: 18 }, { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 18 }
+    ]
+
+    XLSX.utils.book_append_sheet(wb, wsResumo, 'Resumo')
+    XLSX.utils.book_append_sheet(wb, wsDetalhado, 'Detalhado')
+
+    const today = new Date().toISOString().slice(0, 10)
+    XLSX.writeFile(wb, `relatorio-alunos-${today}.xlsx`)
+  }
+
   if (loading) {
     return (
       <div className="loading-screen">
@@ -353,13 +428,24 @@ export default function AdminReports() {
         <div className="report-section">
           <div className="report-section-header">
             <h2>Progresso dos Alunos</h2>
-            <div className="report-search">
-              <input
-                type="text"
-                placeholder="Buscar por nome ou email..."
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-              />
+            <div className="report-section-actions">
+              <div className="report-search">
+                <input
+                  type="text"
+                  placeholder="Buscar por nome ou email..."
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <button
+                type="button"
+                className="report-export-btn"
+                onClick={exportStudentsToExcel}
+                disabled={users.length === 0}
+                title="Exportar relatório de alunos para Excel"
+              >
+                <FiDownload /> Exportar Excel
+              </button>
             </div>
           </div>
 
