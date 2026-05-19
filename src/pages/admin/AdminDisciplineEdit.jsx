@@ -337,6 +337,20 @@ export default function AdminDisciplineEdit() {
     })
   }
 
+  const addQuizOption = () => {
+    setQuizForm(prev => ({ ...prev, options: [...prev.options, ''] }))
+  }
+
+  const removeQuizOption = (index) => {
+    setQuizForm(prev => {
+      const options = prev.options.filter((_, i) => i !== index)
+      let correct_option = prev.correct_option
+      if (correct_option === index) correct_option = 0
+      else if (correct_option > index) correct_option -= 1
+      return { ...prev, options, correct_option }
+    })
+  }
+
   // Separate questions by type
   const generalQuestions = questions.filter(q => !q.lesson_id)
   const lessonQuestionsGrouped = lessons.map(l => ({
@@ -750,9 +764,26 @@ export default function AdminDisciplineEdit() {
                       >
                         <FiCheck />
                       </button>
+                      {i >= 4 && (
+                        <button
+                          type="button"
+                          className="btn-remove-option"
+                          onClick={() => removeQuizOption(i)}
+                          title="Remover esta opção"
+                        >
+                          <FiTrash2 />
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
+                {quizForm.options.length < 5 && (
+                  <div className="form-group form-full">
+                    <button type="button" className="btn-add-option" onClick={addQuizOption}>
+                      <FiPlus /> Adicionar Opção E (opcional)
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="form-actions">
                 <button className="btn-secondary" onClick={resetQuizForm}>Cancelar</button>

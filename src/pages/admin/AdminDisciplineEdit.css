@@ -347,6 +347,46 @@
   color: #2d8a2d;
 }
 
+.btn-remove-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 2px solid #f3c2cb;
+  border-radius: 8px;
+  background: #fee;
+  color: #e94560;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-remove-option:hover {
+  border-color: #e94560;
+  background: #fdd;
+}
+
+.btn-add-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  padding: 0.55rem 1rem;
+  border: 1.5px dashed #009b8f;
+  border-radius: 8px;
+  background: #f0fbfa;
+  color: #009b8f;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-add-option:hover {
+  background: #d6f0ee;
+}
+
 /* Quiz missing notice */
 .quiz-missing-notice {
   background: #fff8e6;
