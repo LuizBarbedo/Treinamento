@@ -20,6 +20,8 @@ export default function Quiz() {
   const [contentCompleted, setContentCompleted] = useState(false)
   const [totalLessons, setTotalLessons] = useState(0)
   const [completedLessonsCount, setCompletedLessonsCount] = useState(0)
+  const [pendingLessonQuizzes, setPendingLessonQuizzes] = useState(0)
+  const [lessonQuizzesDone, setLessonQuizzesDone] = useState(true)
   const [newBadge, setNewBadge] = useState(null)
 
   useEffect(() => {
@@ -27,11 +29,13 @@ export default function Quiz() {
   }, [id])
 
   const fetchQuiz = async () => {
-    const [discRes, questionsRes, lessonsRes, progressRes] = await Promise.all([
+    const [discRes, questionsRes, lessonsRes, progressRes, lessonQuizzesRes, lessonQuizResultsRes] = await Promise.all([
       supabase.from('disciplines').select('*').eq('id', id).single(),
       supabase.from('quiz_questions').select('*').eq('discipline_id', id).is('lesson_id', null).order('order_index').limit(10),
       supabase.from('lessons').select('id').eq('discipline_id', id),
-      supabase.from('lesson_progress').select('lesson_id').eq('user_id', user.id).eq('discipline_id', id)
+      supabase.from('lesson_progress').select('lesson_id').eq('user_id', user.id).eq('discipline_id', id),
+      supabase.from('quiz_questions').select('lesson_id').eq('discipline_id', id).not('lesson_id', 'is', null),
+      supabase.from('lesson_quiz_results').select('lesson_id').eq('user_id', user.id).eq('discipline_id', id)
     ])
 
     if (discRes.data) setDiscipline(discRes.data)
@@ -42,8 +46,17 @@ export default function Quiz() {
     setTotalLessons(total)
     setCompletedLessonsCount(completed)
 
+    const lessonsWithQuiz = new Set((lessonQuizzesRes.data || []).map(q => q.lesson_id).filter(Boolean))
+    const completedLessonQuizIds = new Set((lessonQuizResultsRes.data || []).map(r => r.lesson_id))
+    const pending = [...lessonsWithQuiz].filter(lid => !completedLessonQuizIds.has(lid)).length
+    const allLessonQuizzesDone = pending === 0
+    setPendingLessonQuizzes(pending)
+    setLessonQuizzesDone(allLessonQuizzesDone)
+
     // Quiz liberado se completou todas as aulas (ou se não há aulas cadastradas)
-    const isContentCompleted = total === 0 || completed >= total
+    // E também tiver respondido todos os quizzes de aula da disciplina
+    const lessonsDone = total === 0 || completed >= total
+    const isContentCompleted = lessonsDone && allLessonQuizzesDone
     setContentCompleted(isContentCompleted)
 
     // If there are no quiz questions and all lessons are completed,
@@ -157,6 +170,7 @@ export default function Quiz() {
 
   // Tela de bloqueio se o conteúdo não foi concluído
   if (!contentCompleted) {
+    const lessonsDone = totalLessons === 0 || completedLessonsCount >= totalLessons
     return (
       <div className="quiz-page">
         <Link to={`/disciplinas/${id}`} className="back-link">← Voltar para {discipline.name}</Link>
@@ -165,7 +179,9 @@ export default function Quiz() {
           <div className="locked-icon"><FiLock /></div>
           <h2>Quiz Bloqueado</h2>
           <p>
-            Você precisa concluir todo o conteúdo da disciplina <strong>{discipline.name}</strong> antes de fazer o quiz.
+            {!lessonsDone
+              ? <>Você precisa concluir todas as aulas da disciplina <strong>{discipline.name}</strong> antes de fazer o quiz final.</>
+              : <>Você ainda precisa responder os <strong>quizzes de aula</strong> da disciplina {discipline.name} antes de fazer o quiz final.</>}
           </p>
           <div className="locked-progress">
             <div className="locked-progress-bar">
@@ -178,6 +194,11 @@ export default function Quiz() {
               {completedLessonsCount} de {totalLessons} aulas concluídas
             </span>
           </div>
+          {lessonsDone && !lessonQuizzesDone && (
+            <p className="locked-extra">
+              📝 Faltam <strong>{pendingLessonQuizzes}</strong> quiz(zes) de aula.
+            </p>
+          )}
           <Link to={`/disciplinas/${id}`} className="btn-go-back">
             Continuar Estudando
           </Link>

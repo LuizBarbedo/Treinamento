@@ -63,9 +63,17 @@ export default function DisciplineDetail() {
   // Track whether the discipline has a final quiz
   const [hasFinalQuiz, setHasFinalQuiz] = useState(null)
 
+  // Lessons that have a lesson quiz cadastrado
+  const [lessonsWithQuiz, setLessonsWithQuiz] = useState(new Set())
+
   const completedCount = completedLessons.size
   const allLessonsCompleted = lessons.length > 0 && completedLessons.size >= lessons.length
   const progressPercent = lessons.length > 0 ? Math.round((completedCount / lessons.length) * 100) : 0
+
+  const completedLessonQuizIds = new Set(lessonQuizResultsData.map(r => r.lesson_id))
+  const pendingLessonQuizCount = [...lessonsWithQuiz].filter(lid => !completedLessonQuizIds.has(lid)).length
+  const allLessonQuizzesDone = pendingLessonQuizCount === 0
+  const canAccessFinalQuiz = allLessonsCompleted && allLessonQuizzesDone
 
   useEffect(() => {
     fetchData()
@@ -88,7 +96,7 @@ export default function DisciplineDetail() {
   }, [allLessonsCompleted, hasFinalQuiz])
 
   const fetchData = async () => {
-    const [discRes, lessonsRes, materialsRes, progressRes, quizResultsRes, finalResultRes, monitorRes, finalQuizRes] = await Promise.all([
+    const [discRes, lessonsRes, materialsRes, progressRes, quizResultsRes, finalResultRes, monitorRes, finalQuizRes, lessonQuizzesRes] = await Promise.all([
       supabase.from('disciplines').select('*').eq('id', id).single(),
       supabase.from('lessons').select('*').eq('discipline_id', id).order('order_index'),
       supabase.from('materials').select('*').eq('discipline_id', id).order('created_at'),
@@ -97,10 +105,12 @@ export default function DisciplineDetail() {
       supabase.from('quiz_results').select('discipline_id, score, correct_answers, total_questions').eq('user_id', user.id).eq('discipline_id', id).single(),
       supabase.from('monitor_students').select('monitor_id').eq('student_id', user.id).maybeSingle(),
       supabase.from('quiz_questions').select('id').eq('discipline_id', id).is('lesson_id', null).limit(1),
+      supabase.from('quiz_questions').select('lesson_id').eq('discipline_id', id).not('lesson_id', 'is', null),
     ])
 
     setHasMonitor(!!monitorRes.data)
     setHasFinalQuiz((finalQuizRes.data || []).length > 0)
+    setLessonsWithQuiz(new Set((lessonQuizzesRes.data || []).map(q => q.lesson_id).filter(Boolean)))
 
     if (discRes.data) setDiscipline(discRes.data)
     if (lessonsRes.data) setLessons(lessonsRes.data)
@@ -361,7 +371,9 @@ export default function DisciplineDetail() {
             <p className="progress-complete-msg">
               {hasFinalQuiz === false
                 ? '✅ Todas as aulas foram concluídas! Disciplina finalizada com sucesso.'
-                : '✅ Todas as aulas foram concluídas! O quiz final está liberado.'}
+                : allLessonQuizzesDone
+                  ? '✅ Todas as aulas foram concluídas! O quiz final está liberado.'
+                  : `⚠️ Faltam ${pendingLessonQuizCount} quiz(zes) de aula para liberar o quiz final.`}
             </p>
           )}
         </div>
@@ -410,18 +422,23 @@ export default function DisciplineDetail() {
           </button>
         )}
 
-        {allLessonsCompleted ? (
-          hasFinalQuiz === false ? (
-            <span className="tab tab-quiz tab-quiz-unlocked" title="Disciplina concluída - sem quiz final">
-              <FiCheckCircle /> Disciplina Concluída
-            </span>
-          ) : (
-            <Link to={`/disciplinas/${id}/quiz`} className="tab tab-quiz tab-quiz-unlocked">
-              <FiCheckCircle /> Quiz Final
-            </Link>
-          )
+        {hasFinalQuiz === false && allLessonsCompleted ? (
+          <span className="tab tab-quiz tab-quiz-unlocked" title="Disciplina concluída - sem quiz final">
+            <FiCheckCircle /> Disciplina Concluída
+          </span>
+        ) : canAccessFinalQuiz ? (
+          <Link to={`/disciplinas/${id}/quiz`} className="tab tab-quiz tab-quiz-unlocked">
+            <FiCheckCircle /> Quiz Final
+          </Link>
         ) : (
-          <span className="tab tab-quiz tab-quiz-locked" title="Conclua todas as aulas para liberar o quiz final">
+          <span
+            className="tab tab-quiz tab-quiz-locked"
+            title={
+              !allLessonsCompleted
+                ? 'Conclua todas as aulas para liberar o quiz final'
+                : `Faltam ${pendingLessonQuizCount} quiz(zes) de aula para liberar o quiz final`
+            }
+          >
             <FiLock /> Quiz Final (bloqueado)
           </span>
         )}
