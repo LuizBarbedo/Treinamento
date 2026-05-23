@@ -104,12 +104,23 @@ export default function AdminReports() {
 
     const completedDiscs = userProgressItems.filter(p => p.completed).length
 
-    // Disciplinas em andamento
+    // Disciplinas em andamento: qualquer atividade (aula, quiz de aula ou quiz final)
+    // em uma disciplina que ainda não foi concluída.
     const inProgressDiscIds = new Set()
     const completedDiscIds = new Set(userProgressItems.filter(p => p.completed).map(p => p.discipline_id))
     userLessonProg.forEach(lp => {
       if (!completedDiscIds.has(lp.discipline_id)) {
         inProgressDiscIds.add(lp.discipline_id)
+      }
+    })
+    userLessonQuiz.forEach(lq => {
+      if (!completedDiscIds.has(lq.discipline_id)) {
+        inProgressDiscIds.add(lq.discipline_id)
+      }
+    })
+    userQuizResults.forEach(qr => {
+      if (!completedDiscIds.has(qr.discipline_id)) {
+        inProgressDiscIds.add(qr.discipline_id)
       }
     })
 
@@ -156,9 +167,14 @@ export default function AdminReports() {
       p => p.user_id === userId && p.discipline_id === disciplineId && p.completed
     )
 
-    const progressPercent = totalLessons > 0
-      ? Math.round((lessonsCompleted / totalLessons) * 100)
-      : 0
+    // Se a disciplina está marcada como concluída, mostra 100%
+    // (cobre casos antigos do bug onde o aluno passou no quiz final sem ter lesson_progress).
+    // Caso contrário, calcula com base nas aulas concluídas.
+    const progressPercent = completed
+      ? 100
+      : totalLessons > 0
+        ? Math.round((lessonsCompleted / totalLessons) * 100)
+        : 0
 
     return {
       disciplineName: disc?.name || 'Desconhecida',
@@ -511,7 +527,7 @@ export default function AdminReports() {
                       <div className="user-detail-grid">
                         {disciplines.map(disc => {
                           const detail = getUserDisciplineDetail(u.id, disc.id)
-                          const hasActivity = detail.lessonsCompleted > 0 || detail.quizScore !== null
+                          const hasActivity = detail.lessonsCompleted > 0 || detail.quizScore !== null || detail.lessonQuizzes.length > 0
 
                           return (
                             <div

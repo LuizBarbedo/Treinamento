@@ -53,14 +53,15 @@ export default function Quiz() {
     setPendingLessonQuizzes(pending)
     setLessonQuizzesDone(allLessonQuizzesDone)
 
-    // Quiz liberado se completou todas as aulas (ou se não há aulas cadastradas)
-    // E também tiver respondido todos os quizzes de aula da disciplina
-    const lessonsDone = total === 0 || completed >= total
+    // Quiz liberado apenas se a disciplina tem aulas cadastradas E o aluno completou todas
+    // E também tiver respondido todos os quizzes de aula da disciplina.
+    // Disciplinas sem aulas não devem ser consideradas "feitas" automaticamente.
+    const lessonsDone = total > 0 && completed >= total
     const isContentCompleted = lessonsDone && allLessonQuizzesDone
     setContentCompleted(isContentCompleted)
 
-    // If there are no quiz questions and all lessons are completed,
-    // auto-complete the discipline so the next one is unlocked
+    // Auto-completar disciplina apenas se ela tem aulas, todas foram feitas
+    // e o quiz final não tem questões cadastradas.
     const quizQuestions = questionsRes.data || []
     if (quizQuestions.length === 0 && isContentCompleted) {
       await supabase.from('user_progress').upsert({
