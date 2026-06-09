@@ -104,6 +104,11 @@ export default function AdminReports() {
 
     const completedDiscs = userProgressItems.filter(p => p.completed).length
 
+    // Progresso geral do aluno: disciplinas concluídas em relação ao total da plataforma
+    const overallProgress = disciplines.length > 0
+      ? Math.round((completedDiscs / disciplines.length) * 100)
+      : 0
+
     // Disciplinas em andamento: qualquer atividade (aula, quiz de aula ou quiz final)
     // em uma disciplina que ainda não foi concluída.
     const inProgressDiscIds = new Set()
@@ -133,6 +138,7 @@ export default function AdminReports() {
     return {
       completedDiscs,
       inProgressDiscs: inProgressDiscIds.size,
+      overallProgress,
       avgQuizScore,
       totalLessonsCompleted,
       quizAttempts: userQuizResults.length,
@@ -232,6 +238,7 @@ export default function AdminReports() {
         'Disciplinas concluídas': m.completedDiscs,
         'Disciplinas em andamento': m.inProgressDiscs,
         'Total de disciplinas na plataforma': disciplines.length,
+        'Progresso (%)': m.overallProgress,
         'Aulas concluídas': m.totalLessonsCompleted,
         'Quizzes finais realizados': m.quizAttempts,
         'Quizzes de aula realizados': m.lessonQuizAttempts,
@@ -278,7 +285,7 @@ export default function AdminReports() {
     wsResumo['!cols'] = [
       { wch: 28 }, { wch: 32 }, { wch: 14 }, { wch: 14 },
       { wch: 14 }, { wch: 18 }, { wch: 18 }, { wch: 14 },
-      { wch: 18 }, { wch: 18 }, { wch: 18 }
+      { wch: 14 }, { wch: 18 }, { wch: 18 }, { wch: 18 }
     ]
     wsDetalhado['!cols'] = [
       { wch: 28 }, { wch: 32 }, { wch: 24 }, { wch: 14 },
@@ -471,6 +478,7 @@ export default function AdminReports() {
               <span className="col-metric">Cadastro</span>
               <span className="col-metric">Último Acesso</span>
               <span className="col-metric">Concluídas</span>
+              <span className="col-metric">Progresso</span>
               <span className="col-metric">Em Andamento</span>
               <span className="col-metric">Média Quiz</span>
               <span className="col-metric">Aulas</span>
@@ -500,6 +508,17 @@ export default function AdminReports() {
                     <span className="col-metric">
                       <span className="metric-value">{metrics.completedDiscs}</span>
                       <span className="metric-label">de {disciplines.length}</span>
+                    </span>
+                    <span className="col-metric">
+                      <span className={`metric-value ${metrics.overallProgress >= 100 ? 'good' : ''}`}>
+                        {metrics.overallProgress}%
+                      </span>
+                      <div className="mini-progress-bar">
+                        <div
+                          className="mini-progress-fill"
+                          style={{ width: `${metrics.overallProgress}%` }}
+                        />
+                      </div>
                     </span>
                     <span className="col-metric">
                       <span className="metric-value">{metrics.inProgressDiscs}</span>

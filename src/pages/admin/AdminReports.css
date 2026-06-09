@@ -246,11 +246,11 @@
 /* Users tab: different column layout */
 .report-section:has(.col-user-name) .report-table-header,
 .report-user-block .report-table-row {
-  grid-template-columns: 2fr repeat(5, 1fr) 0.5fr 36px;
+  grid-template-columns: 2fr repeat(6, 1fr) 0.5fr 36px;
 }
 
 .report-section:has(.col-user-name) .report-table-header {
-  grid-template-columns: 2fr repeat(5, 1fr) 0.5fr 36px;
+  grid-template-columns: 2fr repeat(6, 1fr) 0.5fr 36px;
 }
 
 /* Column styles */
@@ -492,6 +492,12 @@
   transition: width 0.3s ease;
 }
 
+.col-metric .mini-progress-bar {
+  flex: none;
+  width: 70px;
+  max-width: 100%;
+}
+
 .mini-progress-text {
   font-weight: 600;
   font-size: 0.78rem;
@@ -532,7 +538,7 @@
 
   .report-section:has(.col-user-name) .report-table-header,
   .report-user-block .report-table-row {
-    grid-template-columns: 1.5fr repeat(5, 0.8fr) 0.4fr 30px !important;
+    grid-template-columns: 1.5fr repeat(6, 0.8fr) 0.4fr 30px !important;
   }
 
   .metric-value {
