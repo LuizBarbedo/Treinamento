@@ -242,6 +242,31 @@
   font-weight: 600;
 }
 
+/* Selo de destaque: aula pendente de quiz */
+.lesson-pending-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: #b8630a;
+  background: rgba(245, 166, 35, 0.16);
+  border: 1px solid rgba(245, 166, 35, 0.55);
+  border-radius: 999px;
+  padding: 0.28rem 0.7rem;
+  margin-top: 0.4rem;
+  font-weight: 700;
+  animation: pendingPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes pendingPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(245, 166, 35, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(245, 166, 35, 0);
+  }
+}
+
 .btn-watch {
   display: flex;
   align-items: center;

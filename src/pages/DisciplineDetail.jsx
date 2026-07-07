@@ -473,6 +473,11 @@ export default function DisciplineDetail() {
                     {lesson.description && <p>{lesson.description}</p>}
                     {!accessible && <span className="lesson-locked-msg">🔒 Complete a aula anterior primeiro</span>}
                     {isCompleted && <span className="lesson-completed-badge">✅ Concluída</span>}
+                    {!isCompleted && accessible && lessonsWithQuiz.has(lesson.id) && (
+                      <span className="lesson-pending-badge">
+                        ⚠️ Aula não concluída — falta fazer o quiz da aula
+                      </span>
+                    )}
                   </div>
                   {accessible && lesson.video_url && (
                     <button
@@ -545,7 +550,7 @@ export default function DisciplineDetail() {
                       <div className="lesson-actions">
                         {lessonsWithQuiz.has(lesson.id) && (
                           <div className="lesson-quiz-required-notice">
-                            📝 É necessário fazer o quiz desta aula para concluí-la.
+                            ⚠️ Esta aula <strong>ainda não está concluída</strong>. Você precisa fazer o quiz da aula abaixo para concluí-la.
                           </div>
                         )}
                         <button
