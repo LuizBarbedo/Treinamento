@@ -289,6 +289,18 @@
   background: linear-gradient(135deg, #e94560, #c0392b) !important;
 }
 
+/* Botão "Fazer Quiz" no card (aluno concluído sem ter feito o quiz) */
+.btn-lesson-quiz-card {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 /* Botão de revisar quiz (aulas já concluídas) */
 .btn-review-quiz {
   display: flex;

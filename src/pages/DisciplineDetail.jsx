@@ -214,9 +214,10 @@ export default function DisciplineDetail() {
     const passed = correct >= Math.ceil(total * 0.66) // 2/3 corretas
     const scorePercent = Math.round((correct / total) * 100)
 
-    // Se a aula já foi concluída, este envio é apenas uma revisão:
-    // mostramos o resultado, mas NÃO sobrescrevemos a nota/progresso/badges já conquistados.
-    const isReview = completedLessons.has(lessonId)
+    // Só é revisão quando a aula já foi concluída E já existe resultado de quiz registrado.
+    // Assim, alunos marcados como concluídos sem terem feito o quiz (bug antigo) ainda
+    // conseguem registrar o resultado normalmente ao fazer o quiz agora.
+    const isReview = completedLessons.has(lessonId) && completedLessonQuizIds.has(lessonId)
 
     setLessonQuizScore({ correct, total, passed, scorePercent, isReview })
     setLessonQuizSubmitted(true)
@@ -458,6 +459,11 @@ export default function DisciplineDetail() {
             const isActive = activeLesson?.id === lesson.id
             const isQuizOpen = activeLessonQuiz === lesson.id
             const quizQuestions = lessonQuizQuestions[lesson.id] || []
+            const hasQuiz = lessonsWithQuiz.has(lesson.id)
+            const hasDoneQuiz = completedLessonQuizIds.has(lesson.id)
+            // Aula que exige quiz mas ainda não tem resultado registrado.
+            // Cobre tanto quem nunca fez quanto quem foi marcado como concluído sem fazer o quiz.
+            const needsQuiz = hasQuiz && !hasDoneQuiz
 
             return (
               <div key={lesson.id} className="lesson-wrapper">
@@ -472,10 +478,10 @@ export default function DisciplineDetail() {
                     </h3>
                     {lesson.description && <p>{lesson.description}</p>}
                     {!accessible && <span className="lesson-locked-msg">🔒 Complete a aula anterior primeiro</span>}
-                    {isCompleted && <span className="lesson-completed-badge">✅ Concluída</span>}
-                    {!isCompleted && accessible && lessonsWithQuiz.has(lesson.id) && (
+                    {isCompleted && !needsQuiz && <span className="lesson-completed-badge">✅ Concluída</span>}
+                    {accessible && needsQuiz && (
                       <span className="lesson-pending-badge">
-                        ⚠️ Aula não concluída — falta fazer o quiz da aula
+                        ⚠️ Você ainda não fez o quiz desta aula — é necessário fazê-lo para concluí-la
                       </span>
                     )}
                   </div>
@@ -497,10 +503,12 @@ export default function DisciplineDetail() {
                       {isActive ? <><FiX /> Fechar</> : <><FiPlay /> Assistir</>}
                     </button>
                   )}
-                  {isCompleted && lessonsWithQuiz.has(lesson.id) && (
+                  {isCompleted && hasQuiz && (
                     <button
-                      className="btn-review-quiz"
-                      title="Você já passou neste quiz — revisão opcional"
+                      className={needsQuiz ? 'btn-lesson-quiz btn-lesson-quiz-card' : 'btn-review-quiz'}
+                      title={needsQuiz
+                        ? 'Você ainda não fez o quiz desta aula'
+                        : 'Você já passou neste quiz — revisão opcional'}
                       onClick={() => {
                         if (isQuizOpen) {
                           setActiveLessonQuiz(null)
@@ -510,7 +518,9 @@ export default function DisciplineDetail() {
                       }}
                       disabled={loadingQuiz}
                     >
-                      {isQuizOpen ? <><FiX /> Fechar Quiz</> : <>🔄 Revisar Quiz</>}
+                      {isQuizOpen
+                        ? <><FiX /> Fechar Quiz</>
+                        : needsQuiz ? <>📝 Fazer Quiz da Aula</> : <>🔄 Revisar Quiz</>}
                     </button>
                   )}
                 </div>
@@ -582,9 +592,13 @@ export default function DisciplineDetail() {
                       <>
                         <div className="lesson-quiz-header">
                           <h4>📝 Quiz da Aula: {lesson.title}</h4>
-                          {isCompleted ? (
+                          {isCompleted && !needsQuiz ? (
                             <div className="lesson-quiz-review-banner">
                               ✅ Você já passou neste quiz — não precisa refazer. Esta é apenas uma revisão e não altera o seu resultado.
+                            </div>
+                          ) : needsQuiz ? (
+                            <div className="lesson-quiz-required-notice">
+                              ⚠️ Você ainda não fez o quiz desta aula. Responda corretamente para concluí-la de fato.
                             </div>
                           ) : (
                             <p>Responda corretamente para concluir esta aula ({quizQuestions.length} questões)</p>
