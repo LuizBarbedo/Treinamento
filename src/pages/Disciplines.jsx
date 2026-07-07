@@ -41,6 +41,9 @@ export default function Disciplines() {
     <div className="disciplines-page">
       <h1>📚 Disciplinas</h1>
       <p className="page-subtitle">Complete cada disciplina em ordem para avançar</p>
+      <div className="disciplines-rule-note">
+        ℹ️ A próxima disciplina só é liberada após você concluir <strong>todos os quizzes de aula</strong> e o <strong>quiz final</strong> da disciplina atual.
+      </div>
 
       <div className="disciplines-list">
         {disciplines.map((disc, index) => {

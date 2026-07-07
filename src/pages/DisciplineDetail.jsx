@@ -383,6 +383,11 @@ export default function DisciplineDetail() {
                   : `⚠️ Faltam ${pendingLessonQuizCount} quiz(zes) de aula para liberar o quiz final.`}
             </p>
           )}
+          {hasFinalQuiz !== false && (
+            <p className="progress-rule-note">
+              ℹ️ Para concluir esta disciplina e liberar a próxima, é necessário fazer <strong>todos os quizzes de aula</strong> e o <strong>quiz final</strong>.
+            </p>
+          )}
         </div>
       )}
 

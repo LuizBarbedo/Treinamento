@@ -89,6 +89,13 @@
   font-weight: 600;
 }
 
+.progress-rule-note {
+  margin-top: 0.6rem;
+  font-size: 0.82rem;
+  color: #666;
+  line-height: 1.5;
+}
+
 /* Tabs */
 .tabs {
   display: flex;

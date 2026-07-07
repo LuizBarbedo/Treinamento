@@ -6,6 +6,17 @@
 
 .page-subtitle {
   color: #666;
+  margin-bottom: 0.75rem;
+}
+
+.disciplines-rule-note {
+  background: rgba(0, 155, 143, 0.1);
+  border: 1px solid rgba(0, 155, 143, 0.35);
+  color: #026a61;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  line-height: 1.5;
   margin-bottom: 2rem;
 }
 

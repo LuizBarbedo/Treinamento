@@ -186,8 +186,13 @@ export default function Quiz() {
     return <div className="error-state">Disciplina não encontrada.</div>
   }
 
-  // Tela de bloqueio se o conteúdo não foi concluído
-  if (!contentCompleted) {
+  // Se o aluno já foi aprovado no quiz final, sua conclusão está registrada.
+  // Mostramos a tela de concluído mesmo que falte algum quiz de aula (não há risco:
+  // ele já passou) — o lembrete dos quizzes de aula pendentes aparece dentro dela.
+  const alreadyPassed = previousResult && previousResult.score >= 50
+
+  // Tela de bloqueio se o conteúdo não foi concluído (não se aplica a quem já passou)
+  if (!contentCompleted && !alreadyPassed) {
     const lessonsDone = totalLessons === 0 || completedLessonsCount >= totalLessons
     return (
       <div className="quiz-page">
@@ -226,7 +231,6 @@ export default function Quiz() {
   }
 
   // Tela de "já concluído": aluno já passou no quiz final e ainda não pediu para refazer
-  const alreadyPassed = previousResult && previousResult.score >= 50
   if (alreadyPassed && !retaking && !submitted) {
     return (
       <div className="quiz-page">
@@ -237,7 +241,7 @@ export default function Quiz() {
           <h2>Quiz Final Concluído!</h2>
           <p className="completed-text">
             Você já realizou e foi <strong>aprovado</strong> no quiz final da disciplina{' '}
-            <strong>{discipline.name}</strong>. Não é necessário refazer — esta disciplina já está concluída.
+            <strong>{discipline.name}</strong>. Não é necessário refazer — sua aprovação está registrada.
           </p>
           <div className="completed-score">
             <span className="completed-score-value">{previousResult.score}%</span>
@@ -245,6 +249,14 @@ export default function Quiz() {
               {previousResult.correct_answers} de {previousResult.total_questions} acertos
             </span>
           </div>
+          {!lessonQuizzesDone && (
+            <div className="completed-pending-notice">
+              📝 Ainda faltam <strong>{pendingLessonQuizzes}</strong> quiz(zes) de aula.
+              Sua aprovação no quiz final continua registrada, mas lembre-se: a próxima
+              disciplina só é liberada após concluir <strong>todos os quizzes de aula</strong> e
+              o <strong>quiz final</strong>.
+            </div>
+          )}
           <p className="completed-hint">Se quiser, você pode refazer as questões para revisar o conteúdo.</p>
           <div className="completed-actions">
             <button className="btn-retake-quiz" onClick={startRetake}>

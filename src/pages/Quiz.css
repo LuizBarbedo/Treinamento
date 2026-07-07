@@ -159,6 +159,18 @@
   font-weight: 600;
 }
 
+.completed-pending-notice {
+  max-width: 480px;
+  margin: 0 auto 1.25rem;
+  background: rgba(245, 166, 35, 0.14);
+  border: 1px solid rgba(245, 166, 35, 0.55);
+  color: #8a5a08;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
 .completed-hint {
   color: #888;
   font-size: 0.9rem;
