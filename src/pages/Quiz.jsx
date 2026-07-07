@@ -23,23 +23,27 @@ export default function Quiz() {
   const [pendingLessonQuizzes, setPendingLessonQuizzes] = useState(0)
   const [lessonQuizzesDone, setLessonQuizzesDone] = useState(true)
   const [newBadge, setNewBadge] = useState(null)
+  const [previousResult, setPreviousResult] = useState(null)
+  const [retaking, setRetaking] = useState(false)
 
   useEffect(() => {
     fetchQuiz()
   }, [id])
 
   const fetchQuiz = async () => {
-    const [discRes, questionsRes, lessonsRes, progressRes, lessonQuizzesRes, lessonQuizResultsRes] = await Promise.all([
+    const [discRes, questionsRes, lessonsRes, progressRes, lessonQuizzesRes, lessonQuizResultsRes, finalResultRes] = await Promise.all([
       supabase.from('disciplines').select('*').eq('id', id).single(),
       supabase.from('quiz_questions').select('*').eq('discipline_id', id).is('lesson_id', null).order('order_index').limit(10),
       supabase.from('lessons').select('id').eq('discipline_id', id),
       supabase.from('lesson_progress').select('lesson_id').eq('user_id', user.id).eq('discipline_id', id),
       supabase.from('quiz_questions').select('lesson_id').eq('discipline_id', id).not('lesson_id', 'is', null),
-      supabase.from('lesson_quiz_results').select('lesson_id').eq('user_id', user.id).eq('discipline_id', id)
+      supabase.from('lesson_quiz_results').select('lesson_id').eq('user_id', user.id).eq('discipline_id', id),
+      supabase.from('quiz_results').select('score, total_questions, correct_answers, completed_at').eq('user_id', user.id).eq('discipline_id', id).maybeSingle()
     ])
 
     if (discRes.data) setDiscipline(discRes.data)
     if (questionsRes.data) setQuestions(questionsRes.data)
+    setPreviousResult(finalResultRes.data || null)
 
     const total = lessonsRes.data?.length || 0
     const completed = progressRes.data?.length || 0
@@ -97,17 +101,25 @@ export default function Quiz() {
     setScore(finalScore)
     setSubmitted(true)
 
+    // Se o aluno já havia sido aprovado, um "refazer" só atualiza a nota se melhorar,
+    // para nunca rebaixar o resultado já conquistado.
+    const passedBefore = previousResult && previousResult.score >= 50
+    const shouldPersistResult = !passedBefore || finalScore > previousResult.score
+
     // Salvar resultado
-    await supabase.from('quiz_results').upsert({
-      user_id: user.id,
-      discipline_id: id,
-      score: finalScore,
-      total_questions: questions.length,
-      correct_answers: correct,
-      completed_at: new Date().toISOString()
-    }, {
-      onConflict: 'user_id,discipline_id'
-    })
+    if (shouldPersistResult) {
+      await supabase.from('quiz_results').upsert({
+        user_id: user.id,
+        discipline_id: id,
+        score: finalScore,
+        total_questions: questions.length,
+        correct_answers: correct,
+        completed_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id,discipline_id'
+      })
+      setPreviousResult({ score: finalScore, total_questions: questions.length, correct_answers: correct })
+    }
 
     // Atualizar progresso se passou (>= 50%)
     if (finalScore >= 50) {
@@ -161,6 +173,11 @@ export default function Quiz() {
     setScore(null)
   }
 
+  const startRetake = () => {
+    setRetaking(true)
+    resetQuiz()
+  }
+
   if (loading) {
     return <div className="loading-screen"><div className="spinner"></div></div>
   }
@@ -208,12 +225,53 @@ export default function Quiz() {
     )
   }
 
+  // Tela de "já concluído": aluno já passou no quiz final e ainda não pediu para refazer
+  const alreadyPassed = previousResult && previousResult.score >= 50
+  if (alreadyPassed && !retaking && !submitted) {
+    return (
+      <div className="quiz-page">
+        <Link to={`/disciplinas/${id}`} className="back-link">← Voltar para {discipline.name}</Link>
+
+        <div className="quiz-completed">
+          <div className="completed-icon">🎉</div>
+          <h2>Quiz Final Concluído!</h2>
+          <p className="completed-text">
+            Você já realizou e foi <strong>aprovado</strong> no quiz final da disciplina{' '}
+            <strong>{discipline.name}</strong>. Não é necessário refazer — esta disciplina já está concluída.
+          </p>
+          <div className="completed-score">
+            <span className="completed-score-value">{previousResult.score}%</span>
+            <span className="completed-score-detail">
+              {previousResult.correct_answers} de {previousResult.total_questions} acertos
+            </span>
+          </div>
+          <p className="completed-hint">Se quiser, você pode refazer as questões para revisar o conteúdo.</p>
+          <div className="completed-actions">
+            <button className="btn-retake-quiz" onClick={startRetake}>
+              🔄 Refazer Questões
+            </button>
+            <Link to={`/disciplinas/${id}`} className="btn-go-back">
+              Voltar para a Disciplina
+            </Link>
+          </div>
+        </div>
+
+        <AIChat discipline={discipline} lessons={[]} materials={[]} />
+      </div>
+    )
+  }
+
   return (
     <div className="quiz-page">
       <Link to={`/disciplinas/${id}`} className="back-link">← Voltar para {discipline.name}</Link>
 
       <div className="quiz-header">
         <h1>📝 Quiz Final: {discipline.name}</h1>
+        {alreadyPassed && retaking && (
+          <div className="quiz-retake-banner">
+            ✅ Você já foi aprovado neste quiz. Está apenas refazendo as questões para revisar — sua aprovação está garantida.
+          </div>
+        )}
         <p>Avaliação geral da disciplina. Responda todas as questões abaixo. Você precisa de pelo menos <strong>50%</strong> de acertos para ser aprovado.</p>
         <div className="quiz-info-bar">
           <span>📋 {questions.length} questões</span>
@@ -231,7 +289,9 @@ export default function Quiz() {
           <div className="result-text">
             {score >= 50
               ? '🎉 Parabéns! Você foi aprovado nesta disciplina!'
-              : '😕 Você não atingiu a pontuação mínima. Revise o conteúdo e tente novamente!'}
+              : alreadyPassed
+                ? '👍 Esta foi uma revisão. Sua aprovação anterior nesta disciplina continua válida.'
+                : '😕 Você não atingiu a pontuação mínima. Revise o conteúdo e tente novamente!'}
           </div>
           <button className="btn-retry" onClick={resetQuiz}>
             Refazer Avaliação
