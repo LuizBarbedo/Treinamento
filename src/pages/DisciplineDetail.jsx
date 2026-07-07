@@ -214,8 +214,14 @@ export default function DisciplineDetail() {
     const passed = correct >= Math.ceil(total * 0.66) // 2/3 corretas
     const scorePercent = Math.round((correct / total) * 100)
 
-    setLessonQuizScore({ correct, total, passed, scorePercent })
+    // Se a aula já foi concluída, este envio é apenas uma revisão:
+    // mostramos o resultado, mas NÃO sobrescrevemos a nota/progresso/badges já conquistados.
+    const isReview = completedLessons.has(lessonId)
+
+    setLessonQuizScore({ correct, total, passed, scorePercent, isReview })
     setLessonQuizSubmitted(true)
+
+    if (isReview) return
 
     // Save quiz result
     await supabase.from('lesson_quiz_results').upsert({
@@ -486,6 +492,22 @@ export default function DisciplineDetail() {
                       {isActive ? <><FiX /> Fechar</> : <><FiPlay /> Assistir</>}
                     </button>
                   )}
+                  {isCompleted && lessonsWithQuiz.has(lesson.id) && (
+                    <button
+                      className="btn-review-quiz"
+                      title="Você já passou neste quiz — revisão opcional"
+                      onClick={() => {
+                        if (isQuizOpen) {
+                          setActiveLessonQuiz(null)
+                        } else {
+                          startLessonQuiz(lesson.id)
+                        }
+                      }}
+                      disabled={loadingQuiz}
+                    >
+                      {isQuizOpen ? <><FiX /> Fechar Quiz</> : <>🔄 Revisar Quiz</>}
+                    </button>
+                  )}
                 </div>
 
                 {/* Video Player */}
@@ -521,6 +543,11 @@ export default function DisciplineDetail() {
                     )}
                     {!isCompleted && watchedLessons.has(lesson.id) && !isQuizOpen && (
                       <div className="lesson-actions">
+                        {lessonsWithQuiz.has(lesson.id) && (
+                          <div className="lesson-quiz-required-notice">
+                            📝 É necessário fazer o quiz desta aula para concluí-la.
+                          </div>
+                        )}
                         <button
                           className="btn-lesson-quiz"
                           onClick={() => startLessonQuiz(lesson.id)}
@@ -550,7 +577,13 @@ export default function DisciplineDetail() {
                       <>
                         <div className="lesson-quiz-header">
                           <h4>📝 Quiz da Aula: {lesson.title}</h4>
-                          <p>Responda corretamente para concluir esta aula ({quizQuestions.length} questões)</p>
+                          {isCompleted ? (
+                            <div className="lesson-quiz-review-banner">
+                              ✅ Você já passou neste quiz — não precisa refazer. Esta é apenas uma revisão e não altera o seu resultado.
+                            </div>
+                          ) : (
+                            <p>Responda corretamente para concluir esta aula ({quizQuestions.length} questões)</p>
+                          )}
                         </div>
 
                         {lessonQuizSubmitted && lessonQuizScore && (
@@ -560,16 +593,26 @@ export default function DisciplineDetail() {
                               {lessonQuizScore.correct} de {lessonQuizScore.total} acertos
                             </div>
                             <div className="lq-result-text">
-                              {lessonQuizScore.passed
-                                ? '🎉 Aprovado! Aula concluída com sucesso.'
-                                : '😕 Não atingiu a pontuação mínima. Revise o conteúdo e tente novamente.'}
+                              {lessonQuizScore.isReview
+                                ? (lessonQuizScore.passed
+                                    ? '✅ Revisão concluída. Você continua aprovado nesta aula — nada foi alterado.'
+                                    : 'ℹ️ Modo de revisão: sua conclusão anterior permanece válida. Nada foi alterado.')
+                                : (lessonQuizScore.passed
+                                    ? '🎉 Aprovado! Aula concluída com sucesso.'
+                                    : '😕 Não atingiu a pontuação mínima. Revise o conteúdo e tente novamente.')}
                             </div>
-                            {!lessonQuizScore.passed && (
+                            {!lessonQuizScore.passed && !lessonQuizScore.isReview && (
                               <button className="btn-retry-lesson" onClick={retryLessonQuiz}>
                                 🔄 Tentar Novamente
                               </button>
                             )}
-                            {lessonQuizScore.passed && (
+                            {lessonQuizScore.isReview ? (
+                              <button className="btn-next-lesson" onClick={() => {
+                                setActiveLessonQuiz(null)
+                              }}>
+                                Fechar Revisão
+                              </button>
+                            ) : lessonQuizScore.passed && (
                               <button className="btn-next-lesson" onClick={() => {
                                 setActiveLessonQuiz(null)
                                 setActiveLesson(null)

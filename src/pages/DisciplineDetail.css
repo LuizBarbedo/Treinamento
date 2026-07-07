@@ -264,6 +264,32 @@
   background: linear-gradient(135deg, #e94560, #c0392b) !important;
 }
 
+/* Botão de revisar quiz (aulas já concluídas) */
+.btn-review-quiz {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  color: #009b8f;
+  border: 1.5px solid #009b8f;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-review-quiz:hover:not(:disabled) {
+  background: #009b8f;
+  color: #fff;
+}
+
+.btn-review-quiz:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
 /* Video Player */
 .lesson-wrapper {
   display: flex;
@@ -315,7 +341,25 @@
   padding: 1rem 1.25rem;
   background: #00405b;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
   justify-content: center;
+}
+
+/* Aviso: quiz obrigatório para concluir a aula */
+.lesson-quiz-required-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(245, 166, 35, 0.15);
+  border: 1px solid rgba(245, 166, 35, 0.5);
+  color: #ffd58a;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
 }
 
 /* Watch notice (waiting for video) */
@@ -417,6 +461,19 @@
 .lesson-quiz-header p {
   color: #888;
   font-size: 0.85rem;
+}
+
+/* Banner de revisão (quiz já aprovado) */
+.lesson-quiz-review-banner {
+  margin-top: 0.5rem;
+  background: rgba(39, 174, 96, 0.12);
+  border: 1px solid rgba(39, 174, 96, 0.45);
+  color: #1e7e46;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 .lesson-quiz-empty {
