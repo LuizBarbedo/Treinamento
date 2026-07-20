@@ -23,7 +23,7 @@ function getEmbedUrl(url) {
 
 export default function DisciplineDetail() {
   const { id } = useParams()
-  const { user, isAdmin, isMonitor, accessLevel } = useAuth()
+  const { user, isAdmin, isMonitor, accessLevel, hasFullAccess } = useAuth()
   const showReflexao = canSeeReflexao(accessLevel)
   const showArtigoTecnico = canSeeArtigoTecnico(accessLevel)
   const [discipline, setDiscipline] = useState(null)
@@ -73,7 +73,7 @@ export default function DisciplineDetail() {
   const completedLessonQuizIds = new Set(lessonQuizResultsData.map(r => r.lesson_id))
   const pendingLessonQuizCount = [...lessonsWithQuiz].filter(lid => !completedLessonQuizIds.has(lid)).length
   const allLessonQuizzesDone = pendingLessonQuizCount === 0
-  const canAccessFinalQuiz = allLessonsCompleted && allLessonQuizzesDone
+  const canAccessFinalQuiz = hasFullAccess || (allLessonsCompleted && allLessonQuizzesDone)
 
   useEffect(() => {
     fetchData()
@@ -162,6 +162,7 @@ export default function DisciplineDetail() {
 
   // Check if lesson is accessible (sequential order)
   const isLessonAccessible = (index) => {
+    if (hasFullAccess) return true
     if (index === 0) return true
     return completedLessons.has(lessons[index - 1].id)
   }

@@ -14,6 +14,9 @@ export function AuthProvider({ children }) {
   const [isMonitor, setIsMonitor] = useState(false)
   const [userRole, setUserRole] = useState('user') // 'admin' | 'monitor' | 'user'
   const [accessLevel, setAccessLevel] = useState('basico') // 'basico' | 'intermediario' | 'avancado'
+  // Ignora o bloqueio sequencial de disciplinas/aulas. Concedido caso a caso
+  // (coordenação avaliando conteúdo); alunos comuns são sempre false.
+  const [hasFullAccess, setHasFullAccess] = useState(false)
   const [mustResetPassword, setMustResetPassword] = useState(false)
 
   const configuredResetRedirect = import.meta.env.VITE_PASSWORD_RESET_REDIRECT_URL?.trim()
@@ -28,6 +31,7 @@ export function AuthProvider({ children }) {
       setIsMonitor(false)
       setUserRole('user')
       setAccessLevel('basico')
+      setHasFullAccess(false)
       setMustResetPassword(false)
       return
     }
@@ -40,13 +44,14 @@ export function AuthProvider({ children }) {
       setIsMonitor(false)
       setUserRole('admin')
       setAccessLevel('avancado')
+      setHasFullAccess(true)
       return
     }
     // Verifica na tabela user_roles
     try {
       const { data } = await supabase
         .from('user_roles')
-        .select('role, access_level')
+        .select('role, access_level, full_access')
         .eq('user_id', currentUser.id)
         .single()
       const role = data?.role || 'user'
@@ -54,11 +59,13 @@ export function AuthProvider({ children }) {
       setIsMonitor(role === 'monitor')
       setUserRole(role)
       setAccessLevel(data?.access_level || 'basico')
+      setHasFullAccess(role === 'admin' || data?.full_access === true)
     } catch {
       setIsAdmin(false)
       setIsMonitor(false)
       setUserRole('user')
       setAccessLevel('basico')
+      setHasFullAccess(false)
     }
   }
 
@@ -161,11 +168,12 @@ export function AuthProvider({ children }) {
     setIsMonitor(false)
     setUserRole('user')
     setAccessLevel('basico')
+    setHasFullAccess(false)
     setMustResetPassword(false)
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAdmin, isMonitor, userRole, accessLevel, mustResetPassword, signIn, signUp, signOut, resetPassword, updatePassword }}>
+    <AuthContext.Provider value={{ user, loading, isAdmin, isMonitor, userRole, accessLevel, hasFullAccess, mustResetPassword, signIn, signUp, signOut, resetPassword, updatePassword }}>
       {children}
     </AuthContext.Provider>
   )

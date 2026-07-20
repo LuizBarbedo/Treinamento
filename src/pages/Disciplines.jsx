@@ -6,7 +6,7 @@ import { FiLock, FiCheck } from 'react-icons/fi'
 import './Disciplines.css'
 
 export default function Disciplines() {
-  const { user } = useAuth()
+  const { user, hasFullAccess } = useAuth()
   const [disciplines, setDisciplines] = useState([])
   const [completedDisciplines, setCompletedDisciplines] = useState(new Set())
   const [loading, setLoading] = useState(true)
@@ -29,6 +29,7 @@ export default function Disciplines() {
   }
 
   const isDisciplineAccessible = (index) => {
+    if (hasFullAccess) return true
     if (index === 0) return true
     return completedDisciplines.has(disciplines[index - 1].id)
   }
@@ -40,10 +41,14 @@ export default function Disciplines() {
   return (
     <div className="disciplines-page">
       <h1>📚 Disciplinas</h1>
-      <p className="page-subtitle">Complete cada disciplina em ordem para avançar</p>
-      <div className="disciplines-rule-note">
-        ℹ️ A próxima disciplina só é liberada após você concluir <strong>todos os quizzes de aula</strong> e o <strong>quiz final</strong> da disciplina atual.
-      </div>
+      <p className="page-subtitle">
+        {hasFullAccess ? 'Todas as disciplinas estão liberadas' : 'Complete cada disciplina em ordem para avançar'}
+      </p>
+      {!hasFullAccess && (
+        <div className="disciplines-rule-note">
+          ℹ️ A próxima disciplina só é liberada após você concluir <strong>todos os quizzes de aula</strong> e o <strong>quiz final</strong> da disciplina atual.
+        </div>
+      )}
 
       <div className="disciplines-list">
         {disciplines.map((disc, index) => {

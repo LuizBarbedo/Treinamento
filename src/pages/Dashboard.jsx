@@ -9,7 +9,7 @@ import { BooksStackIcon, TrendingUpIcon, MedalIcon, TrophyIcon } from '../compon
 import './Dashboard.css'
 
 export default function Dashboard() {
-  const { user } = useAuth()
+  const { user, hasFullAccess } = useAuth()
   const [stats, setStats] = useState({ total: 0, completed: 0, inProgress: 0, badges: 0 })
   const [disciplines, setDisciplines] = useState([])
   const [completedDisciplines, setCompletedDisciplines] = useState(new Set())
@@ -104,6 +104,7 @@ export default function Dashboard() {
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuário'
 
   const isDisciplineAccessible = (index) => {
+    if (hasFullAccess) return true
     if (index === 0) return true
     return completedDisciplines.has(disciplines[index - 1].id)
   }

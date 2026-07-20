@@ -10,7 +10,7 @@ import './Quiz.css'
 
 export default function Quiz() {
   const { id } = useParams()
-  const { user } = useAuth()
+  const { user, hasFullAccess } = useAuth()
   const [discipline, setDiscipline] = useState(null)
   const [questions, setQuestions] = useState([])
   const [answers, setAnswers] = useState({})
@@ -62,7 +62,9 @@ export default function Quiz() {
     // Disciplinas sem aulas não devem ser consideradas "feitas" automaticamente.
     const lessonsDone = total > 0 && completed >= total
     const isContentCompleted = lessonsDone && allLessonQuizzesDone
-    setContentCompleted(isContentCompleted)
+    // O acesso total libera a tela do quiz, mas não conta como conteúdo
+    // concluído — a auto-conclusão abaixo continua exigindo progresso real.
+    setContentCompleted(hasFullAccess || isContentCompleted)
 
     // Auto-completar disciplina apenas se ela tem aulas, todas foram feitas
     // e o quiz final não tem questões cadastradas.
