@@ -13,6 +13,11 @@ export default function AdminReports() {
   const [allQuizResults, setAllQuizResults] = useState([])
   const [allLessonProgress, setAllLessonProgress] = useState([])
   const [allLessonQuizResults, setAllLessonQuizResults] = useState([])
+  // Monitoria: vínculos, dúvidas e mensagens alimentam as abas de interação
+  // aluno-monitor da exportação. Ficam vazios enquanto ninguém abrir dúvida.
+  const [monitorLinks, setMonitorLinks] = useState([])
+  const [doubts, setDoubts] = useState([])
+  const [doubtReplies, setDoubtReplies] = useState([])
   const [expandedUser, setExpandedUser] = useState(null)
   const [activeTab, setActiveTab] = useState('overview')
   const [searchTerm, setSearchTerm] = useState('')
@@ -31,7 +36,10 @@ export default function AdminReports() {
         { data: quizResults },
         { data: lessonProg },
         { data: lessonQuiz },
-        { data: lessons }
+        { data: lessons },
+        { data: links },
+        { data: doubtRows },
+        { data: replyRows }
       ] = await Promise.all([
         supabase.rpc('get_platform_stats'),
         supabase.rpc('get_platform_users'),
@@ -40,7 +48,10 @@ export default function AdminReports() {
         supabase.from('quiz_results').select('*'),
         supabase.from('lesson_progress').select('*'),
         supabase.from('lesson_quiz_results').select('*'),
-        supabase.from('lessons').select('*').order('order_index')
+        supabase.from('lessons').select('*').order('order_index'),
+        supabase.from('monitor_students').select('*'),
+        supabase.from('doubts').select('*').order('created_at'),
+        supabase.from('doubt_replies').select('*').order('created_at')
       ])
 
       setStats(platformStats)
@@ -53,6 +64,9 @@ export default function AdminReports() {
       setAllQuizResults(quizResults || [])
       setAllLessonProgress(lessonProg || [])
       setAllLessonQuizResults(lessonQuiz || [])
+      setMonitorLinks(links || [])
+      setDoubts(doubtRows || [])
+      setDoubtReplies(replyRows || [])
     } catch (err) {
       console.error('Erro ao buscar dados do relatório:', err)
     } finally {
@@ -225,6 +239,214 @@ export default function AdminReports() {
     })
   }
 
+  // ---------------------------------------------------------------------
+  // Monitoria: consolida a interação entre aluno e monitor.
+  // Funciona com a base vazia — as abas saem só com os cabeçalhos e com os
+  // vínculos já formados, e passam a se preencher assim que houver dúvidas.
+  // ---------------------------------------------------------------------
+  const STATUS_DUVIDA = {
+    open: 'Aguardando resposta',
+    answered: 'Respondida',
+    resolved: 'Resolvida'
+  }
+
+  const horasEntre = (inicio, fim) => (new Date(fim) - new Date(inicio)) / 3600000
+
+  const mediaHoras = (valores) => {
+    if (valores.length === 0) return null
+    return Math.round((valores.reduce((s, v) => s + v, 0) / valores.length) * 10) / 10
+  }
+
+  const maiorData = (datas) => {
+    const validas = datas.filter(Boolean)
+    if (validas.length === 0) return null
+    return validas.reduce((a, b) => (new Date(a) > new Date(b) ? a : b))
+  }
+
+  // Classificação equivalente à do Relatório de Monitores
+  const classificarMonitor = (recebidas, pendentes, horasMedia) => {
+    if (recebidas === 0) return 'Sem atividade'
+    const taxaPendente = pendentes / recebidas
+    if (taxaPendente > 0.5) return 'Atenção'
+    if (horasMedia !== null && horasMedia > 48) return 'Lento'
+    if (taxaPendente <= 0.1 && (horasMedia === null || horasMedia <= 24)) return 'Excelente'
+    return 'Bom'
+  }
+
+  const buildMonitoriaRows = (dataset) => {
+    const noRecorte = new Set(dataset.map(u => u.id))
+    const usuarioPorId = new Map(users.map(u => [u.id, u]))
+    const disciplinaPorId = new Map(disciplines.map(d => [d.id, d]))
+    const aulaPorId = new Map(
+      disciplines.flatMap(d => (d.lessons || []).map(l => [l.id, l]))
+    )
+
+    const nomeDe = (id) => usuarioPorId.get(id)?.full_name || usuarioPorId.get(id)?.email || ''
+    const emailDe = (id) => usuarioPorId.get(id)?.email || ''
+
+    const vinculos = monitorLinks.filter(v => noRecorte.has(v.student_id))
+    const monitorDoAluno = new Map(vinculos.map(v => [v.student_id, v]))
+
+    // Mensagens agrupadas por dúvida, em ordem cronológica
+    const respostasPorDuvida = new Map()
+    doubtReplies.forEach(r => {
+      const lista = respostasPorDuvida.get(r.doubt_id) || []
+      lista.push(r)
+      respostasPorDuvida.set(r.doubt_id, lista)
+    })
+    respostasPorDuvida.forEach(lista =>
+      lista.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+    )
+
+    // Dados derivados de cada dúvida, reaproveitados nas três abas
+    const duvidasDoRecorte = doubts.filter(d => monitorDoAluno.has(d.user_id))
+    const analiseDuvida = new Map()
+    duvidasDoRecorte.forEach(d => {
+      const mensagens = respostasPorDuvida.get(d.id) || []
+      const doAluno = mensagens.filter(m => m.user_id === d.user_id)
+      const doMonitor = mensagens.filter(m => m.user_id !== d.user_id)
+      const primeiraResposta = doMonitor[0] || null
+      analiseDuvida.set(d.id, {
+        mensagens,
+        doAluno,
+        doMonitor,
+        primeiraResposta,
+        horasAteResposta: primeiraResposta
+          ? Math.round(horasEntre(d.created_at, primeiraResposta.created_at) * 10) / 10
+          : null,
+        ultimaMensagem: mensagens.length > 0 ? mensagens[mensagens.length - 1].created_at : null
+      })
+    })
+
+    // ---------------- aba por aluno ----------------
+    const alunos = vinculos
+      .map(v => {
+        const minhasDuvidas = duvidasDoRecorte.filter(d => d.user_id === v.student_id)
+        const analises = minhasDuvidas.map(d => analiseDuvida.get(d.id))
+        const abertas = minhasDuvidas.filter(d => d.status === 'open').length
+        const respondidas = minhasDuvidas.filter(d => d.status === 'answered').length
+        const resolvidas = minhasDuvidas.filter(d => d.status === 'resolved').length
+        const tempos = analises.map(a => a.horasAteResposta).filter(h => h !== null)
+
+        let situacao = 'Sem dúvidas registradas'
+        if (minhasDuvidas.length > 0) {
+          if (abertas > 0) situacao = 'Aguardando resposta'
+          else if (respondidas > 0) situacao = 'Em andamento'
+          else situacao = 'Atendimentos concluídos'
+        }
+
+        return {
+          'Aluno': nomeDe(v.student_id),
+          'E-mail do aluno': emailDe(v.student_id),
+          'Monitor': nomeDe(v.monitor_id),
+          'E-mail do monitor': emailDe(v.monitor_id),
+          'Vinculado em': formatDate(v.assigned_at),
+          'Último acesso do aluno': formatDate(usuarioPorId.get(v.student_id)?.last_sign_in_at),
+          'Dúvidas enviadas': minhasDuvidas.length,
+          'Aguardando resposta': abertas,
+          'Respondidas': respondidas,
+          'Resolvidas': resolvidas,
+          'Mensagens do aluno': analises.reduce((s, a) => s + a.doAluno.length, 0),
+          'Respostas do monitor': analises.reduce((s, a) => s + a.doMonitor.length, 0),
+          'Primeira dúvida em': formatDateTime(minhasDuvidas[0]?.created_at),
+          'Última interação em': formatDateTime(
+            maiorData([
+              ...minhasDuvidas.map(d => d.created_at),
+              ...analises.map(a => a.ultimaMensagem)
+            ])
+          ),
+          'Tempo médio até 1ª resposta (h)': mediaHoras(tempos) ?? '',
+          'Situação': situacao
+        }
+      })
+      .sort((a, b) => a['Aluno'].localeCompare(b['Aluno'], 'pt-BR'))
+
+    // ---------------- aba por monitor ----------------
+    const porMonitor = new Map()
+    vinculos.forEach(v => {
+      const grupo = porMonitor.get(v.monitor_id) || []
+      grupo.push(v.student_id)
+      porMonitor.set(v.monitor_id, grupo)
+    })
+
+    const monitores = Array.from(porMonitor.entries())
+      .map(([monitorId, alunoIds]) => {
+        const idsGrupo = new Set(alunoIds)
+        const recebidas = duvidasDoRecorte.filter(d => idsGrupo.has(d.user_id))
+        const analises = recebidas.map(d => analiseDuvida.get(d.id))
+        const abertas = recebidas.filter(d => d.status === 'open').length
+        const respondidas = recebidas.filter(d => d.status === 'answered').length
+        const resolvidas = recebidas.filter(d => d.status === 'resolved').length
+        const respostas = analises.flatMap(a => a.doMonitor)
+        const tempos = analises.map(a => a.horasAteResposta).filter(h => h !== null)
+        const horasMedia = mediaHoras(tempos)
+        const datasRespostas = respostas.map(r => r.created_at).sort()
+
+        return {
+          'Monitor': nomeDe(monitorId),
+          'E-mail do monitor': emailDe(monitorId),
+          'Alunos vinculados': alunoIds.length,
+          'Alunos que enviaram dúvida': new Set(recebidas.map(d => d.user_id)).size,
+          'Dúvidas recebidas': recebidas.length,
+          'Aguardando resposta': abertas,
+          'Respondidas': respondidas,
+          'Resolvidas': resolvidas,
+          'Respostas enviadas': respostas.length,
+          'Tempo médio até 1ª resposta (h)': horasMedia ?? '',
+          'Primeira resposta em': formatDateTime(datasRespostas[0]),
+          'Última resposta em': formatDateTime(datasRespostas[datasRespostas.length - 1]),
+          'Taxa de resolução (%)': recebidas.length > 0
+            ? Math.round(((respondidas + resolvidas) / recebidas.length) * 100)
+            : '',
+          'Situação': classificarMonitor(recebidas.length, abertas, horasMedia)
+        }
+      })
+      .sort((a, b) => a['Monitor'].localeCompare(b['Monitor'], 'pt-BR'))
+
+    // ---------------- aba por dúvida ----------------
+    const duvidas = duvidasDoRecorte
+      .map(d => {
+        const a = analiseDuvida.get(d.id)
+        const vinculo = monitorDoAluno.get(d.user_id)
+        return {
+          'Título da dúvida': d.title || '',
+          'Aluno': nomeDe(d.user_id),
+          'E-mail do aluno': emailDe(d.user_id),
+          'Monitor': vinculo ? nomeDe(vinculo.monitor_id) : '',
+          'Disciplina': disciplinaPorId.get(d.discipline_id)?.name || '',
+          'Aula': aulaPorId.get(d.lesson_id)?.title || 'Dúvida geral da disciplina',
+          'Status': STATUS_DUVIDA[d.status] || d.status || '',
+          'Criada em': formatDateTime(d.created_at),
+          'Total de mensagens': a.mensagens.length,
+          'Mensagens do aluno': a.doAluno.length,
+          'Respostas do monitor': a.doMonitor.length,
+          'Primeira resposta em': formatDateTime(a.primeiraResposta?.created_at),
+          'Tempo até 1ª resposta (h)': a.horasAteResposta ?? '',
+          'Última mensagem em': formatDateTime(a.ultimaMensagem),
+          'Última movimentação': formatDateTime(d.updated_at),
+          'Descrição': d.description || ''
+        }
+      })
+      .sort((a, b) => a['Aluno'].localeCompare(b['Aluno'], 'pt-BR'))
+
+    return { alunos, monitores, duvidas }
+  }
+
+  // Monta a planilha a partir dos cabeçalhos, para que a aba saia com as
+  // colunas mesmo quando ainda não há nenhuma linha de dados.
+  const sheetComCabecalho = (headers, rows, widths) => {
+    const matriz = [headers, ...rows.map(r => headers.map(h => r[h] ?? ''))]
+    const ws = XLSX.utils.aoa_to_sheet(matriz)
+    ws['!cols'] = widths.map(wch => ({ wch }))
+    ws['!autofilter'] = {
+      ref: XLSX.utils.encode_range({
+        s: { r: 0, c: 0 },
+        e: { r: Math.max(rows.length, 1), c: headers.length - 1 }
+      })
+    }
+    return ws
+  }
+
   const exportStudentsToExcel = () => {
     const dataset = filteredUsers.length > 0 ? filteredUsers : users
 
@@ -295,6 +517,42 @@ export default function AdminReports() {
 
     XLSX.utils.book_append_sheet(wb, wsResumo, 'Resumo')
     XLSX.utils.book_append_sheet(wb, wsDetalhado, 'Detalhado')
+
+    // Abas de monitoria: interação entre aluno e monitor
+    const monitoria = buildMonitoriaRows(dataset)
+
+    XLSX.utils.book_append_sheet(wb, sheetComCabecalho(
+      [
+        'Aluno', 'E-mail do aluno', 'Monitor', 'E-mail do monitor', 'Vinculado em',
+        'Último acesso do aluno', 'Dúvidas enviadas', 'Aguardando resposta', 'Respondidas',
+        'Resolvidas', 'Mensagens do aluno', 'Respostas do monitor', 'Primeira dúvida em',
+        'Última interação em', 'Tempo médio até 1ª resposta (h)', 'Situação'
+      ],
+      monitoria.alunos,
+      [28, 32, 28, 32, 14, 18, 16, 18, 14, 12, 18, 18, 18, 18, 26, 24]
+    ), 'Monitoria - Alunos')
+
+    XLSX.utils.book_append_sheet(wb, sheetComCabecalho(
+      [
+        'Monitor', 'E-mail do monitor', 'Alunos vinculados', 'Alunos que enviaram dúvida',
+        'Dúvidas recebidas', 'Aguardando resposta', 'Respondidas', 'Resolvidas',
+        'Respostas enviadas', 'Tempo médio até 1ª resposta (h)', 'Primeira resposta em',
+        'Última resposta em', 'Taxa de resolução (%)', 'Situação'
+      ],
+      monitoria.monitores,
+      [28, 32, 18, 26, 18, 18, 14, 12, 18, 26, 20, 20, 20, 16]
+    ), 'Monitoria - Monitores')
+
+    XLSX.utils.book_append_sheet(wb, sheetComCabecalho(
+      [
+        'Título da dúvida', 'Aluno', 'E-mail do aluno', 'Monitor', 'Disciplina', 'Aula',
+        'Status', 'Criada em', 'Total de mensagens', 'Mensagens do aluno',
+        'Respostas do monitor', 'Primeira resposta em', 'Tempo até 1ª resposta (h)',
+        'Última mensagem em', 'Última movimentação', 'Descrição'
+      ],
+      monitoria.duvidas,
+      [40, 28, 32, 28, 24, 28, 18, 18, 18, 18, 18, 20, 22, 20, 20, 60]
+    ), 'Monitoria - Dúvidas')
 
     const today = new Date().toISOString().slice(0, 10)
     XLSX.writeFile(wb, `relatorio-alunos-${today}.xlsx`)
