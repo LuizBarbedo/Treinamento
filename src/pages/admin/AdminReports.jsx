@@ -171,7 +171,7 @@ export default function AdminReports() {
     const disc = disciplines.find(d => d.id === disciplineId)
     const totalLessons = disc?.lessons?.length || 0
 
-    const lessonsCompleted = allLessonProgress.filter(
+    const rawLessonsCompleted = allLessonProgress.filter(
       lp => lp.user_id === userId && lp.discipline_id === disciplineId
     ).length
 
@@ -187,9 +187,10 @@ export default function AdminReports() {
       p => p.user_id === userId && p.discipline_id === disciplineId && p.completed
     )
 
-    // Se a disciplina está marcada como concluída, mostra 100%
+    // Se a disciplina está marcada como concluída, mostra 100%/todas as aulas
     // (cobre casos antigos do bug onde o aluno passou no quiz final sem ter lesson_progress).
     // Caso contrário, calcula com base nas aulas concluídas.
+    const lessonsCompleted = completed ? totalLessons : rawLessonsCompleted
     const progressPercent = completed
       ? 100
       : totalLessons > 0
