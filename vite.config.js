@@ -8,6 +8,13 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 8571,
     strictPort: true,
+    proxy: {
+      '/ollama-api': {
+        target: 'https://ollama.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/ollama-api/, '')
+      }
+    }
   },
   preview: {
     host: '0.0.0.0',
