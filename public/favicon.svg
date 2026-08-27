@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="grad-cap" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#009b8f" />
+      <stop offset="100%" stop-color="#00405b" />
+    </linearGradient>
+  </defs>
+  <!-- Fundo com gradiente da identidade visual Capacita Portos -->
+  <rect width="64" height="64" rx="15" fill="url(#grad-cap)" />
+  
+  <!-- Ondas portuárias sutis na base -->
+  <path d="M0 50 C18 45 42 54 64 49 L64 64 L0 64 Z" fill="#002433" opacity="0.45" />
+  
+  <!-- Capelo de Formatura / Treinamento -->
+  <path d="M32 15 L10 26.5 L32 38 L54 26.5 Z" fill="#ffffff" />
+  <path d="M19 33.5 V42.5 C19 46.5 24.8 49.5 32 49.5 C39.2 49.5 45 46.5 45 42.5 V33.5" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none" />
+  <path d="M47 27.5 V39.5" stroke="#38ef7d" stroke-width="2.5" stroke-linecap="round" />
+  <circle cx="47" cy="42" r="2.5" fill="#38ef7d" />
+</svg>
