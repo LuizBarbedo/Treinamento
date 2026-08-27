@@ -1,6 +1,6 @@
 const baseUrl = (import.meta.env.VITE_OLLAMA_BASE_URL || '/ollama-api').replace(/\/$/, '')
 const apiKey = import.meta.env.VITE_OLLAMA_API_KEY
-const modelName = import.meta.env.VITE_OLLAMA_MODEL || 'qwen3.5:397b'
+const modelName = import.meta.env.VITE_OLLAMA_MODEL || 'deepseek-v4-flash:0731'
 
 /**
  * Monta o system prompt restringindo o agente ao conteúdo da disciplina.
