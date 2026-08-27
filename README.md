@@ -25,14 +25,14 @@ Teste de deploy automatico.
 | Frontend | React 19 + Vite |
 | Roteamento | React Router DOM v7 |
 | Backend / BD | Supabase (PostgreSQL + Auth + Storage) |
-| IA | Google Generative AI (Gemini) |
+| IA | Ollama (Cloud/Turbo) |
 | Ícones | React Icons |
 
 ## Pré-requisitos
 
 - Node.js 18+ (ou Bun)
 - Conta no [Supabase](https://supabase.com/) com o schema aplicado (`supabase/schema.sql`)
-- Chave de API do [Google Gemini](https://aistudio.google.com/)
+- Chave de API do [Ollama Cloud/Turbo](https://ollama.com/)
 
 ## Configuração
 
@@ -52,7 +52,9 @@ Teste de deploy automatico.
    |----------|-----------|
    | `VITE_SUPABASE_URL` | URL do projeto Supabase |
    | `VITE_SUPABASE_ANON_KEY` | Chave anônima do Supabase |
-   | `VITE_GEMINI_API_KEY` | Chave de API do Google Gemini |
+   | `VITE_OLLAMA_BASE_URL` | URL base da API do Ollama (ex.: `https://ollama.com`) |
+   | `VITE_OLLAMA_MODEL` | Nome do modelo a ser usado (ex.: `qwen3.6:120b`) |
+   | `VITE_OLLAMA_API_KEY` | Chave de API do Ollama Cloud/Turbo |
    | `VITE_PASSWORD_RESET_REDIRECT_URL` | URL completa de redefinição de senha (ex.: `https://capacitaportos.com.br/redefinir-senha`) |
 
 3. Aplique as migrações no Supabase executando os arquivos da pasta `supabase/` (começando por `schema.sql` e depois os arquivos `migration_*.sql`).

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { FiMessageCircle, FiX, FiSend } from 'react-icons/fi'
-import { sendMessage } from '../lib/gemini'
+import { sendMessage } from '../lib/ollama'
 import './AIChat.css'
 
 export default function AIChat({ discipline, lessons = [], materials = [] }) {
@@ -37,7 +37,7 @@ export default function AIChat({ discipline, lessons = [], materials = [] }) {
 
     // Passar o histórico sem a mensagem de boas-vindas
     const chatHistory = messages.slice(1).map(m => ({
-      role: m.role === 'assistant' ? 'model' : 'user',
+      role: m.role === 'assistant' ? 'assistant' : 'user',
       text: m.text
     }))
 

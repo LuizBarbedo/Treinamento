@@ -1,14 +1,6 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
-
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-
-let genAI = null
-let model = null
-
-if (apiKey && !apiKey.includes('SUA_')) {
-  genAI = new GoogleGenerativeAI(apiKey)
-  model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
-}
+const baseUrl = import.meta.env.VITE_OLLAMA_BASE_URL || 'https://ollama.com'
+const apiKey = import.meta.env.VITE_OLLAMA_API_KEY
+const modelName = import.meta.env.VITE_OLLAMA_MODEL || 'qwen3.6:120b'
 
 /**
  * Monta o system prompt restringindo o agente ao conteúdo da disciplina.
@@ -45,40 +37,51 @@ REGRAS OBRIGATÓRIAS:
 }
 
 /**
- * Envia uma mensagem para o Gemini com o contexto da disciplina.
+ * Envia uma mensagem para o Ollama (Cloud/Turbo) com o contexto da disciplina.
  */
 export async function sendMessage(message, discipline, lessons, materials, chatHistory) {
-  if (!model) {
-    return 'Agente de IA não configurado. Adicione a VITE_GEMINI_API_KEY no arquivo .env.'
+  if (!apiKey) {
+    return 'Agente de IA não configurado. Adicione a VITE_OLLAMA_API_KEY no arquivo .env.'
   }
 
   try {
     const systemPrompt = buildSystemPrompt(discipline, lessons, materials)
 
-    // Montar o histórico para a conversa
-    const contents = [
-      { role: 'user', parts: [{ text: systemPrompt + '\n\nEntendido, estou pronto para ajudar!' }] },
-      { role: 'model', parts: [{ text: `Olá! Sou seu assistente para a disciplina **${discipline.name}**. Como posso ajudar com suas dúvidas sobre o conteúdo? 😊` }] },
+    const messages = [
+      { role: 'system', content: systemPrompt },
+      {
+        role: 'assistant',
+        content: `Olá! Sou seu assistente para a disciplina **${discipline.name}**. Como posso ajudar com suas dúvidas sobre o conteúdo? 😊`
+      },
+      ...chatHistory.map((msg) => ({
+        role: msg.role === 'user' ? 'user' : 'assistant',
+        content: msg.text
+      })),
+      { role: 'user', content: message }
     ]
 
-    // Adicionar histórico da conversa
-    for (const msg of chatHistory) {
-      contents.push({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.text }]
-      })
+    const res = await fetch(`${baseUrl}/api/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({ model: modelName, messages, stream: false })
+    })
+
+    if (!res.ok) {
+      const status = res.status
+      const error = new Error(`Ollama respondeu com status ${status}`)
+      error.status = status
+      throw error
     }
 
-    // Adicionar a mensagem atual
-    contents.push({ role: 'user', parts: [{ text: message }] })
-
-    const result = await model.generateContent({ contents })
-    const response = result.response.text()
-    return response
+    const data = await res.json()
+    return data.message?.content?.trim() || 'Desculpe, não consegui gerar uma resposta.'
   } catch (error) {
-    console.error('Erro ao chamar Gemini:', error)
-    if (error.message?.includes('API_KEY')) {
-      return 'Chave de API inválida. Verifique a VITE_GEMINI_API_KEY no arquivo .env.'
+    console.error('Erro ao chamar Ollama:', error)
+    if (error.status === 401 || error.status === 403) {
+      return 'Chave de API inválida. Verifique a VITE_OLLAMA_API_KEY no arquivo .env.'
     }
     return 'Desculpe, ocorreu um erro ao processar sua pergunta. Tente novamente.'
   }
