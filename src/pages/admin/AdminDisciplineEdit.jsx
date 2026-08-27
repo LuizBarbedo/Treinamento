@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { FiArrowLeft, FiSave, FiPlus, FiTrash2, FiEdit2, FiCheck, FiUpload, FiFile } from 'react-icons/fi'
+import { FiArrowLeft, FiSave, FiPlus, FiTrash2, FiEdit2, FiCheck, FiUpload, FiFile, FiSearch } from 'react-icons/fi'
 import './AdminDisciplineEdit.css'
 
 export default function AdminDisciplineEdit() {
@@ -30,6 +30,7 @@ export default function AdminDisciplineEdit() {
   const [uploadingFile, setUploadingFile] = useState(false)
   const [selectedFile, setSelectedFile] = useState(null)
   const fileInputRef = useRef(null)
+  const [indexingStatus, setIndexingStatus] = useState('')
 
   // Quiz form
   const [quizForm, setQuizForm] = useState({
@@ -234,6 +235,8 @@ export default function AdminDisciplineEdit() {
         materialData.file_path = filePath
       }
 
+      let savedMaterial = null
+
       if (editingMaterialId) {
         // Se está editando e tem novo arquivo, deletar o antigo do storage
         if (selectedFile) {
@@ -242,13 +245,24 @@ export default function AdminDisciplineEdit() {
             await supabase.storage.from('materials').remove([oldMat.file_path])
           }
         }
-        await supabase.from('materials').update(materialData).eq('id', editingMaterialId)
+        const { data } = await supabase.from('materials').update(materialData).eq('id', editingMaterialId).select().single()
+        savedMaterial = data
       } else {
-        await supabase.from('materials').insert({ ...materialData, discipline_id: id })
+        const { data } = await supabase.from('materials').insert({ ...materialData, discipline_id: id }).select().single()
+        savedMaterial = data
       }
 
       resetMaterialForm()
       fetchAll()
+
+      // Indexa o conteúdo do material (PDF/Word) para a busca do chat de IA,
+      // em background, sem travar o formulário
+      if (savedMaterial && (savedMaterial.type === 'pdf' || savedMaterial.type === 'word')) {
+        setIndexingStatus(`Indexando "${savedMaterial.title}" para busca da IA...`)
+        import('../../lib/materialIndexer')
+          .then(({ indexMaterial }) => indexMaterial(savedMaterial, id))
+          .finally(() => setIndexingStatus(''))
+      }
     } catch (err) {
       console.error('Erro ao salvar material:', err)
       alert('Erro ao salvar material. Tente novamente.')
@@ -256,6 +270,21 @@ export default function AdminDisciplineEdit() {
 
     setSaving(false)
     setUploadingFile(false)
+  }
+
+  const reindexMaterials = async () => {
+    const fileMaterials = materials.filter(m => m.type === 'pdf' || m.type === 'word')
+    if (fileMaterials.length === 0) {
+      return alert('Nenhum material em PDF/Word para indexar.')
+    }
+    setIndexingStatus(`Reprocessando 0/${fileMaterials.length} materiais...`)
+    const { reindexAllMaterials } = await import('../../lib/materialIndexer')
+    let done = 0
+    await reindexAllMaterials(fileMaterials, id, () => {
+      done += 1
+      setIndexingStatus(`Reprocessando ${done}/${fileMaterials.length} materiais...`)
+    })
+    setIndexingStatus('')
   }
 
   const deleteMaterial = async (matId, title) => {
@@ -553,6 +582,9 @@ export default function AdminDisciplineEdit() {
         <div className="admin-section">
           <div className="section-toolbar">
             <h3>📎 Materiais de Apoio</h3>
+            <button className="btn-secondary" onClick={reindexMaterials} disabled={!!indexingStatus} title="Reindexa PDFs/Word já cadastrados para a busca do chat de IA">
+              <FiSearch /> Reprocessar índice de busca
+            </button>
             <button className="btn-primary" onClick={() => { resetMaterialForm(); setShowMaterialForm(true) }}>
               <FiPlus /> Novo Material
             </button>
@@ -662,6 +694,10 @@ export default function AdminDisciplineEdit() {
                 </button>
               </div>
             </div>
+          )}
+
+          {indexingStatus && (
+            <div className="list-empty" style={{ padding: '0.5rem 0' }}>🔎 {indexingStatus}</div>
           )}
 
           <div className="admin-list">
